@@ -1,5 +1,7 @@
 package net.chaossquad.mclib;
 
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 
 /**
@@ -121,6 +123,35 @@ public final class WorldUtils {
             }
         }
 
+    }
+
+    // LOCATIONS
+
+    /**
+     * Compares locations by their block coordinates.
+     * @param l1 first location
+     * @param l2 second location
+     * @return block coordinates match
+     */
+    public static boolean doBlockCoordinatesMatch(Location l1, Location l2) {
+        return l1.getBlockX() == l2.getBlockX() && l1.getBlockY() == l2.getBlockY() && l1.getBlockZ() == l2.getBlockZ();
+    }
+
+    /**
+     * Returns the distance between two block locations.
+     * @param location1 first location
+     * @param location2 second location
+     * @return distance in blocks
+     */
+    public static int getBlockDistance(Location location1, Location location2) {
+        int dx = Math.abs(location1.getBlockX() - location2.getBlockX());
+        int dy = Math.abs(location1.getBlockY() - location2.getBlockY());
+        int dz = Math.abs(location1.getBlockZ() - location2.getBlockZ());
+
+        double distanceSquared = dx * dx + dy * dy + dz * dz;
+        double distance = Math.sqrt(distanceSquared);
+
+        return (int) Math.round(distance);
     }
 
 }
