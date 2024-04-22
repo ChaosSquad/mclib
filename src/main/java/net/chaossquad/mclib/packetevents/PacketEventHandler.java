@@ -1,4 +1,4 @@
-package net.chaossquad.mclib.packets;
+package net.chaossquad.mclib.packetevents;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;

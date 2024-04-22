@@ -1,4 +1,4 @@
-package net.chaossquad.mclib.packets;
+package net.chaossquad.mclib.packetevents;
 
 import net.minecraft.network.protocol.Packet;
 import org.bukkit.entity.Player;
@@ -6,14 +6,14 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class ClientboundPacketEvent extends Event implements Cancellable {
+public class ServerboundPacketEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private final Player player;
     private final Packet<?> packet;
     private boolean cancelled;
     private Packet<?> replacement;
 
-    public ClientboundPacketEvent(Player player, Packet<?> packet) {
+    public ServerboundPacketEvent(Player player, Packet<?> packet) {
         super(true);
         this.player = player;
         this.packet = packet;
