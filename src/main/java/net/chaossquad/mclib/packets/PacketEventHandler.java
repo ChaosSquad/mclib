@@ -17,15 +17,20 @@ import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public final class PacketEventHandler implements Listener {
     private final Plugin plugin;
+    private final UUID uuid;
 
     public PacketEventHandler(Plugin plugin) {
         this.plugin = plugin;
+        this.uuid = UUID.randomUUID();
         this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
+
+    // PACKET LISTENERS
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -36,7 +41,7 @@ public final class PacketEventHandler implements Listener {
             return;
         }
 
-        connection.channel.pipeline().addBefore("packet_handler", "MCLIB-READER", new ChannelInboundHandlerAdapter() {
+        connection.channel.pipeline().addBefore("packet_handler", this.getReaderName(), new ChannelInboundHandlerAdapter() {
 
             public void channelRead(ChannelHandlerContext ctx, Object msg) {
                 boolean cancelled = false;
@@ -65,7 +70,7 @@ public final class PacketEventHandler implements Listener {
 
         });
 
-        connection.channel.pipeline().addBefore("packet_handler", "MCLIB-WRITER", new ChannelOutboundHandlerAdapter() {
+        connection.channel.pipeline().addBefore("packet_handler", this.getWriterName(), new ChannelOutboundHandlerAdapter() {
 
             public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
                 boolean cancelled = false;
@@ -106,18 +111,20 @@ public final class PacketEventHandler implements Listener {
         }
 
         try {
-            connection.channel.pipeline().remove("MCLIB-READER");
+            connection.channel.pipeline().remove(this.getReaderName());
         } catch (NoSuchElementException ignored) {
             // should already be removed at this point
         }
 
         try {
-            connection.channel.pipeline().remove("MCLIB-WRITER");
+            connection.channel.pipeline().remove(this.getWriterName());
         } catch (NoSuchElementException ignored) {
             // should already be removed at this point
         }
 
     }
+
+    // CONNECTION
 
     private Connection getConnection(ServerPlayer serverPlayer) {
 
@@ -132,6 +139,24 @@ public final class PacketEventHandler implements Listener {
             return null;
         }
 
+    }
+
+    // GETTER
+
+    public Plugin getPlugin() {
+        return plugin;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public String getReaderName() {
+        return "MCLIB-READER-" + uuid.toString();
+    }
+
+    public String getWriterName() {
+        return "MCLIB-WRITER-" + uuid.toString();
     }
 
 }
