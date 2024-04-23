@@ -31,7 +31,7 @@ public class PacketEntityManager implements Listener {
 
     // TASKS
 
-    private void cleanupEntities() {
+    public void cleanupEntities() {
 
         for (PacketEntity<?> entity : List.copyOf(this.entities)) {
 
@@ -44,7 +44,7 @@ public class PacketEntityManager implements Listener {
 
     }
 
-    private void cleanupPlayers() {
+    public void cleanupPlayers() {
 
         for (PacketEntity<?> entity : List.copyOf(this.entities)) {
             if (entity.isRemoved()) continue;
@@ -53,7 +53,7 @@ public class PacketEntityManager implements Listener {
 
     }
 
-    private void updateEntities() {
+    public void updateEntities() {
 
         for (PacketEntity<?> entity : List.copyOf(this.entities)) {
             if (entity.isRemoved()) continue;
@@ -134,7 +134,7 @@ public class PacketEntityManager implements Listener {
      * @return packet entity object
      */
     public PacketEntity<?> addEntity(Entity entity) {
-        PacketEntity<?> packetEntity = new PacketEntity<>(entity);
+        PacketEntity<?> packetEntity = new PacketEntity<>(this, entity);
         this.entities.add(packetEntity);
         return packetEntity;
     }

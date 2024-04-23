@@ -5,6 +5,7 @@ import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.entity.EntityInLevelCallback;
 import org.bukkit.craftbukkit.v1_20_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_20_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -16,13 +17,16 @@ import java.util.*;
  * Contains the NMS entity, the players that can see it and custom data for that entity.
  * @param <T> entity type if relevant
  */
-public class PacketEntity<T extends Entity> {
+public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
+    private final PacketEntityManager manager;
     private final T entity;
     private final List<Player> players;
     private final Map<String, PacketEntityData<?>> data;
 
-    public PacketEntity(T entity) {
+    public PacketEntity(PacketEntityManager manager, T entity) {
+        this.manager = manager;
         this.entity = entity;
+        this.entity.setLevelCallback(this);
         this.players = new ArrayList<>();
         this.data = new HashMap<>();
     }
@@ -190,6 +194,24 @@ public class PacketEntity<T extends Entity> {
      */
     public void removeAllData() {
         this.data.clear();
+    }
+
+    // GETTER
+
+    public PacketEntityManager getManager() {
+        return manager;
+    }
+
+    // LEVEL CALLBACK
+
+    @Override
+    public void onMove() {
+        this.updateEntity();
+    }
+
+    @Override
+    public void onRemove(Entity.RemovalReason removalReason) {
+        this.manager.cleanupEntities();
     }
 
 }
