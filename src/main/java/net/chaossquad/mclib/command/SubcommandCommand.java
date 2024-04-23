@@ -46,7 +46,7 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
                 return true;
             }
 
-            if (sender != this.plugin.getServer().getConsoleSender() && subcommand.permission() != null && sender.hasPermission(subcommand.permission())) {
+            if (!this.hasCommandPermission(subcommand, sender)) {
                 sender.sendMessage("§cNo permission");
                 return true;
             }
@@ -83,7 +83,7 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
 
             SubcommandEntry subcommand = this.getSubcommand(args[0]);
             if (subcommand == null) return List.of();
-            if (sender != this.plugin.getServer().getConsoleSender() && subcommand.permission() != null && sender.hasPermission(subcommand.permission())) return List.of();
+            if (!this.hasCommandPermission(subcommand, sender)) return List.of();
 
             TabCompleter completer = subcommand.tabCompleter();
             if (completer == null) return List.of();
@@ -112,18 +112,24 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
 
     }
 
+    private boolean hasCommandPermission(SubcommandEntry command, CommandSender sender) {
+        return sender == this.plugin.getServer().getConsoleSender() || command.permission() == null || sender.hasPermission(command.permission());
+    }
+
     private SubcommandEntry getSubcommand(String name) {
 
         SubcommandEntry entry = null;
 
-        try {
+        if (this.dynamicSubcommandProvider != null) {
 
-            if (this.dynamicSubcommandProvider != null) {
+            try {
+
                 entry = this.dynamicSubcommandProvider.getDynamicSubcommands().get(name);
+
+            } catch (Exception e) {
+                this.plugin.getLogger().log(Level.WARNING, "Exception in dynamic subcommand provider", e);
             }
 
-        } catch (Exception e) {
-            this.plugin.getLogger().log(Level.WARNING, "Exception in dynamic subcommand provider", e);
         }
 
         if (entry == null) {
@@ -143,7 +149,7 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
             SubcommandEntry entry = this.entries.get(command);
             if (entry == null) continue;
 
-            if (sender == this.plugin.getServer().getConsoleSender() || entry.permission() == null || sender.hasPermission(entry.permission())) {
+            if (this.hasCommandPermission(entry, sender)) {
                 commandList.add(command);
             }
 
@@ -155,7 +161,7 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
                 SubcommandEntry entry = entries.get(command);
                 if (entry == null) continue;
 
-                if (sender == this.plugin.getServer().getConsoleSender() || entry.permission() == null || sender.hasPermission(entry.permission())) {
+                if (this.hasCommandPermission(entry, sender)) {
                     commandList.add(command);
                 }
 
