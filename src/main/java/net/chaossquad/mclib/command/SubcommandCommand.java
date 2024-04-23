@@ -6,6 +6,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * A command that can has multiple commands as subcommands.
@@ -115,8 +116,19 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
 
         SubcommandEntry entry = null;
 
-        if (this.dynamicSubcommandProvider != null) entry = this.dynamicSubcommandProvider.getDynamicSubcommands().get(name);
-        if (entry == null) this.entries.get(name);
+        try {
+
+            if (this.dynamicSubcommandProvider != null) {
+                entry = this.dynamicSubcommandProvider.getDynamicSubcommands().get(name);
+            }
+
+        } catch (Exception e) {
+            this.plugin.getLogger().log(Level.WARNING, "Exception in dynamic subcommand provider", e);
+        }
+
+        if (entry == null) {
+            entry = this.entries.get(name);
+        }
 
         return entry;
     }
@@ -138,8 +150,9 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
         }
 
         if (this.dynamicSubcommandProvider != null) {
-            for (String command : List.copyOf(this.dynamicSubcommandProvider.getDynamicSubcommands().keySet())) {
-                SubcommandEntry entry = this.entries.get(command);
+            Map<String, SubcommandEntry> entries = Map.copyOf(this.dynamicSubcommandProvider.getDynamicSubcommands());
+            for (String command : entries.keySet()) {
+                SubcommandEntry entry = entries.get(command);
                 if (entry == null) continue;
 
                 if (sender == this.plugin.getServer().getConsoleSender() || entry.permission() == null || sender.hasPermission(entry.permission())) {
