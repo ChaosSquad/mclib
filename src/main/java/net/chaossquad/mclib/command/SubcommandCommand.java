@@ -1,14 +1,13 @@
 package net.chaossquad.mclib.command;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 
-public class SubcommandCommand implements CommandExecutor, TabCompleter {
+public class SubcommandCommand implements TabCompletingCommandExecutor {
     private final Plugin plugin;
     private final Map<String, SubcommandEntry> entries;
     private String availableSubcommandsMessage;
