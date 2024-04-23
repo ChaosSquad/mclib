@@ -35,7 +35,7 @@
         <repository>
             <id>chaossquad</id>
             <name>ChaosSquad Repository</name>
-            <url>http://chaossquad.net:8080/snapshots</url>
+            <url>https://chaossquad.net:8443/snapshots</url>
         </repository>
     </distributionManagement>
 
