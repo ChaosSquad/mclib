@@ -60,6 +60,8 @@ public class SubcommandCommand implements CommandExecutor, TabCompleter {
 
             }
 
+            sender.sendMessage(message);
+
         }
 
         return true;
