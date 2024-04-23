@@ -74,7 +74,7 @@ public class SubcommandCommand implements CommandExecutor, TabCompleter {
 
             SubcommandEntry subcommand = this.entries.get(args[0]);
             if (subcommand == null) return List.of();
-            if (sender != this.plugin.getServer().getConsoleSender()  && sender.hasPermission(subcommand.permission())) return List.of();
+            if (sender != this.plugin.getServer().getConsoleSender() && subcommand.permission() != null && sender.hasPermission(subcommand.permission())) return List.of();
 
             TabCompleter completer = subcommand.tabCompleter();
             if (completer == null) return List.of();
