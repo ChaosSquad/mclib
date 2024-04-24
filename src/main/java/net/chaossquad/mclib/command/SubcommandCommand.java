@@ -118,22 +118,18 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
 
     private SubcommandEntry getSubcommand(String name) {
 
-        SubcommandEntry entry = null;
+        SubcommandEntry entry = this.entries.get(name);
+
+        if (entry != null) return entry; // Return if entry was found
 
         if (this.dynamicSubcommandProvider != null) {
 
             try {
-
                 entry = this.dynamicSubcommandProvider.getDynamicSubcommands().get(name);
-
             } catch (Exception e) {
                 this.plugin.getLogger().log(Level.WARNING, "Exception in dynamic subcommand provider", e);
             }
 
-        }
-
-        if (entry == null) {
-            entry = this.entries.get(name);
         }
 
         return entry;
