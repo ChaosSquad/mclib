@@ -60,7 +60,7 @@ public abstract class ActionBarManager {
 
             // Add text when it is available and not null or remove it when these conditions are not met
 
-            if (text != null && text.removeAt() < this.tick) {
+            if (text != null && this.tick <= text.removeAt()) {
 
                 // Add components
                 components.addAll(Arrays.stream(text.content()).toList());
@@ -122,7 +122,13 @@ public abstract class ActionBarManager {
 
         }
 
-        this.tick = this.tick < Long.MAX_VALUE ? this.tick + 1 : 0;
+        if (this.tick < Long.MAX_VALUE) {
+            this.tick++;
+        } else {
+            this.tick = 0;
+            this.texts.clear();
+        }
+
     }
 
     /**
@@ -161,7 +167,7 @@ public abstract class ActionBarManager {
      * @param components chat components of the action bar
      * @param duration how long the action bar should be displayed
      */
-    public void addText(Player player, String id, BaseComponent[] components, int duration) {
+    public void sendActionBarMessage(Player player, String id, BaseComponent[] components, int duration) {
         if (player == null || !player.isOnline() || id == null || components == null) return;
         this.getPlayerTextMap(player).put(id, new ActionBarText(components, this.tick + 1 + duration));
     }
@@ -171,7 +177,7 @@ public abstract class ActionBarManager {
      * @param player player
      * @param id actionbar text id
      */
-    public void removeText(Player player, String id) {
+    public void removeActionBarMessage(Player player, String id) {
         if (player == null || id == null) return;
         this.getPlayerTextMap(player).remove(id);
     }
@@ -180,7 +186,7 @@ public abstract class ActionBarManager {
      * Clears all actionbar texts of the specified player.
      * @param player player
      */
-    public void clearTexts(Player player) {
+    public void clearActionBarMessages(Player player) {
         this.texts.remove(player);
     }
 
