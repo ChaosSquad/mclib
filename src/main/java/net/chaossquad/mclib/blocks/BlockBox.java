@@ -11,6 +11,13 @@ import org.bukkit.util.Vector;
  * Both objects can be converted into each other.
  */
 public class BlockBox {
+
+    public interface BlockLocationProvider {
+
+        void provide(int x, int y, int z);
+
+    }
+
     private int minX;
     private int minY;
     private int minZ;
@@ -200,6 +207,22 @@ public class BlockBox {
         this.maxX = Math.max(minX, maxX);
         this.maxY = Math.max(minY, maxY);
         this.maxZ = Math.max(minZ, maxZ);
+    }
+
+    // FOR EACH
+
+    public void forEach(BlockLocationProvider locationProvider) {
+        BlockBox box = this.clone();
+        box.sort();
+
+        for (int x = box.getMinX(); x <= box.getMaxX(); x++) {
+            for (int y = box.getMinY(); y <= box.getMaxY(); y++) {
+                for (int z = box.getMinZ(); z <= box.getMaxZ(); z++) {
+                    locationProvider.provide(x, y, z);
+                }
+            }
+        }
+
     }
 
     // CLONE

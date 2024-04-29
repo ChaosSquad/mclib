@@ -1,5 +1,6 @@
 package net.chaossquad.mclib;
 
+import net.chaossquad.mclib.blocks.BlockBox;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -152,6 +153,34 @@ public final class WorldUtils {
         double distance = Math.sqrt(distanceSquared);
 
         return (int) Math.round(distance);
+    }
+
+    /**
+     * Fills the specified area with the specified block.
+     * @param world world
+     * @param box block box
+     * @param material material
+     */
+    public static void fillAreaWith(World world, BlockBox box, Material material) {
+        box = box.clone();
+        box.sort();
+
+        box.forEach(((x, y, z) -> {
+            world.getBlockAt(x, y, z).setType(material);
+        }));
+    }
+
+    /**
+     * Fills the specified area with the specified block.
+     * @param from from location
+     * @param to to location
+     * @param material block
+     * @deprecated Use {@link this#fillAreaWith(World, BlockBox, Material)} instead
+     */
+    @Deprecated
+    public static void fillAreaWith(Location from, Location to, Material material) {
+        if (from.getWorld() == null) return;
+        fillAreaWith(from.getWorld(), new BlockBox(from, to), material);
     }
 
 }
