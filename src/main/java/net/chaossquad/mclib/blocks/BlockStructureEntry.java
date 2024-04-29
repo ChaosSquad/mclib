@@ -26,7 +26,7 @@ public class BlockStructureEntry {
      * Returns the material (type).
      * @return type
      */
-    public Material type() {
+    public final Material type() {
         return this.type;
     }
 
@@ -34,7 +34,7 @@ public class BlockStructureEntry {
      * Returns a copy of the block data.
      * @return copy of block data
      */
-    public BlockData data() {
+    public final BlockData data() {
         return this.data.clone();
     }
 
