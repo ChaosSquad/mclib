@@ -7,24 +7,39 @@ import org.bukkit.block.data.BlockData;
  * Represents a block in a block structure.
  * It saves a copy of its type and of its data.
  * The block data will be copied on setting and getting.
- * @param type block type (material)
- * @param data block data
  */
-public record BlockStructureEntry(Material type, BlockData data) {
+public class BlockStructureEntry {
+    private final Material type;
+    private final BlockData data;
 
     public BlockStructureEntry(Material type, BlockData data) {
         this.type = type;
         this.data = data.clone();
     }
 
-    @Override
+    private BlockStructureEntry(BlockStructureEntry entry) {
+        this.type = entry.type;
+        this.data = entry.data.clone();
+    }
+
+    /**
+     * Returns the material (type).
+     * @return type
+     */
+    public Material type() {
+        return this.type;
+    }
+
+    /**
+     * Returns a copy of the block data.
+     * @return copy of block data
+     */
     public BlockData data() {
         return this.data.clone();
     }
 
-    @Override
     public BlockStructureEntry clone() {
-        return new BlockStructureEntry(this.type, this.data.clone());
+        return new BlockStructureEntry(this);
     }
 
 }
