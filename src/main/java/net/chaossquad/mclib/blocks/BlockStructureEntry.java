@@ -17,7 +17,7 @@ public class BlockStructureEntry {
         this.data = data.clone();
     }
 
-    private BlockStructureEntry(BlockStructureEntry entry) {
+    public BlockStructureEntry(BlockStructureEntry entry) {
         this.type = entry.type;
         this.data = entry.data.clone();
     }
