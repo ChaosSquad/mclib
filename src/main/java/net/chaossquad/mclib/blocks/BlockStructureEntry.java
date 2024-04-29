@@ -9,11 +9,11 @@ import org.bukkit.block.data.BlockData;
  * The block data will be copied on setting and getting.
  */
 public class BlockStructureEntry {
-    private final Material type;
-    private final BlockData data;
+    private Material type;
+    private BlockData data;
 
     public BlockStructureEntry(Material type, BlockData data) {
-        this.type = type;
+        this.type = type != null ? type : Material.AIR;
         this.data = data.clone();
     }
 
@@ -36,6 +36,22 @@ public class BlockStructureEntry {
      */
     public final BlockData data() {
         return this.data.clone();
+    }
+
+    /**
+     * Sets the material (type).
+     * @param type type
+     */
+    public final void setType(Material type) {
+        this.type = type != null ? type : Material.AIR;
+    }
+
+    /**
+     * Sets the block data.
+     * @param data block data
+     */
+    public final void setData(BlockData data) {
+        this.data = data.clone();
     }
 
     public BlockStructureEntry clone() {

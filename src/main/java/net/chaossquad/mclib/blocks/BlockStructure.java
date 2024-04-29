@@ -442,9 +442,13 @@ public class BlockStructure {
             for (int y = 0; y < this.structure[0].length; y++) {
                 for (int z = 0; z < zLen; z++) {
                     BlockStructureEntry entry = this.getBlock(x, y, z);
+
                     BlockData data = entry.data();
                     data.rotate(StructureRotation.COUNTERCLOCKWISE_90);
-                    rotatedMatrix[z][y][xLen - 1 - x] = new BlockStructureEntry(entry.type(), data);
+
+                    entry.setData(data);
+
+                    rotatedMatrix[z][y][xLen - 1 - x] = entry;
                 }
             }
         }
@@ -466,9 +470,13 @@ public class BlockStructure {
             for (int y = 0; y < this.structure[0].length; y++) {
                 for (int z = 0; z < zLen; z++) {
                     BlockStructureEntry entry = this.getBlock(x, y, z);
+
                     BlockData data = entry.data();
                     data.rotate(StructureRotation.CLOCKWISE_90);
-                    rotatedMatrix[zLen - 1 - z][y][x] = new BlockStructureEntry(entry.type(), data);
+
+                    entry.setData(data);
+
+                    rotatedMatrix[zLen - 1 - z][y][x] = entry;
                 }
             }
         }
@@ -490,9 +498,13 @@ public class BlockStructure {
             for (int y = 0; y < this.structure[0].length; y++) {
                 for (int j = 0; j < cols; j++) {
                     BlockStructureEntry entry = this.getBlock(i, y, j);
+
                     BlockData data = entry.data();
                     data.rotate(StructureRotation.CLOCKWISE_180);
-                    rotatedMatrix[rows - 1 - i][y][cols - 1 - j] = new BlockStructureEntry(entry.type(), data);
+
+                    entry.setData(data);
+
+                    rotatedMatrix[rows - 1 - i][y][cols - 1 - j] = entry;
                 }
             }
         }
