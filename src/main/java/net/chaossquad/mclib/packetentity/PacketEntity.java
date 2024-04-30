@@ -173,6 +173,16 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
     }
 
     /**
+     * Returns the custom entity data of the specified key.
+     * Returns null if the data does not exist.
+     * @param key key
+     * @return data
+     */
+    public PacketEntityData<?> getData(String key) {
+        return this.data.get(key);
+    }
+
+    /**
      * Add or update a custom entity data.
      * @param key key to add
      * @param data value to add

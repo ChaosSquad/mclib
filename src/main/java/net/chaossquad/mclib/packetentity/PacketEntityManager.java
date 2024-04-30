@@ -117,6 +117,18 @@ public class PacketEntityManager implements Listener {
     }
 
     /**
+     * Searches for the {@link PacketEntity} which manages the entity with the specified id.
+     * @param id entity id
+     * @return PacketEntity
+     */
+    public PacketEntity<?> getPacketEntityFromId(int id) {
+        for (PacketEntity<?> packetEntity : this.entities) {
+            if (packetEntity.getEntity().getId() == id) return packetEntity;
+        }
+        return null;
+    }
+
+    /**
      * Searches for the {@link PacketEntity} that is managing the specified entity.
      * @param entity nms entity
      * @return PacketEntity
@@ -134,6 +146,7 @@ public class PacketEntityManager implements Listener {
      * @return packet entity object
      */
     public PacketEntity<?> addEntity(Entity entity) {
+        if (entity == null || entity.isRemoved()) return null;
         PacketEntity<?> packetEntity = new PacketEntity<>(this, entity);
         this.entities.add(packetEntity);
         return packetEntity;
