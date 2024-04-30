@@ -102,6 +102,16 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
     }
 
     /**
+     * Returns true if the specified player can see the entity.
+     * Else, it returns false.
+     * @param player player that should be checked for
+     * @return true if player can see entity, false if not
+     */
+    public boolean hasPlayer(Player player) {
+        return this.showEntityCondition(player) && this.players.contains(player);
+    }
+
+    /**
      * Adds a player so that the player can see the entity.
      * @param player the player
      * @return true if adding the player was successful
