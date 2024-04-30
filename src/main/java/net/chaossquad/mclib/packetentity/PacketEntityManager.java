@@ -59,7 +59,7 @@ public class PacketEntityManager implements Listener {
             if (entity.isRemoved()) continue;
 
             if (entity.getEntity().getEntityData().isDirty()) {
-                entity.updateEntity();
+                entity.sendEntityData();
             }
 
         }

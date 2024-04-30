@@ -2,8 +2,6 @@ package net.chaossquad.mclib.packetentity;
 
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.entity.EntityInLevelCallback;
 import org.bukkit.craftbukkit.v1_20_R3.CraftWorld;
@@ -123,7 +121,7 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
         ClientboundAddEntityPacket packet = new ClientboundAddEntityPacket(this.entity);
         ((CraftPlayer) player).getHandle().connection.send(packet);
 
-        this.updateEntity();
+        this.sendEntityData(player);
 
         this.players.add(player);
         return true;
@@ -155,19 +153,25 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
     // ENTITY DATA
 
     /**
+     * Sends all entity data modifications to the specified player.
+     * @param player player
+     * @return entity data
+     */
+    public boolean sendEntityData(Player player) {
+        if (!this.hasPlayer(player)) return false;
+        if (!this.showEntityCondition(player)) return false;
+
+        this.entity.getEntityData().refresh(((CraftPlayer) player).getHandle());
+        return true;
+    }
+
+    /**
      * Sends all entity data modifications to the players.
      */
-    public void updateEntity() {
-
-        List<SynchedEntityData.DataValue<?>> data = this.entity.getEntityData().packDirty();
-        if (data == null) return;
+    public void sendEntityData() {
 
         for (Player player : this.getPlayers()) {
-            if (!this.showEntityCondition(player)) continue;
-
-            ClientboundSetEntityDataPacket packet = new ClientboundSetEntityDataPacket(this.entity.getId(), data);
-            ((CraftPlayer) player).getHandle().connection.send(packet);
-
+            this.sendEntityData(player);
         }
 
     }
@@ -226,7 +230,7 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
 
     @Override
     public void onMove() {
-        this.updateEntity();
+        // Currently nothing
     }
 
     @Override
