@@ -66,7 +66,7 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
      * @return true if entity can be shown to a player if the player is in the list for the entity
      */
     private boolean showEntityCondition(Player player) {
-        return player != null && player.isOnline() && ((CraftWorld) player.getWorld()).getHandle() != this.entity.level();
+        return player != null && player.isOnline() && ((CraftWorld) player.getWorld()).getHandle() == this.entity.level();
     }
 
     /**
