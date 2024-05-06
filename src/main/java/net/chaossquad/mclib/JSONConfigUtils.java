@@ -17,7 +17,7 @@ public final class JSONConfigUtils {
      * @param json location json
      * @return location or null if invalid
      */
-    private static Location jsonObjectToLocation(JSONObject json) {
+    public static Location jsonObjectToLocation(JSONObject json) {
 
         try {
 
