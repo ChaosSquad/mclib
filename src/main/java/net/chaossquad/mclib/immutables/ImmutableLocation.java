@@ -25,7 +25,7 @@ public class ImmutableLocation extends Location {
      * @param location Bukkit Location
      */
     public ImmutableLocation(Location location) {
-        super(location.getWorld(), location.getBlockX(), location.getBlockY(), location.getBlockZ(), location.getYaw(), location.getPitch());
+        super(location.getWorld(), location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
     }
 
     @Override
