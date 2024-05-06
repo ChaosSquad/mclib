@@ -183,4 +183,14 @@ public final class WorldUtils {
         fillAreaWith(from.getWorld(), new BlockBox(from, to), material);
     }
 
+    /**
+     * Returns a new location with the specified world.
+     * @param location location
+     * @param world world
+     * @return new location with world
+     */
+    public static Location locationWithWorld(Location location, World world) {
+        return new Location(world, location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+    }
+
 }
