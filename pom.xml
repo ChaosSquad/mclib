@@ -22,6 +22,8 @@
     </repositories>
 
     <dependencies>
+
+        <!-- Spigot -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
@@ -29,6 +31,15 @@
             <scope>provided</scope>
             <classifier>remapped-mojang</classifier>
         </dependency>
+
+        <!-- JSON: https://mvnrepository.com/artifact/org.json/json -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20240303</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
