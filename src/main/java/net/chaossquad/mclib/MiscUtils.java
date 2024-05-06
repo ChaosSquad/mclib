@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class MiscUtils {
@@ -78,6 +79,19 @@ public final class MiscUtils {
         }
 
         return success;
+    }
+
+    /**
+     * Clones a list and their elements.
+     * @param list the list that should be cloned
+     * @param clazz type of the objects that should be cloned
+     * @return cloned unmodifiable list that contains all objects that have been cloned successfully
+     * @param <T> type
+     */
+    public static <T> List<T> cloneWithObjects(List<T> list, Class<T> clazz) {
+        List<T> clone = new ArrayList<>();
+        cloneObjectsInto(list, clone, clazz);
+        return List.copyOf(clone);
     }
 
 }
