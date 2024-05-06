@@ -1,6 +1,10 @@
 package net.chaossquad.mclib;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.Duration;
+import java.util.List;
 
 public final class MiscUtils {
 
@@ -30,6 +34,50 @@ public final class MiscUtils {
         }
 
         return formattedTime;
+    }
+
+    /**
+     * Clones a list and their elements.
+     * @param cloneFrom the list that should be cloned
+     * @param cloneInto the list the cloned objects should be put into. NEEDS TO BE MODIFIABLE!
+     * @param clazz type of the objects that should be cloned
+     * @return true if all objects in the cloneFrom list were cloned. false if at least one object has not been cloned successfully.
+     * @param <T> type
+     */
+    public static <T> boolean cloneObjectsInto(List<T> cloneFrom, List<T> cloneInto, Class<T> clazz) {
+        boolean success = true;
+
+        for (T obj : cloneFrom) {
+
+            // Try to clone via copy constructor
+
+            try {
+
+                Constructor<T> constructor = clazz.getConstructor(clazz);
+                cloneInto.add(constructor.newInstance(obj));
+
+                continue;
+            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ignored) {}
+
+            // Try to clone via clone method
+
+            try {
+
+                Method cloneMethod = obj.getClass().getMethod("clone");
+                @SuppressWarnings("unchecked")
+                T clonedObj = (T) cloneMethod.invoke(obj);
+                cloneInto.add(clonedObj);
+
+                continue;
+            } catch (NoSuchMethodException | ClassCastException | IllegalAccessException | InvocationTargetException ignored) {}
+
+            // Set success to false (RUN LAST!)
+
+            success = false;
+
+        }
+
+        return success;
     }
 
 }
