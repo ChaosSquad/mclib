@@ -1,11 +1,18 @@
 package net.chaossquad.mclib;
 
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public final class MiscUtils {
 
@@ -92,6 +99,33 @@ public final class MiscUtils {
         List<T> clone = new ArrayList<>();
         cloneObjectsInto(list, clone, clazz);
         return List.copyOf(clone);
+    }
+
+    /**
+     * Gets a resource embedded into the jar file.
+     * @param plugin plugin
+     * @param filename file name
+     * @return content of the file
+     */
+    public static String getEmbeddedFile(Plugin plugin, String filename) {
+        InputStream file = plugin.getResource(filename);
+        if (file == null) return null;
+
+        try {
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(file));
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line).append("\n");
+            }
+            return stringBuilder.toString();
+
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.WARNING, "Error while reading embedded resource " + filename, e);
+            return null;
+        }
+
     }
 
 }
