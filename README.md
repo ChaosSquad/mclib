@@ -13,6 +13,22 @@ It contains most classes required by multiple plugins that we have created.
 - WorldUtils: World-related utilities
 - MiscUtils: Other utilities
 ### How to use
-[coming soon]
+Add Repository:
+```xml
+<repository>
+  <id>ChaosSquad-Repository-snapshots</id>
+  <name>ChaosSquad Repository</name>
+  <url>https://chaossquad.net:8443/snapshots</url>
+</repository>
+```
+
+Add Dependency:
+```xml
+<dependency>
+  <groupId>net.chaossquad</groupId>
+  <artifactId>mclib</artifactId>
+  <version>master-029f9e7d272da14044530a9d5699ff14a1917715</version>
+</dependency>
+```
 ### Version Support
 This lib only supports one specific version, but most of the non-NMS-features should also work on other versions.
