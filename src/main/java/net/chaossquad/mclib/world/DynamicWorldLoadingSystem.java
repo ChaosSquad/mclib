@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 /**
- * The dynamic map loading system allows you to create a copy of a template world and load it.
+ * The dynamic world loading system allows you to create a copy of a template world and load it.
  * The system can create multiple copies of the specified template.
  * Dynamic worlds will be automatically deleted when they are not loaded anymore.
  *
@@ -35,16 +35,16 @@ import java.util.logging.Level;
  * - Running {@link this#cleanupDynamicWorldDirectory(String)} or {@link this#cleanupUnloadedDynamicWorldDirectories()} is not required, only use them if you know what you are doing.
  * - If you want to remove/disable the DynamicWorldLoadingSystem manually, you can call {@link this#remove()}, but be aware that there is no way back.
  */
-public final class DynamicMapLoadingSystem implements Listener {
+public final class DynamicWorldLoadingSystem implements Listener {
     public static final List<String> DISALLOWED_WORLD_NAMES = List.of("cache", "config", "libraries", "logs", "plugins", "versions", "world");
     private static final String PREFIX = "dynamicworlds-";
 
     // UTILITY CLASSES
 
     public static final class DefaultCleanupTask extends BukkitRunnable {
-        private final DynamicMapLoadingSystem system;
+        private final DynamicWorldLoadingSystem system;
 
-        private DefaultCleanupTask(DynamicMapLoadingSystem system) {
+        private DefaultCleanupTask(DynamicWorldLoadingSystem system) {
             this.system = system;
         }
 
@@ -53,17 +53,17 @@ public final class DynamicMapLoadingSystem implements Listener {
             this.system.cleanupUnloadedDynamicWorldDirectories();
         }
 
-        public DynamicMapLoadingSystem getSystem() {
+        public DynamicWorldLoadingSystem getSystem() {
             return system;
         }
 
     }
 
     public static final class SingleWorldCleanupTask extends BukkitRunnable {
-        private final DynamicMapLoadingSystem system;
+        private final DynamicWorldLoadingSystem system;
         private final World world;
 
-        private SingleWorldCleanupTask(DynamicMapLoadingSystem system, World world) {
+        private SingleWorldCleanupTask(DynamicWorldLoadingSystem system, World world) {
             this.system = system;
             this.world = world;
         }
@@ -79,7 +79,7 @@ public final class DynamicMapLoadingSystem implements Listener {
 
         }
 
-        public DynamicMapLoadingSystem getSystem() {
+        public DynamicWorldLoadingSystem getSystem() {
             return system;
         }
 
@@ -89,9 +89,9 @@ public final class DynamicMapLoadingSystem implements Listener {
      * Event Listener.
      */
     public static final class EventListener implements Listener {
-        private final DynamicMapLoadingSystem system;
+        private final DynamicWorldLoadingSystem system;
 
-        public EventListener(DynamicMapLoadingSystem system) {
+        public EventListener(DynamicWorldLoadingSystem system) {
             this.system = system;
         }
 
@@ -120,7 +120,7 @@ public final class DynamicMapLoadingSystem implements Listener {
             new SingleWorldCleanupTask(this.system, event.getWorld()).runTaskTimer(this.system.getPlugin(), 1, 1);
         }
 
-        public DynamicMapLoadingSystem getSystem() {
+        public DynamicWorldLoadingSystem getSystem() {
             return system;
         }
 
@@ -133,7 +133,7 @@ public final class DynamicMapLoadingSystem implements Listener {
     private final EventListener listener;
     private int nextId;
 
-    public DynamicMapLoadingSystem(Plugin plugin) {
+    public DynamicWorldLoadingSystem(Plugin plugin) {
         this.plugin = plugin;
         this.listener = new EventListener(this);
         this.nextId = 0;
@@ -278,7 +278,7 @@ public final class DynamicMapLoadingSystem implements Listener {
     // UTILITIES
 
     /**
-     * Returns the prefix of the world directories for this dynamic map loading system.
+     * Returns the prefix of the world directories for this dynamic world loading system.
      * @return prefix
      */
     public String getPrefix() {
@@ -295,7 +295,7 @@ public final class DynamicMapLoadingSystem implements Listener {
 
     // GETTER
 
-    public DynamicMapLoadingSystem getSelf() {
+    public DynamicWorldLoadingSystem getSelf() {
         return this;
     }
 
@@ -305,7 +305,7 @@ public final class DynamicMapLoadingSystem implements Listener {
 
     /**
      * Returns the event listener of this system.
-     * This listener must be added to the exception list if you are using a dynamic map listener system.
+     * This listener must be added to the exception list if you are using a dynamic world listener system.
      * @return event listener of this system
      */
     public EventListener getListener() {
@@ -316,7 +316,7 @@ public final class DynamicMapLoadingSystem implements Listener {
 
     /**
      * Removes the bukkit task and the event handlers.
-     * @param cleanup If true, all dynamically loaded worlds will be cleaned up. Else, they will persist until you delete them manually or there is another DynamicMapLoadingSystem that deletes it.
+     * @param cleanup If true, all dynamically loaded worlds will be cleaned up. Else, they will persist until you delete them manually or there is another DynamicWorldLoadingSystem that deletes it.
      */
     public void remove(boolean cleanup) {
 
