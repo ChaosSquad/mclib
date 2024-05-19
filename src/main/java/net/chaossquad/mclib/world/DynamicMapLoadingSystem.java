@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.IOException;
@@ -20,47 +21,163 @@ import java.util.List;
 import java.util.logging.Level;
 
 /**
- * The dynamic map loading system allows you to create a copy of a template map and load it.
- * This copy will be automatically removed when the world is unloaded.
+ * The dynamic map loading system allows you to create a copy of a template world and load it.
+ * The system can create multiple copies of the specified template.
+ * Dynamic worlds will be automatically deleted when they are not loaded anymore.
+ *
+ * Known drawbacks/issues:
+ * 1. The {@link this#getTemplateWorldName(World)} is unsafe because it generates the template world name of the world name.
+ * 2. Dynamic worlds cannot be cleaned up when the plugin is disabled or the server is stopped, because worlds are not unloaded synchronously. The world only can be cleaned up when the dynamic world loading system was created again.
+ *
+ * Normal usage:
+ * - Create a world of a template by using {@link this#createWorldFromTemplate(String)}.
+ * - Unload the world as you would unload any normal bukkit world ({@link org.bukkit.Server#unloadWorld(String, boolean)}) and the world folder of the dynamic world will be cleaned up.
+ * - Running {@link this#cleanupDynamicWorldDirectory(String)} or {@link this#cleanupUnloadedDynamicWorldDirectories()} is not required, only use them if you know what you are doing.
+ * - If you want to remove/disable the DynamicWorldLoadingSystem manually, you can call {@link this#remove()}, but be aware that there is no way back.
  */
-public class DynamicMapLoadingSystem implements Listener, Runnable {
+public final class DynamicMapLoadingSystem implements Listener {
     public static final List<String> DISALLOWED_WORLD_NAMES = List.of("cache", "config", "libraries", "logs", "plugins", "versions", "world");
     private static final String PREFIX = "dynamicworlds-";
 
+    // UTILITY CLASSES
+
+    public static final class DefaultCleanupTask extends BukkitRunnable {
+        private final DynamicMapLoadingSystem system;
+
+        private DefaultCleanupTask(DynamicMapLoadingSystem system) {
+            this.system = system;
+        }
+
+        @Override
+        public void run() {
+            this.system.cleanupUnloadedDynamicWorldDirectories();
+        }
+
+        public DynamicMapLoadingSystem getSystem() {
+            return system;
+        }
+
+    }
+
+    public static final class SingleWorldCleanupTask extends BukkitRunnable {
+        private final DynamicMapLoadingSystem system;
+        private final World world;
+
+        private SingleWorldCleanupTask(DynamicMapLoadingSystem system, World world) {
+            this.system = system;
+            this.world = world;
+        }
+
+        @Override
+        public void run() {
+
+            if (this.system.getPlugin().getServer().getWorld(this.world.getUID()) == null) {
+                this.system.cleanupDynamicWorldDirectory(this.world.getName());
+                this.cancel();
+                return;
+            }
+
+        }
+
+        public DynamicMapLoadingSystem getSystem() {
+            return system;
+        }
+
+    }
+
+    /**
+     * Event Listener.
+     */
+    public static final class EventListener implements Listener {
+        private final DynamicMapLoadingSystem system;
+
+        public EventListener(DynamicMapLoadingSystem system) {
+            this.system = system;
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onPluginDisable(PluginDisableEvent event) {
+            if (event.getPlugin() != this.system.getPlugin()) return;
+            if (this.system.getDynamicWorlds().isEmpty()) return;
+            this.system.getPlugin().getLogger().log(
+                    Level.WARNING,
+                    "\n" +
+                    "---------- WARNING ----------\n" +
+                    "There are still dynamic worlds loaded.\n" +
+                    "They will not be cleaned up because it is not possible.\n" +
+                    "All tasks of the plugin will be stopped when the plugin disables, so it is not possible to wait until the world is unloaded.\n" +
+                    "-------------------"
+            );
+        }
+
+        /**
+         * Cleans up the dynamic world when has been unloaded successfully.
+         */
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onWorldUnload(WorldUnloadEvent event) {
+            if (event.isCancelled()) return;
+            if (!this.system.getDynamicWorlds().contains(event.getWorld())) return;
+            new SingleWorldCleanupTask(this.system, event.getWorld()).runTaskTimer(this.system.getPlugin(), 1, 1);
+        }
+
+        public DynamicMapLoadingSystem getSystem() {
+            return system;
+        }
+
+    }
+
+    // MAIN CLASS
+
     private final Plugin plugin;
     private final BukkitTask task;
+    private final EventListener listener;
     private int nextId;
 
     public DynamicMapLoadingSystem(Plugin plugin) {
         this.plugin = plugin;
+        this.listener = new EventListener(this);
         this.nextId = 0;
 
-        this.task = this.plugin.getServer().getScheduler().runTaskTimer(this.plugin, this, 1, 1200);
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+        this.task = new DefaultCleanupTask(this).runTaskTimer(this.plugin, 1, 1200);
+        this.plugin.getServer().getPluginManager().registerEvents(this.listener, this.plugin);
     }
 
-    // WORLD (UN)LOADING
+    // WORLD DIRECTORIES
 
     /**
-     * Cleanup task.
+     * Cleans up a single dynamic world directory if it is not loaded.
+     * @param name world name
+     * @return success
      */
-    @Override
-    public void run() {
+    public boolean cleanupDynamicWorldDirectory(String name) {
+        Path serverDirectory = this.getServerDirectory();
+        Path worldPath = serverDirectory.resolve(name).toAbsolutePath().normalize();
+
+        if (!Files.isDirectory(worldPath)) return false;
+        if (!worldPath.startsWith(serverDirectory)) return false;
+        if (!worldPath.getFileName().toString().startsWith(this.getPrefix())) return false;
+
+        World world = this.plugin.getServer().getWorld(name);
+        if (world != null) return false;
+
+        if (deleteDirectory(worldPath)) {
+            this.plugin.getLogger().log(Level.INFO, "Deleted dynamic world " + worldPath.getFileName().toString());
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Cleans up all dynamic world directories of worlds that are not loaded.
+     */
+    public void cleanupUnloadedDynamicWorldDirectories() {
         try {
 
             Path serverDirectory = this.getServerDirectory();
 
             for (Path path : Files.list(serverDirectory).toList()) {
-                if (!Files.isDirectory(path)) continue;
-                if (!path.getFileName().toString().startsWith(this.getPrefix())) continue;
-
-                World world = this.plugin.getServer().getWorld(path.getFileName().toString());
-                if (world != null) continue;
-
-                if (deleteDirectory(path)) {
-                    this.plugin.getLogger().log(Level.INFO, "Deleted dynamic world " + path.getFileName());
-                }
-
+                this.cleanupDynamicWorldDirectory(path.getFileName().toString());
             }
 
         } catch (Exception e) {
@@ -68,18 +185,20 @@ public class DynamicMapLoadingSystem implements Listener, Runnable {
         }
     }
 
+    // WORLD LOADING
+
     /**
      * Creates a full copy of a world and loads it.
      * @param name world directory name
      * @return loaded world or null if the world was not loaded
      */
-    public World loadWorld(String name) {
+    public World createWorldFromTemplate(String name) {
         if (DISALLOWED_WORLD_NAMES.contains(name)) return null;
 
         // Check if directory exists
 
         Path worldPath = this.getServerDirectory().resolve(name);
-        if (!Files.isDirectory(worldPath)) return null;
+        if (!Files.exists(worldPath) && !Files.isDirectory(worldPath)) return null;
 
         // Copy world directory
 
@@ -107,15 +226,7 @@ public class DynamicMapLoadingSystem implements Listener, Runnable {
         return world;
     }
 
-    // GETTER
-
-    public DynamicMapLoadingSystem getSelf() {
-        return this;
-    }
-
-    public Plugin getPlugin() {
-        return plugin;
-    }
+    // WORLD INFO
 
     /**
      * Returns a list of dynamically loaded worlds.
@@ -133,6 +244,35 @@ public class DynamicMapLoadingSystem implements Listener, Runnable {
         }
 
         return List.copyOf(worlds);
+    }
+
+    /**
+     * Returns the name of the template world.
+     * @deprecated Unsafe, only use it if you absolutely must.
+     * @return
+     */
+    @Deprecated
+    public String getTemplateWorldName(World world) {
+        if (world == null || !this.getDynamicWorlds().contains(world)) return null;
+
+        try {
+
+            Path serverDirectory = this.getServerDirectory();
+            for (Path path : Files.list(serverDirectory).toList()) {
+                if (!Files.exists(path) || !Files.isDirectory(path)) continue;
+                if (!path.getFileName().toString().equals(world.getName())) continue;
+
+                String worldName = world.getName().replace(this.getPrefix(), "");
+                String[] splittedWorldName = worldName.split("-");
+
+                return splittedWorldName[0];
+            }
+
+        } catch (IOException e) {
+            return null;
+        }
+
+        return null;
     }
 
     // UTILITIES
@@ -153,16 +293,23 @@ public class DynamicMapLoadingSystem implements Listener, Runnable {
         return this.plugin.getServer().getWorldContainer().toPath().toAbsolutePath().normalize();
     }
 
-    // EVENTS
+    // GETTER
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPluginDisable(PluginDisableEvent event) {
-        this.run();
+    public DynamicMapLoadingSystem getSelf() {
+        return this;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onWorldUnload(WorldUnloadEvent event) {
-        this.plugin.getServer().getScheduler().runTaskLater(this.plugin, this, 1);
+    public Plugin getPlugin() {
+        return plugin;
+    }
+
+    /**
+     * Returns the event listener of this system.
+     * This listener must be added to the exception list if you are using a dynamic map listener system.
+     * @return event listener of this system
+     */
+    public EventListener getListener() {
+        return this.listener;
     }
 
     // REMOVE
@@ -174,8 +321,10 @@ public class DynamicMapLoadingSystem implements Listener, Runnable {
     public void remove(boolean cleanup) {
 
         if (cleanup) {
-            this.getDynamicWorlds().forEach(world -> this.plugin.getServer().unloadWorld(world, false));
-            this.run();
+            this.getDynamicWorlds().forEach(world -> {
+                this.plugin.getServer().unloadWorld(world, false);
+                new SingleWorldCleanupTask(this, world).runTaskTimer(this.plugin, 1, 1);
+            });
         }
 
         this.task.cancel();
