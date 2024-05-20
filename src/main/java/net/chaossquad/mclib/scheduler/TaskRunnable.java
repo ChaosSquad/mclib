@@ -1,7 +1,7 @@
 package net.chaossquad.mclib.scheduler;
 
 /**
- * A runnable for the task scheduler.
+ * A runnable for the {@link TaskScheduler}.
  */
 public interface TaskRunnable {
 

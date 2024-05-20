@@ -17,6 +17,12 @@ import org.bukkit.plugin.Plugin;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+/**
+ * Fires events when NMS packets are being sent or received.
+ * Also allows editing or cancelling these packets inside the events.
+ * The events are: {@link ClientboundPacketEvent} and {@link ServerboundPacketEvent}.
+ * When you create an object of this class, everything should work as intended, and you just need to listen for the events.
+ */
 public final class PacketEventHandler implements Listener {
     private final Plugin plugin;
     private final UUID uuid;

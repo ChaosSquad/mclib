@@ -10,6 +10,9 @@ import java.util.logging.Level;
 
 /**
  * A command that can has multiple commands as subcommands.
+ * You can add subcommands with {@link this#addSubcommand(String, SubcommandEntry)}.
+ * You can remove subcommands with {@link this#removeSubcommand(String)}.
+ * You can set a {@link DynamicSubcommandProvider} that can provide subcommands dynamically in the constructor.
  */
 public class SubcommandCommand implements TabCompletingCommandExecutor {
     private final Plugin plugin;

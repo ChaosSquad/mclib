@@ -24,11 +24,11 @@ import java.util.logging.Level;
  * The dynamic world loading system allows you to create a copy of a template world and load it.
  * The system can create multiple copies of the specified template.
  * Dynamic worlds will be automatically deleted when they are not loaded anymore.
- *
+ * <p>
  * Known drawbacks/issues:
  * 1. The {@link this#getTemplateWorldName(World)} is unsafe because it generates the template world name of the world name.
  * 2. Dynamic worlds cannot be cleaned up when the plugin is disabled or the server is stopped, because worlds are not unloaded synchronously. The world only can be cleaned up when the dynamic world loading system was created again.
- *
+ * <p>
  * Normal usage:
  * - Create a world of a template by using {@link this#createWorldFromTemplate(String)}.
  * - Unload the world as you would unload any normal bukkit world ({@link org.bukkit.Server#unloadWorld(String, boolean)}) and the world folder of the dynamic world will be cleaned up.

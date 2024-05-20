@@ -6,6 +6,9 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+/**
+ * This event is fired by {@link PacketEventHandler} when a clientbound NMS packet is sent to a player.
+ */
 public class ClientboundPacketEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private final Player player;

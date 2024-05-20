@@ -4,6 +4,9 @@ import org.bukkit.World;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * An immutable version of {@link Vector}
+ */
 public class ImmutableVector extends Vector {
 
     public ImmutableVector() {

@@ -1,5 +1,9 @@
 package net.chaossquad.mclib.scheduler;
 
+/**
+ * A task for the {@link TaskScheduler}.
+ * Can only be created by the {@link TaskScheduler} itself.
+ */
 public abstract class Task {
     private final TaskScheduler scheduler;
     private final TaskRunnable runnable;

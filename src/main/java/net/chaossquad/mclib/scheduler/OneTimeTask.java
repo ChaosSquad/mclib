@@ -1,5 +1,9 @@
 package net.chaossquad.mclib.scheduler;
 
+/**
+ * A one-time task for {@link TaskScheduler}.
+ * See {@link TaskScheduler#runTaskLater(TaskRunnable, long, String)}.
+ */
 public class OneTimeTask extends Task {
     private final long delay;
     private final long addedTick;

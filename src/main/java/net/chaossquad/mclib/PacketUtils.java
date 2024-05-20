@@ -21,6 +21,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utilities for NMS packets.
+ */
 public final class PacketUtils {
 
     private PacketUtils() {}

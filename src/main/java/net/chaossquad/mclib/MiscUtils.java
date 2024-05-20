@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+/**
+ * Utilities that don't fit into the other categories.
+ */
 public final class MiscUtils {
 
     private MiscUtils() {}

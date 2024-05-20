@@ -8,6 +8,11 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 
+/**
+ * Solves the problem of handling multiple actionbars at once.
+ * With {@link org.bukkit.entity.Player.Spigot#sendMessage(ChatMessageType, BaseComponent...)}, one actionbar would remove another actionbar.
+ * With the ActionBarManager, it is possible to display multiple actionbars at once.
+ */
 public abstract class ActionBarManager {
     private final Plugin plugin;
     private final Map<Player, Map<String, ActionBarText>> texts;

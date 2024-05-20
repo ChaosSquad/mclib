@@ -2,6 +2,11 @@ package net.chaossquad.mclib.combattracking;
 
 import java.util.*;
 
+/**
+ * Represents a fight against one player.
+ * You can use {@link this#getStats()} to get the damaged caused by all players against the player that was damaged.
+ * You can use {@link this#getKiller(PlayerFight)} to get the player with the most damage, and {@link this#getAssistants(PlayerFight, UUID)} to get all players that dealt damage and are not the killer.
+ */
 public class PlayerFight {
     private final Map<UUID, Double> damagers;
     private int expires;

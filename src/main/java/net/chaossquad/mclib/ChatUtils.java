@@ -9,6 +9,9 @@ import org.bukkit.inventory.meta.trim.TrimMaterial;
 
 import java.util.UUID;
 
+/**
+ * Utilities for the chat.
+ */
 public final class ChatUtils {
 
     private ChatUtils() {}

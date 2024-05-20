@@ -8,6 +8,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utilities for json configurations.
+ */
 public final class JSONConfigUtils {
 
     private JSONConfigUtils() {}

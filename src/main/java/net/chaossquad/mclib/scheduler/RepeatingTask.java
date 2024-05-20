@@ -1,5 +1,9 @@
 package net.chaossquad.mclib.scheduler;
 
+/**
+ * Repeating task for the {@link TaskScheduler}.
+ * See {@link TaskScheduler#scheduleRepeatingTask(TaskRunnable, long, long, TaskStopCondition, String)}.
+ */
 public class RepeatingTask extends Task {
     private final long interval;
     private final TaskStopCondition stopCondition;

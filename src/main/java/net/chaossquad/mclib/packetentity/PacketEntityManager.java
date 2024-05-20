@@ -11,6 +11,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The packet entity manager handles packet entities.
+ * It adds, removes and cleans up packet entities, allows to access the packet entities and updates the information of packet entities.
+ */
 public class PacketEntityManager implements Listener {
     private final Plugin plugin;
     private final List<PacketEntity<?>> entities;
