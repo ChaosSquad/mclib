@@ -1,0 +1,10 @@
+net.chaossquad.mclib
+net.chaossquad.mclib.actionbar
+net.chaossquad.mclib.blocks
+net.chaossquad.mclib.combattracking
+net.chaossquad.mclib.command
+net.chaossquad.mclib.immutables
+net.chaossquad.mclib.packetentity
+net.chaossquad.mclib.packetevents
+net.chaossquad.mclib.scheduler
+net.chaossquad.mclib.world
