@@ -12,6 +12,8 @@ It contains most classes required by multiple plugins that we have created.
 - ChatUtils: Chat-related utilities
 - WorldUtils: World-related utilities
 - MiscUtils: Other utilities
+### JavaDocs
+You can visit the javadocs [here](https://chaossquad.github.io/mclib).
 ### How to use
 Add Repository:
 ```xml
