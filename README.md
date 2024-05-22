@@ -9,6 +9,7 @@ It contains most classes required by multiple plugins that we have created.
 - PacketEntityManager: Create, remove and manage packet entities.
 - PacketEventHandler: Sends bukkit events for incoming and outgoing packets.
 - TaskScheduler: Task scheduler for game modes that cannot use the Bukkit Scheduler because they can be replaced during the plugin runtime.
+- DynamicWorldLoadingSystem: Dynamically loads and unloads worlds from a template to prevent the template world from being modified.
 - ChatUtils: Chat-related utilities
 - WorldUtils: World-related utilities
 - MiscUtils: Other utilities
