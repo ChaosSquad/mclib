@@ -1,10 +1,13 @@
 package net.chaossquad.mclib.packetentity;
 
 import net.minecraft.world.entity.Entity;
+import org.bukkit.craftbukkit.v1_21_R1.CraftWorld;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -72,14 +75,28 @@ public class PacketEntityManager implements Listener {
 
     // EVENTS
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         this.cleanupPlayers();
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
         this.cleanupPlayers();
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onWorldUnload(WorldUnloadEvent event) {
+
+        for (PacketEntity<?> entity : List.copyOf(this.entities)) {
+            if (entity.isRemoved()) continue;
+
+            if (entity.getEntity().level() == ((CraftWorld) event.getWorld()).getHandle()) {
+                entity.remove();
+            }
+
+        }
+
     }
 
     // API

@@ -2,10 +2,13 @@ package net.chaossquad.mclib.packetentity;
 
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
+import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.entity.EntityInLevelCallback;
-import org.bukkit.craftbukkit.v1_20_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_21_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_21_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -118,7 +121,9 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
         if (this.entity.isRemoved()) return false;
         if (!this.showEntityCondition(player)) return false;
 
-        ClientboundAddEntityPacket packet = new ClientboundAddEntityPacket(this.entity);
+        ServerEntity serverEntity = new ServerEntity(this.entity.level().getMinecraftWorld(), this.entity, 0, false, packet -> {}, Set.of());
+
+        ClientboundAddEntityPacket packet = new ClientboundAddEntityPacket(this.entity, serverEntity);
         ((CraftPlayer) player).getHandle().connection.send(packet);
 
         this.sendEntityData(player);
@@ -161,7 +166,10 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
         if (!this.hasPlayer(player)) return false;
         if (!this.showEntityCondition(player)) return false;
 
-        this.entity.getEntityData().refresh(((CraftPlayer) player).getHandle());
+        List<SynchedEntityData.DataValue<?>> data = this.entity.getEntityData().getNonDefaultValues();
+        if (data == null || data.isEmpty()) return false;
+
+        ((CraftPlayer) player).getHandle().connection.send(new ClientboundSetEntityDataPacket(this.entity.getId(), data));
         return true;
     }
 

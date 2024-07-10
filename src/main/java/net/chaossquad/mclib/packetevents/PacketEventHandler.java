@@ -7,7 +7,7 @@ import io.netty.channel.ChannelPromise;
 import net.chaossquad.mclib.PacketUtils;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_21_R1.entity.CraftPlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
