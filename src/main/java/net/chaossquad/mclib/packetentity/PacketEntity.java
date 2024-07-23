@@ -130,10 +130,10 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
         if (this.entity.isRemoved()) return false;
         if (!this.showEntityCondition(player)) return false;
 
+        if (!this.players.contains(player)) this.players.add(player);
+
         this.sendEntityData(player, true);
 
-        if (this.players.contains(player)) return true;
-        this.players.add(player);
         return true;
     }
 
