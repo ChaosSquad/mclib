@@ -1,8 +1,6 @@
 package net.chaossquad.mclib.packetentity;
 
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import org.bukkit.craftbukkit.v1_21_R1.CraftWorld;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -35,6 +33,7 @@ public class PacketEntityManager implements Listener {
                 updateEntities();
             }
         }.runTaskTimer(this.plugin, 1, 1200);
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     // TASKS
@@ -83,17 +82,38 @@ public class PacketEntityManager implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        this.cleanupPlayers();
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                PacketEntityManager.this.cleanupPlayers();
+            }
+
+        }.runTaskLater(this.plugin, 1);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
-        this.cleanupPlayers();
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                PacketEntityManager.this.cleanupPlayers();
+            }
+
+        }.runTaskLater(this.plugin, 1);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onWorldUnload(WorldUnloadEvent event) {
-        this.updateEntities();
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                PacketEntityManager.this.updateEntities();
+            }
+
+        }.runTaskLater(this.plugin, 1);
     }
 
     // API
