@@ -41,17 +41,7 @@ public class PacketEntityManager implements Listener {
 
     public void cleanupEntities() {
 
-        List<ServerLevel> levels = this.plugin.getServer().getWorlds().stream().map(world -> (CraftWorld) world).map(CraftWorld::getHandle).toList();
-
         for (PacketEntity<?> entity : List.copyOf(this.entities)) {
-
-            // Check for unloaded world
-
-            if (!entity.isRemoved() && !levels.contains(entity.getEntity().level())) {
-                entity.remove();
-            }
-
-            // CLEANUP FROM LIST (RUN LAST)
 
             if (entity.isRemoved()) {
                 entity.removeAllPlayers();
@@ -75,6 +65,11 @@ public class PacketEntityManager implements Listener {
 
         for (PacketEntity<?> entity : List.copyOf(this.entities)) {
             if (entity.isRemoved()) continue;
+
+            if (!this.plugin.getServer().getWorlds().contains(entity.getWorld())) {
+                entity.remove();
+                continue;
+            }
 
             if (entity.getEntity().getEntityData().isDirty()) {
                 entity.sendEntityData();

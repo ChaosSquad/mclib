@@ -57,7 +57,6 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
      */
     public void remove() {
         this.entity.setRemoved(Entity.RemovalReason.DISCARDED);
-        this.removeAllPlayers();
     }
 
     /**
@@ -257,14 +256,8 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
 
     @Override
     public void onRemove(Entity.RemovalReason removalReason) {
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                PacketEntity.this.manager.cleanupEntities();
-            }
-
-        }.runTaskLater(this.manager.getPlugin(), 1);
+        this.removeAllPlayers();
+        this.manager.cleanupEntities();
     }
 
 }
