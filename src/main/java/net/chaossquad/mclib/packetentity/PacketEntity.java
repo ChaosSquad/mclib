@@ -7,6 +7,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.entity.EntityInLevelCallback;
+import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_21_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_21_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -57,6 +58,14 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
     public void remove() {
         this.entity.setRemoved(Entity.RemovalReason.DISCARDED);
         this.removeAllPlayers();
+    }
+
+    /**
+     * Returns the bukkit world where the packet entity currently is.
+     * @return bukkit world
+     */
+    public World getWorld() {
+        return this.entity.level().getWorld();
     }
 
     // PLAYERS
