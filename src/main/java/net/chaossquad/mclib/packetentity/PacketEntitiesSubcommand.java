@@ -187,6 +187,35 @@ public class PacketEntitiesSubcommand implements TabCompletingCommandExecutor {
                                         entity.removeAllPlayers();
                                         sender.sendMessage("§aCleared players");
                                     }
+                                    case "update" -> {
+
+                                        if (args.length < 4) {
+                                            sender.sendMessage("§cUsage: [...] packetentities <id/e:entityid> players update <full> [player]");
+                                            return true;
+                                        }
+
+                                        boolean full = Boolean.parseBoolean(args[3]);
+
+                                        if (args.length > 4) {
+
+                                            Player player = ChatUtils.getPlayerFromString(args[4]);
+                                            if (player == null) {
+                                                sender.sendMessage("§cPlayer does not exist");
+                                                return true;
+                                            }
+
+                                            entity.sendEntityData(player, full);
+                                            sender.sendMessage("§aUpdated entity for specified player (full=" + full + ")");
+
+                                        } else {
+                                            entity.sendEntityData(full);
+                                            sender.sendMessage("§aUpdated entity for all players (full=" + full + ")");
+                                        }
+
+                                    }
+                                    default -> {
+
+                                    }
                                 }
 
                             } else {

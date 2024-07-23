@@ -30,7 +30,7 @@ public class PacketEntityManager implements Listener {
             public void run() {
                 cleanupEntities();
                 cleanupPlayers();
-                updateEntities();
+                updateEntities(true);
             }
         }.runTaskTimer(this.plugin, 1, 1200);
         this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
@@ -60,7 +60,7 @@ public class PacketEntityManager implements Listener {
 
     }
 
-    public void updateEntities() {
+    public void updateEntities(boolean full) {
 
         for (PacketEntity<?> entity : List.copyOf(this.entities)) {
             if (entity.isRemoved()) continue;
@@ -71,11 +71,15 @@ public class PacketEntityManager implements Listener {
             }
 
             if (entity.getEntity().getEntityData().isDirty()) {
-                entity.sendEntityData();
+                entity.sendEntityData(full);
             }
 
         }
 
+    }
+
+    public void updateEntities() {
+        this.updateEntities(false);
     }
 
     // EVENTS
@@ -110,7 +114,7 @@ public class PacketEntityManager implements Listener {
 
             @Override
             public void run() {
-                PacketEntityManager.this.updateEntities();
+                PacketEntityManager.this.updateEntities(false);
             }
 
         }.runTaskLater(this.plugin, 1);

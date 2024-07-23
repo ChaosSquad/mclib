@@ -130,13 +130,9 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
         if (this.entity.isRemoved()) return false;
         if (!this.showEntityCondition(player)) return false;
 
-        ServerEntity serverEntity = new ServerEntity(this.entity.level().getMinecraftWorld(), this.entity, 0, false, packet -> {}, Set.of());
+        this.sendEntityData(player, true);
 
-        ClientboundAddEntityPacket packet = new ClientboundAddEntityPacket(this.entity, serverEntity);
-        ((CraftPlayer) player).getHandle().connection.send(packet);
-
-        this.sendEntityData(player);
-
+        if (this.players.contains(player)) return true;
         this.players.add(player);
         return true;
     }
@@ -169,11 +165,19 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
     /**
      * Sends all entity data modifications to the specified player.
      * @param player player
+     * @param full re-add the entity to the player
      * @return entity data
      */
-    public boolean sendEntityData(Player player) {
+    public boolean sendEntityData(Player player, boolean full) {
         if (!this.hasPlayer(player)) return false;
         if (!this.showEntityCondition(player)) return false;
+
+        // Send entity data if full is set
+        if (full) {
+            ServerEntity serverEntity = new ServerEntity(this.entity.level().getMinecraftWorld(), this.entity, 0, false, packet -> {}, Set.of());
+            ClientboundAddEntityPacket packet = new ClientboundAddEntityPacket(this.entity, serverEntity);
+            ((CraftPlayer) player).getHandle().connection.send(packet);
+        }
 
         List<SynchedEntityData.DataValue<?>> data = this.entity.getEntityData().getNonDefaultValues();
         if (data == null || data.isEmpty()) return false;
@@ -184,17 +188,34 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
 
     /**
      * Sends all entity data modifications to the players.
+     * @param full Re-add the entity to the player
      */
-    public void sendEntityData() {
+    public void sendEntityData(boolean full) {
 
         for (Player player : this.getPlayers()) {
-            this.sendEntityData(player);
+            this.sendEntityData(player, full);
         }
 
         if (this.entity.getEntityData().isDirty()) {
             this.entity.getEntityData().packDirty();
         }
 
+    }
+
+    /**
+     * Sends all entity data modifications to the specified player.
+     * @param player player
+     * @return entity data
+     */
+    public boolean sendEntityData(Player player) {
+        return this.sendEntityData(player, false);
+    }
+
+    /**
+     * Sends all entity data modifications to the players.
+     */
+    public void sendEntityData() {
+        this.sendEntityData(false);
     }
 
     // CUSTOM DATA
