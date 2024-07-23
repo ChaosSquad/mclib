@@ -10,6 +10,7 @@ import net.minecraft.world.level.entity.EntityInLevelCallback;
 import org.bukkit.craftbukkit.v1_21_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_21_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
@@ -182,6 +183,10 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
             this.sendEntityData(player);
         }
 
+        if (this.entity.getEntityData().isDirty()) {
+            this.entity.getEntityData().packDirty();
+        }
+
     }
 
     // CUSTOM DATA
@@ -243,7 +248,14 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
 
     @Override
     public void onRemove(Entity.RemovalReason removalReason) {
-        this.manager.cleanupEntities();
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                PacketEntity.this.manager.cleanupEntities();
+            }
+
+        }.runTaskLater(this.manager.getPlugin(), 1);
     }
 
 }

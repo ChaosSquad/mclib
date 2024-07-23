@@ -1,5 +1,6 @@
 package net.chaossquad.mclib.packetentity;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import org.bukkit.craftbukkit.v1_21_R1.CraftWorld;
 import org.bukkit.event.EventHandler;
@@ -33,14 +34,24 @@ public class PacketEntityManager implements Listener {
                 cleanupPlayers();
                 updateEntities();
             }
-        }.runTaskTimer(this.plugin, 1, 200);
+        }.runTaskTimer(this.plugin, 1, 1200);
     }
 
     // TASKS
 
     public void cleanupEntities() {
 
+        List<ServerLevel> levels = this.plugin.getServer().getWorlds().stream().map(world -> (CraftWorld) world).map(CraftWorld::getHandle).toList();
+
         for (PacketEntity<?> entity : List.copyOf(this.entities)) {
+
+            // Check for unloaded world
+
+            if (!entity.isRemoved() && !levels.contains(entity.getEntity().level())) {
+                entity.remove();
+            }
+
+            // CLEANUP FROM LIST (RUN LAST)
 
             if (entity.isRemoved()) {
                 entity.removeAllPlayers();
@@ -87,16 +98,7 @@ public class PacketEntityManager implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onWorldUnload(WorldUnloadEvent event) {
-
-        for (PacketEntity<?> entity : List.copyOf(this.entities)) {
-            if (entity.isRemoved()) continue;
-
-            if (entity.getEntity().level() == ((CraftWorld) event.getWorld()).getHandle()) {
-                entity.remove();
-            }
-
-        }
-
+        this.updateEntities();
     }
 
     // API
