@@ -115,7 +115,7 @@ public final class JSONConfigUtils {
      * @param key namespaced key
      * @return json
      */
-    public JSONObject serializeNamespacedKey(NamespacedKey key) {
+    public static JSONObject serializeNamespacedKey(NamespacedKey key) {
         JSONObject data = new JSONObject();
 
         data.put("namespace", key.getNamespace());
@@ -129,7 +129,7 @@ public final class JSONConfigUtils {
      * @param data json
      * @return namespaced key
      */
-    public NamespacedKey deserializeNamespacedKey(JSONObject data) {
+    public static NamespacedKey deserializeNamespacedKey(JSONObject data) {
         return new NamespacedKey(data.getString("namespace"), data.getString("key"));
     }
 
@@ -140,7 +140,7 @@ public final class JSONConfigUtils {
      * @param container persistent data container
      * @return json
      */
-    public JSONArray serializePersistentDataContainer(PersistentDataContainer container) {
+    public static JSONArray serializePersistentDataContainer(PersistentDataContainer container) {
         JSONArray data = new JSONArray();
 
         for (NamespacedKey key : container.getKeys()) {
@@ -219,7 +219,7 @@ public final class JSONConfigUtils {
      * @param data json
      * @param target target container
      */
-    public void deserializePersistentDataContainer(JSONArray data, PersistentDataContainer target) {
+    public static void deserializePersistentDataContainer(JSONArray data, PersistentDataContainer target) {
 
         for (JSONObject container : data.toList().stream().filter(object -> object instanceof JSONObject).map(object -> (JSONObject) object).toList()) {
 
@@ -247,7 +247,7 @@ public final class JSONConfigUtils {
      * @param damageable damageable item meta
      * @param data existing json
      */
-    private void serializeDamageableItemMeta(Damageable damageable, JSONObject data) {
+    private static void serializeDamageableItemMeta(Damageable damageable, JSONObject data) {
         data.put("damage", damageable.getDamage());
         data.put("max_damage", damageable.getMaxDamage());
     }
@@ -257,7 +257,7 @@ public final class JSONConfigUtils {
      * @param data json
      * @param damageable target damageable item meta
      */
-    private void deserializeDamageableItemMeta(JSONObject data, Damageable damageable) {
+    private static void deserializeDamageableItemMeta(JSONObject data, Damageable damageable) {
         if (data.has("damage")) damageable.setDamage(data.getInt("damage"));
         if (data.has("max_damage")) damageable.setMaxDamage(data.getInt("max_damage"));
     }
@@ -267,7 +267,7 @@ public final class JSONConfigUtils {
      * @param potion potion meta
      * @param data json
      */
-    private void serializePotionMeta(PotionMeta potion, JSONObject data) {
+    private static void serializePotionMeta(PotionMeta potion, JSONObject data) {
 
         if (potion.getBasePotionType() != null) {
             data.put("base_potion_type", potion.getBasePotionType().getKey().getKey());
@@ -299,7 +299,7 @@ public final class JSONConfigUtils {
      * @param data json
      * @param potion target potion meta
      */
-    public void deserializePotionMeta(JSONObject data, PotionMeta potion) {
+    public static void deserializePotionMeta(JSONObject data, PotionMeta potion) {
 
         if (data.has("base_potion_type")) {
             potion.setBasePotionType(Registry.POTION.get(NamespacedKey.minecraft(data.getString("base_potion_type"))));
@@ -335,7 +335,7 @@ public final class JSONConfigUtils {
      * @param meta item meta
      * @return json
      */
-    public JSONObject serializeItemMeta(ItemMeta meta) {
+    public static JSONObject serializeItemMeta(ItemMeta meta) {
         JSONObject data = new JSONObject();
 
         // Display Name
@@ -429,7 +429,7 @@ public final class JSONConfigUtils {
      * @param data json
      * @param target target item meta
      */
-    public void deserializeItemMeta(JSONObject data, ItemMeta target) {
+    public static void deserializeItemMeta(JSONObject data, ItemMeta target) {
 
         // Display Name
 
@@ -539,7 +539,7 @@ public final class JSONConfigUtils {
      * @param item item stack
      * @return json
      */
-    public JSONObject serializeItem(ItemStack item) {
+    public static JSONObject serializeItem(ItemStack item) {
         JSONObject data = new JSONObject();
 
         data.put("type", item.getType());
@@ -554,7 +554,7 @@ public final class JSONConfigUtils {
      * @param data json
      * @return item stack
      */
-    public ItemStack deserializeItem(JSONObject data) {
+    public static ItemStack deserializeItem(JSONObject data) {
         Material material = Material.getMaterial(data.getString("type"));
         if (material == null) return null;
 
@@ -573,7 +573,7 @@ public final class JSONConfigUtils {
      * @param items item list
      * @return json
      */
-    public JSONArray serializeItemList(List<ItemStack> items) {
+    public static JSONArray serializeItemList(List<ItemStack> items) {
         JSONArray result = new JSONArray();
         for (ItemStack item : items) {
             result.put(serializeItem(item));
@@ -586,7 +586,7 @@ public final class JSONConfigUtils {
      * @param data json
      * @return item list
      */
-    public List<ItemStack> deserializeItemList(JSONArray data) {
+    public static List<ItemStack> deserializeItemList(JSONArray data) {
         List<ItemStack> items = new ArrayList<>();
         for (int i = 0; i < data.length(); i++) {
             items.add(deserializeItem(data.optJSONObject(i)));
