@@ -1,10 +1,7 @@
 package net.chaossquad.mclib;
 
 import com.google.common.collect.Multimap;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
@@ -17,6 +14,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -264,6 +263,74 @@ public final class JSONConfigUtils {
     }
 
     /**
+     * Serializes potion meta into json
+     * @param potion potion meta
+     * @param data json
+     */
+    private void serializePotionMeta(PotionMeta potion, JSONObject data) {
+
+        if (potion.getBasePotionType() != null) {
+            data.put("base_potion_type", potion.getBasePotionType().getKey().getKey());
+        }
+
+        if (potion.getColor() != null) {
+            data.put("color", potion.getColor().asARGB());
+        }
+
+        if (!potion.getCustomEffects().isEmpty()) {
+            JSONArray effects = new JSONArray();
+            for (PotionEffect effect : potion.getCustomEffects()) {
+                JSONObject effectData = new JSONObject();
+                effectData.put("key", effect.getType().getKey().getKey());
+                effectData.put("duration", effect.getDuration());
+                effectData.put("amplifier", effect.getAmplifier());
+                effectData.put("ambient", effect.isAmbient());
+                effectData.put("particles", effect.hasParticles());
+                effectData.put("icon", effect.hasIcon());
+                effects.put(effectData);
+            }
+            data.put("custom_effects", effects);
+        }
+
+    }
+
+    /**
+     * Deserializes json into potion meta
+     * @param data json
+     * @param potion target potion meta
+     */
+    public void deserializePotionMeta(JSONObject data, PotionMeta potion) {
+
+        if (data.has("base_potion_type")) {
+            potion.setBasePotionType(Registry.POTION.get(NamespacedKey.minecraft(data.getString("base_potion_type"))));
+        }
+
+        if (data.has("color")) {
+            potion.setColor(Color.fromARGB(data.getInt("color")));
+        }
+
+        if (data.has("custom_effects")) {
+            JSONArray effects = new JSONArray();
+            for (int i = 0; i < effects.length(); i++) {
+                JSONObject effectData = new JSONObject();
+                PotionEffectType type = Registry.EFFECT.get(NamespacedKey.minecraft(data.getString("key")));
+                if (type == null) continue;
+
+                PotionEffect effect = new PotionEffect(
+                        type,
+                        data.getInt("duration"),
+                        data.getInt("amplifier"),
+                        data.getBoolean("ambient"),
+                        data.getBoolean("particles"),
+                        data.getBoolean("icon")
+                );
+                potion.addCustomEffect(effect, true);
+            }
+        }
+
+    }
+
+    /**
      * Serializes an item meta to json
      * @param meta item meta
      * @return json
@@ -346,6 +413,10 @@ public final class JSONConfigUtils {
 
         if (meta instanceof Damageable damageable) {
             serializeDamageableItemMeta(damageable, data);
+        }
+
+        if (meta instanceof PotionMeta potionMeta) {
+            serializePotionMeta(potionMeta, data);
         }
 
         // Return
@@ -455,6 +526,10 @@ public final class JSONConfigUtils {
             deserializeDamageableItemMeta(data, damageable);
         }
 
+        if (target instanceof PotionMeta potionMeta) {
+            deserializePotionMeta(data, potionMeta);
+        }
+
     }
 
     // ITEM SERIALIZATION
@@ -464,7 +539,7 @@ public final class JSONConfigUtils {
      * @param item item stack
      * @return json
      */
-    public JSONObject serializeItemToJSON(ItemStack item) {
+    public JSONObject serializeItem(ItemStack item) {
         JSONObject data = new JSONObject();
 
         data.put("type", item.getType());
@@ -479,7 +554,7 @@ public final class JSONConfigUtils {
      * @param data json
      * @return item stack
      */
-    public ItemStack deserializeItemFromJSON(JSONObject data) {
+    public ItemStack deserializeItem(JSONObject data) {
         Material material = Material.getMaterial(data.getString("type"));
         if (material == null) return null;
 
@@ -491,6 +566,32 @@ public final class JSONConfigUtils {
         item.setItemMeta(meta);
 
         return item;
+    }
+
+    /**
+     * Serializes an item list to json
+     * @param items item list
+     * @return json
+     */
+    public JSONArray serializeItemList(List<ItemStack> items) {
+        JSONArray result = new JSONArray();
+        for (ItemStack item : items) {
+            result.put(serializeItem(item));
+        }
+        return result;
+    }
+
+    /**
+     * Deserializes json into an item list
+     * @param data json
+     * @return item list
+     */
+    public List<ItemStack> deserializeItemList(JSONArray data) {
+        List<ItemStack> items = new ArrayList<>();
+        for (int i = 0; i < data.length(); i++) {
+            items.add(deserializeItem(data.optJSONObject(i)));
+        }
+        return items;
     }
 
 }
