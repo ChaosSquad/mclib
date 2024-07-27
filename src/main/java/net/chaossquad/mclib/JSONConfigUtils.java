@@ -248,8 +248,15 @@ public final class JSONConfigUtils {
      * @param data existing json
      */
     private static void serializeDamageableItemMeta(Damageable damageable, JSONObject data) {
-        data.put("damage", damageable.getDamage());
-        data.put("max_damage", damageable.getMaxDamage());
+
+        if (damageable.hasDamage()) {
+            data.put("damage", damageable.getDamage());
+        }
+
+        if (damageable.hasMaxDamage()) {
+            data.put("max_damage", damageable.getMaxDamage());
+        }
+
     }
 
     /**
