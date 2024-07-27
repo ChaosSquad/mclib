@@ -549,7 +549,7 @@ public final class JSONConfigUtils {
     public static JSONObject serializeItem(ItemStack item) {
         JSONObject data = new JSONObject();
 
-        data.put("type", item.getType());
+        data.put("type", item.getType().name());
         data.put("amount", item.getAmount());
         data.put("meta", serializeItemMeta(item.getItemMeta()));
 
