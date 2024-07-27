@@ -379,7 +379,7 @@ public final class JSONConfigUtils {
 
         // Attribute Modifiers
 
-        if (meta.getAttributeModifiers() != null || !meta.getAttributeModifiers().isEmpty()) {
+        if (meta.getAttributeModifiers() != null && !meta.getAttributeModifiers().isEmpty()) {
             JSONArray attributeModifiers = new JSONArray();
             for (Attribute attribute : meta.getAttributeModifiers().keySet()) {
                 for (AttributeModifier modifier : meta.getAttributeModifiers().get(attribute)) {
