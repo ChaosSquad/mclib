@@ -1,9 +1,18 @@
 package net.chaossquad.mclib;
 
 import net.chaossquad.mclib.blocks.BlockBox;
+import net.chaossquad.mclib.blocks.BlockStructure;
+import net.chaossquad.mclib.blocks.BlockStructureEntry;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.entity.BlockDisplay;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.util.Vector;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utilities related to worlds.
@@ -191,6 +200,63 @@ public final class WorldUtils {
      */
     public static Location locationWithWorld(Location location, World world) {
         return new Location(world, location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+    }
+
+    // BLOCK DISPLAYS
+
+    public static final NamespacedKey BLOCK_DISPLAY_STRUCTURE_RELATIVE_X = new NamespacedKey("net.chaossquad.mclib", "block_structure_relative_x");
+    public static final NamespacedKey BLOCK_DISPLAY_STRUCTURE_RELATIVE_Y = new NamespacedKey("net.chaossquad.mclib", "block_structure_relative_y");
+    public static final NamespacedKey BLOCK_DISPLAY_STRUCTURE_RELATIVE_Z = new NamespacedKey("net.chaossquad.mclib", "block_structure_relative_z");
+
+    /**
+     * Creates a structure of block displays for the specified {@link BlockStructure} object at the specified location and spawns them in the specified {@link World}.
+     * @param world the world the entities should be spawned in
+     * @param structure the block structure that should be spawned
+     * @param location the location where the structure should be spawned
+     * @param scoreboardTags list of scoreboard tags that should be added
+     * @return a list of the spawned block displays
+     */
+    public static List<BlockDisplay> spawnBlockStructure(World world, BlockStructure structure, Location location, List<String> scoreboardTags) {
+        location = location.clone();
+        structure = structure.clone();
+        List<BlockDisplay> blockDisplays = new ArrayList<>();
+
+        int rx = 0;
+        for (int x = location.getBlockX(); x < location.getBlockX() + structure.getXLength(); x++) {
+            int ry = 0;
+            for (int y = location.getBlockY(); y < location.getBlockY() + structure.getYLength(); y++) {
+                int rz = 0;
+                for (int z = location.getBlockZ(); z < location.getBlockZ() + structure.getZLength(); z++) {
+                    BlockStructureEntry entry = structure.getBlock(rx, ry, rz);
+
+                    if (entry.type() != Material.AIR) {
+
+                        BlockDisplay blockDisplay = world.spawn(location, BlockDisplay.class);
+                        blockDisplay.setGravity(false);
+                        blockDisplay.setBlock(entry.data());
+
+                        if (scoreboardTags != null) {
+                            for (String tag : List.copyOf(scoreboardTags)) {
+                                blockDisplay.addScoreboardTag(tag);
+                            }
+                        }
+
+                        blockDisplay.getPersistentDataContainer().set(BLOCK_DISPLAY_STRUCTURE_RELATIVE_X, PersistentDataType.INTEGER, rx);
+                        blockDisplay.getPersistentDataContainer().set(BLOCK_DISPLAY_STRUCTURE_RELATIVE_Y, PersistentDataType.INTEGER, ry);
+                        blockDisplay.getPersistentDataContainer().set(BLOCK_DISPLAY_STRUCTURE_RELATIVE_Z, PersistentDataType.INTEGER, rz);
+
+                        blockDisplays.add(blockDisplay);
+
+                    }
+
+                    rz++;
+                }
+                ry++;
+            }
+            rx++;
+        }
+
+        return List.copyOf(blockDisplays);
     }
 
 }
