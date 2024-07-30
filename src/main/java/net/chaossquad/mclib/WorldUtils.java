@@ -231,7 +231,7 @@ public final class WorldUtils {
 
                     if (entry.type() != Material.AIR) {
 
-                        BlockDisplay blockDisplay = world.spawn(location, BlockDisplay.class);
+                        BlockDisplay blockDisplay = world.spawn(new Location(world, location.getBlockX() + rx, location.getBlockY() + ry, location.getBlockZ() + rz), BlockDisplay.class);
                         blockDisplay.setGravity(false);
                         blockDisplay.setBlock(entry.data());
 
