@@ -3,6 +3,7 @@ package net.chaossquad.mclib;
 import me.leoko.advancedgui.utils.components.Component;
 import me.leoko.advancedgui.utils.components.GroupComponent;
 import me.leoko.advancedgui.utils.interactions.Interaction;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -48,18 +49,19 @@ public final class AdvancedGUIUtils {
     }
 
     /**
-     * Replaces the component tree of an {@link Interaction} with the specified {@link GroupComponent}.
+     * Replaces the component tree of an {@link Interaction} with a copy the specified {@link GroupComponent}.
+     * For safety reasons, this method will clone the specified component tree and set the interaction of the component tree to the target interaction.
      * @param target target Interaction
      * @param componentTree GroupComponent to set
      * @return success
      */
-    public static boolean setInteractionComponentTree(Interaction target, GroupComponent componentTree) {
+    public static boolean setInteractionComponentTree(@NotNull Interaction target, @NotNull GroupComponent componentTree) {
 
         try {
             Field field = Interaction.class.getDeclaredField("componentTree");
             field.setAccessible(true);
 
-            field.set(target, componentTree);
+            field.set(target, componentTree.clone(target));
 
             return true;
         } catch (Exception e) {
