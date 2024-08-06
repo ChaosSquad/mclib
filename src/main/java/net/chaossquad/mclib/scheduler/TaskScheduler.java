@@ -13,7 +13,7 @@ import java.util.logging.Level;
  * The purpose of this class is to provide a custom task scheduler so that you don't need to remove tasks manually from the bukkit scheduler.
  * You can for example integrate this scheduler inside a gamemode class, and as soon as the gamemode has ended, all tasks are gone because the {@link this#tick()} method if this scheduler is no longer called.
  */
-public final class TaskScheduler {
+public final class TaskScheduler implements SchedulerInterface {
     private final Plugin plugin;
     private final Map<Integer, Task> tasks;
     private long tick;
