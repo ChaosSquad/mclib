@@ -6,9 +6,9 @@ package net.chaossquad.mclib.scheduler;
 public interface TaskRunnable {
 
     static TaskRunnable fromRunnable(Runnable runnable) {
-        return (scheduler, taskId) -> runnable.run();
+        return (task) -> runnable.run();
     }
 
-    void run(TaskScheduler scheduler, int taskId);
+    void run(Task task);
 
 }
