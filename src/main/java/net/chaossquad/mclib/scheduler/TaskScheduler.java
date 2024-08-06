@@ -105,7 +105,7 @@ public final class TaskScheduler implements SchedulerInterface {
         return this.tasks.size();
     }
 
-    public Task getTask(int taskId) {
+    public Task getTask(long taskId) {
         return this.tasks.get(taskId);
     }
 
