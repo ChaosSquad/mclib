@@ -13,6 +13,7 @@ public abstract class Task {
     private final TaskRunnable runnable;
     private final RemoveCondition removeCondition;
     private final String label;
+    private boolean removed;
     private boolean paused;
 
     protected Task(long id, @NotNull TaskScheduler scheduler, @NotNull TaskRunnable runnable, @Nullable Task.RemoveCondition removeCondition, @Nullable String label) {
@@ -21,15 +22,16 @@ public abstract class Task {
         this.runnable = runnable;
         this.removeCondition = removeCondition != null ? removeCondition : () -> false;
         this.label = label != null ? label.replace(",", "").replace(" ", "") : "unnamed";
+        this.removed = false;
+        this.paused = false;
     }
 
     // RUN
 
+    /**
+     * This will run the task.
+     */
     protected final void run() {
-
-        if (this.paused) {
-            return;
-        }
 
         this.onRun();
         this.runnable.run(this);
@@ -74,6 +76,24 @@ public abstract class Task {
     }
 
     /**
+     * Returns if the task has been marked for removal.
+     * If the task is marked for removal, it will no longer execute.
+     * This method does not return if the task has been or should be removed.
+     * If you want to check if the task has been or should be removed, use {@link this#toBeRemoved()}.
+     * @return marked for removal
+     */
+    public boolean isMarkedForRemoval() {
+        return this.removed;
+    }
+
+    /**
+     * Mark the task for removal.
+     */
+    public void remove() {
+        this.removed = true;
+    }
+
+    /**
      * Returns if the task is paused
      * @return true = task paused
      */
@@ -90,7 +110,7 @@ public abstract class Task {
     }
 
     public final boolean toBeRemoved() {
-        return this.removeCondition.toBeRemoved() || this.inheritedRemoveCondition();
+        return this.removed || this.removeCondition.toBeRemoved() || this.inheritedRemoveCondition();
     }
 
     public final String getLabel() {
