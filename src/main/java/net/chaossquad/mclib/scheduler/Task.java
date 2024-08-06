@@ -1,5 +1,6 @@
 package net.chaossquad.mclib.scheduler;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,8 +31,10 @@ public abstract class Task {
 
     /**
      * This will run the task.
+     * This does not check any conditions, so only use it if you know what you are doing!
      */
-    protected final void run() {
+    @ApiStatus.Internal
+    public final void run() {
 
         this.onRun();
         this.runnable.run(this);
@@ -109,12 +112,29 @@ public abstract class Task {
         this.paused = paused;
     }
 
+    /**
+     * Returns if the task should be removed.
+     * This is the case if it is marked for removal, the remove condition is true or the inherited remove condition is true.
+     * @return if the task should be removed
+     */
     public final boolean toBeRemoved() {
         return this.removed || this.removeCondition.toBeRemoved() || this.inheritedRemoveCondition();
     }
 
+    /**
+     * Returns the label which is like a task name.
+     * @return label
+     */
     public final String getLabel() {
         return this.label;
+    }
+
+    /**
+     * Returns the remove condition object.
+     * @return remove condition
+     */
+    public final RemoveCondition getRemoveCondition() {
+        return this.removeCondition;
     }
 
     @Override
