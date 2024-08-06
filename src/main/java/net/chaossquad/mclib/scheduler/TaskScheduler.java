@@ -35,7 +35,7 @@ public final class TaskScheduler implements SchedulerInterface {
 
         synchronized (this.tasks) {
 
-            for (Map.Entry<Long, Task> entry : this.tasks.entrySet()) {
+            for (Map.Entry<Long, Task> entry : Map.copyOf(this.tasks).entrySet()) {
                 if (entry.getKey() == null || entry.getValue() == null) continue;
                 this.handleTask(entry.getKey(), entry.getValue());
             }
