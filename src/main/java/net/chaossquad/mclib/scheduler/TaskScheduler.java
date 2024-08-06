@@ -1,6 +1,8 @@
 package net.chaossquad.mclib.scheduler;
 
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,14 +15,16 @@ import java.util.logging.Level;
  * The purpose of this class is to provide a custom task scheduler so that you don't need to remove tasks manually from the bukkit scheduler.
  * You can for example integrate this scheduler inside a gamemode class, and as soon as the gamemode has ended, all tasks are gone because the {@link this#tick()} method if this scheduler is no longer called.
  */
-public final class TaskScheduler {
+public final class TaskScheduler implements SchedulerInterface {
     private final Plugin plugin;
-    private final Map<Integer, Task> tasks;
+    private final Map<Long, Task> tasks;
+    private long nextTaskId;
     private long tick;
 
     public TaskScheduler(Plugin plugin) {
         this.plugin = plugin;
         this.tasks = Collections.synchronizedMap(new HashMap<>());
+        this.nextTaskId = 1;
         this.tick = 0;
     }
 
@@ -31,36 +35,9 @@ public final class TaskScheduler {
 
         synchronized (this.tasks) {
 
-            for (Integer taskId : Map.copyOf(this.tasks).keySet()) {
-
-                if (taskId == null) {
-                    this.tasks.remove(null);
-                    continue;
-                }
-
-                Task task = this.tasks.get(taskId);
-
-                if (task == null) {
-                    this.tasks.remove(taskId);
-                    continue;
-                }
-
-                if (task.shouldRun() && !task.isPaused()) {
-
-                    try {
-                        task.run(this, taskId);
-                    } catch (Exception e) {
-                        this.plugin.getLogger().log(Level.WARNING, "Exception in scheduler task with id " + taskId, e);
-                        hadException = true;
-                    }
-
-                }
-
-                if (task.shouldBeRemoved()) {
-                    this.tasks.remove(taskId);
-                    continue;
-                }
-
+            for (Map.Entry<Long, Task> entry : Map.copyOf(this.tasks).entrySet()) {
+                if (entry.getKey() == null || entry.getValue() == null) continue;
+                this.handleTask(entry.getKey(), entry.getValue());
             }
 
         }
@@ -70,21 +47,44 @@ public final class TaskScheduler {
         return hadException;
     }
 
-    // TASK ID MANAGEMENT
+    /**
+     * Handles one specific task.
+     * @param taskId task id
+     * @param task task
+     */
+    private void handleTask(long taskId, @NotNull Task task) {
 
-    private int getFreeTaskId() {
+        // Conditions
+        boolean valid = taskId == task.getId() && task.getScheduler() == this;
+        boolean toBeRemoved = task.toBeRemoved();
+        boolean shouldRun = task.shouldRun();
+        boolean paused = task.isPaused();
 
-        for (int i = 0; i < Integer.MAX_VALUE; i++) {
+        // Execution
+        if (valid && !toBeRemoved && !paused && shouldRun) {
 
-            if (this.tasks.containsKey(i)) {
-                continue;
+            try {
+                task.run();
+            } catch (Exception e) {
+                this.plugin.getLogger().log(Level.WARNING, "Exception in scheduler task (id=" + taskId + ")", e);
             }
-
-            return i;
 
         }
 
-        return -1;
+        // Removal
+        if (!valid || toBeRemoved) {
+            this.tasks.remove(taskId);
+            return;
+        }
+
+    }
+
+    // TASK ID MANAGEMENT
+
+    private long getFreeTaskId() {
+        long taskId = this.nextTaskId;
+        this.nextTaskId++;
+        return taskId;
     }
 
     // GET TASKS
@@ -93,7 +93,7 @@ public final class TaskScheduler {
      * Returns a copy of the map where the tasks are stored.
      * @return map of tasks
      */
-    public Map<Integer, Task> getTasks() {
+    public Map<Long, Task> getTasks() {
         return Map.copyOf(this.tasks);
     }
 
@@ -133,55 +133,26 @@ public final class TaskScheduler {
      * @param runnable the runnable that should be executed
      * @param delay the initial delay (the amount of ticks to wait until the task will run the first time)
      * @param interval the interval (the amount of ticks to wait before the task runs again after the last execution)
-     * @param stopCondition the condition the task should be stopped and removed
+     * @param removeCondition the condition the task should be stopped and removed
      * @return task id
      */
-    public int scheduleRepeatingTask(TaskRunnable runnable, long delay, long interval, TaskStopCondition stopCondition, String label) {
-        int taskId = this.getFreeTaskId();
-        this.tasks.put(taskId, new RepeatingTask(this, runnable, label, delay, interval, stopCondition));
+    public long scheduleRepeatingTask(@NotNull TaskRunnable runnable, long delay, long interval, @Nullable Task.RemoveCondition removeCondition, @Nullable String label) {
+        long taskId = this.getFreeTaskId();
+        this.tasks.put(taskId, new RepeatingTask(taskId, this, runnable, removeCondition, label, delay, interval));
         return taskId;
-    }
-    public int scheduleRepeatingTask(TaskRunnable runnable, long delay, long interval, TaskStopCondition stopCondition) {
-        return this.scheduleRepeatingTask(runnable, delay, interval, stopCondition, null);
-    }
-    public int scheduleRepeatingTask(TaskRunnable runnable, long delay, long interval, String label) {
-        return this.scheduleRepeatingTask(runnable, delay, interval, null, label);
-    }
-    public int scheduleRepeatingTask(TaskRunnable runnable, long delay, long interval) {
-        return this.scheduleRepeatingTask(runnable, delay, interval, (TaskStopCondition) null);
-    }
-    public int scheduleRepeatingTask(Runnable runnable, long delay, long interval, TaskStopCondition stopCondition, String label) {
-        return this.scheduleRepeatingTask(TaskRunnable.fromRunnable(runnable), delay, interval, stopCondition, label);
-    }
-    public int scheduleRepeatingTask(Runnable runnable, long delay, long interval, TaskStopCondition stopCondition) {
-        return this.scheduleRepeatingTask(runnable, delay, interval, stopCondition, null);
-    }
-    public int scheduleRepeatingTask(Runnable runnable, long delay, long interval, String label) {
-        return this.scheduleRepeatingTask(runnable, delay, interval, null, label);
-    }
-    public int scheduleRepeatingTask(Runnable runnable, long delay, long interval) {
-        return this.scheduleRepeatingTask(runnable, delay, interval, (TaskStopCondition) null);
     }
 
     /**
      * Schedules a one-time delayed task.
      * @param runnable the runnable that should be executed
      * @param delay the delay (the amount of ticks to wait until the task will run)
+     * @param removeCondition the condition the task should be stopped and removed
      * @return task id
      */
-    public int runTaskLater(TaskRunnable runnable, long delay, String label) {
-        int taskId = this.getFreeTaskId();
-        this.tasks.put(taskId, new OneTimeTask(this, runnable, label, delay));
+    public long runTaskLater(@NotNull TaskRunnable runnable, long delay, @Nullable Task.RemoveCondition removeCondition, @Nullable String label) {
+        long taskId = this.getFreeTaskId();
+        this.tasks.put(taskId, new OneTimeTask(taskId, this, runnable, removeCondition, label, delay));
         return taskId;
-    }
-    public int runTaskLater(TaskRunnable runnable, long delay) {
-        return this.runTaskLater(runnable, delay, null);
-    }
-    public int runTaskLater(Runnable runnable, long delay, String label) {
-        return this.runTaskLater(TaskRunnable.fromRunnable(runnable), delay, label);
-    }
-    public int runTaskLater(Runnable runnable, long delay) {
-        return this.runTaskLater(runnable, delay, null);
     }
 
     // OTHER

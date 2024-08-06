@@ -1,31 +1,43 @@
 package net.chaossquad.mclib.scheduler;
 
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * A task for the {@link TaskScheduler}.
  * Can only be created by the {@link TaskScheduler} itself.
  */
 public abstract class Task {
+    private final long id;
     private final TaskScheduler scheduler;
     private final TaskRunnable runnable;
+    private final RemoveCondition removeCondition;
     private final String label;
+    private boolean removed;
     private boolean paused;
 
-    protected Task(TaskScheduler scheduler, TaskRunnable runnable, String label) {
+    protected Task(long id, @NotNull TaskScheduler scheduler, @NotNull TaskRunnable runnable, @Nullable Task.RemoveCondition removeCondition, @Nullable String label) {
+        this.id = id;
         this.scheduler = scheduler;
         this.runnable = runnable;
+        this.removeCondition = removeCondition != null ? removeCondition : () -> false;
         this.label = label != null ? label.replace(",", "").replace(" ", "") : "unnamed";
+        this.removed = false;
+        this.paused = false;
     }
 
     // RUN
 
-    public final void run(TaskScheduler scheduler, int taskId) {
-
-        if (this.paused) {
-            return;
-        }
+    /**
+     * This will run the task.
+     * This does not check any conditions, so only use it if you know what you are doing!
+     */
+    @ApiStatus.Internal
+    public final void run() {
 
         this.onRun();
-        this.runnable.run(scheduler, taskId);
+        this.runnable.run(this);
 
     }
 
@@ -46,12 +58,42 @@ public abstract class Task {
      * This method is called when the task scheduler checks if the task should be removed.
      * @return true = task scheduler should remove the task, false = do not remove
      */
-    public abstract boolean shouldBeRemoved();
+    protected abstract boolean inheritedRemoveCondition();
 
-    // GETTER / SETTER
+    // OTHER
 
+    /**
+     * Returns the task id.
+     * @return task id
+     */
+    public final long getId() {
+        return this.id;
+    }
+
+    /**
+     * Returns the task scheduler.
+     * @return task scheduler
+     */
     public final TaskScheduler getScheduler() {
         return this.scheduler;
+    }
+
+    /**
+     * Returns if the task has been marked for removal.
+     * If the task is marked for removal, it will no longer execute.
+     * This method does not return if the task has been or should be removed.
+     * If you want to check if the task has been or should be removed, use {@link this#toBeRemoved()}.
+     * @return marked for removal
+     */
+    public boolean isMarkedForRemoval() {
+        return this.removed;
+    }
+
+    /**
+     * Mark the task for removal.
+     */
+    public void remove() {
+        this.removed = true;
     }
 
     /**
@@ -70,13 +112,44 @@ public abstract class Task {
         this.paused = paused;
     }
 
+    /**
+     * Returns if the task should be removed.
+     * This is the case if it is marked for removal, the remove condition is true or the inherited remove condition is true.
+     * @return if the task should be removed
+     */
+    public final boolean toBeRemoved() {
+        return this.removed || this.removeCondition.toBeRemoved() || this.inheritedRemoveCondition();
+    }
+
+    /**
+     * Returns the label which is like a task name.
+     * @return label
+     */
+    public final String getLabel() {
+        return this.label;
+    }
+
+    /**
+     * Returns the remove condition object.
+     * @return remove condition
+     */
+    public final RemoveCondition getRemoveCondition() {
+        return this.removeCondition;
+    }
+
     @Override
     public String toString() {
         return "UNSPECIFIED";
     }
 
-    public String getLabel() {
-        return this.label;
+    // INNER CLASSES
+
+    /**
+     * Stop condition for custom tasks.
+     * When {@link this#toBeRemoved()} returns true, the task will automatically be removed from the {@link TaskScheduler}.
+     */
+    public interface RemoveCondition {
+        boolean toBeRemoved();
     }
 
 }

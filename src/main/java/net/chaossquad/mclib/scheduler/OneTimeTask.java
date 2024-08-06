@@ -1,5 +1,8 @@
 package net.chaossquad.mclib.scheduler;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * A one-time task for {@link TaskScheduler}.
  * See {@link TaskScheduler#runTaskLater(TaskRunnable, long, String)}.
@@ -9,8 +12,8 @@ public class OneTimeTask extends Task {
     private final long addedTick;
     private boolean executed;
 
-    protected OneTimeTask(TaskScheduler scheduler, TaskRunnable runnable, String label, long delay) {
-        super(scheduler, runnable, label);
+    protected OneTimeTask(long id, @NotNull TaskScheduler scheduler, @NotNull TaskRunnable runnable, @Nullable Task.RemoveCondition removeCondition, @Nullable String label, long delay) {
+        super(id, scheduler, runnable, removeCondition, label);
         this.delay = delay;
         this.addedTick = this.getScheduler().getTick();
         this.executed = false;
@@ -42,7 +45,7 @@ public class OneTimeTask extends Task {
     }
 
     @Override
-    public boolean shouldBeRemoved() {
+    public boolean inheritedRemoveCondition() {
         return this.executed;
     }
 

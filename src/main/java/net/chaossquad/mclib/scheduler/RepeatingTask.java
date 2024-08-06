@@ -1,20 +1,20 @@
 package net.chaossquad.mclib.scheduler;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Repeating task for the {@link TaskScheduler}.
- * See {@link TaskScheduler#scheduleRepeatingTask(TaskRunnable, long, long, TaskStopCondition, String)}.
+ * See {@link TaskScheduler#scheduleRepeatingTask(TaskRunnable, long, long, RemoveCondition, String)}
  */
 public class RepeatingTask extends Task {
     private final long interval;
-    private final TaskStopCondition stopCondition;
     private long lastExecutionTick;
 
-    protected RepeatingTask(TaskScheduler scheduler, TaskRunnable runnable, String label, long initialDelay, long interval, TaskStopCondition stopCondition) {
-        super(scheduler, runnable, label);
+    protected RepeatingTask(long id, @NotNull TaskScheduler scheduler, @NotNull TaskRunnable runnable, @Nullable Task.RemoveCondition removeCondition, @Nullable String label, long initialDelay, long interval) {
+        super(id, scheduler, runnable, removeCondition, label);
 
         this.interval = interval;
-        this.stopCondition = stopCondition != null ? stopCondition : () -> false;
-
         this.lastExecutionTick = this.getScheduler().getTick() + initialDelay;
     }
 
@@ -38,8 +38,8 @@ public class RepeatingTask extends Task {
     }
 
     @Override
-    public boolean shouldBeRemoved() {
-        return this.stopCondition.shouldBeStopped();
+    public boolean inheritedRemoveCondition() {
+        return false;
     }
 
     @Override
@@ -53,10 +53,6 @@ public class RepeatingTask extends Task {
 
     public long getLastExecutionTick() {
         return this.lastExecutionTick;
-    }
-
-    public TaskStopCondition getStopCondition() {
-        return this.stopCondition;
     }
 
 }
