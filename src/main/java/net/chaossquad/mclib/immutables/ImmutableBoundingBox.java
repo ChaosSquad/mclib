@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * An immutable version of {@link BoundingBox}
  */
+@Deprecated
 public class ImmutableBoundingBox extends BoundingBox {
 
     public ImmutableBoundingBox(double x1, double y1, double z1, double x2, double y2, double z2) {

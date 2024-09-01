@@ -225,7 +225,7 @@ public class BlockBox {
 
     }
 
-    // CLONE
+    // CLONE AND CONVERT
 
     /**
      * Creates a copy of this block box.
@@ -234,6 +234,28 @@ public class BlockBox {
     @Override
     public BlockBox clone() {
         return new BlockBox(this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
+    }
+
+    /**
+     * Converts the BlockBox into a {@link BoundingBox} containing all blocks
+     * @return
+     */
+    public BoundingBox toBoundingBox() {
+        BlockBox copy = this.clone();
+        copy.sort();
+
+        double minX = copy.getMinX();
+        double minY = copy.getMinY();
+        double minZ = copy.getMinZ();
+        double maxX = copy.getMaxX();
+        double maxY = copy.getMaxY();
+        double maxZ = copy.getMaxZ();
+
+        maxX += 0.99999;
+        maxY += 0.99999;
+        maxZ += 0.99999;
+
+        return new BoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
 }
