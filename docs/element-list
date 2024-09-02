@@ -1,0 +1,15 @@
+net.chaossquad.mclib
+net.chaossquad.mclib.actionbar
+net.chaossquad.mclib.advancedgui.dynamic_components
+net.chaossquad.mclib.advancedgui.other
+net.chaossquad.mclib.advancedgui.provider
+net.chaossquad.mclib.advancedgui.synchronization
+net.chaossquad.mclib.blocks
+net.chaossquad.mclib.combattracking
+net.chaossquad.mclib.command
+net.chaossquad.mclib.commands
+net.chaossquad.mclib.immutables
+net.chaossquad.mclib.packetentity
+net.chaossquad.mclib.packetevents
+net.chaossquad.mclib.scheduler
+net.chaossquad.mclib.world
