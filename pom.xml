@@ -6,7 +6,7 @@
 
     <groupId>net.chaossquad</groupId>
     <artifactId>mclib</artifactId>
-    <version>1.0-1.21-SNAPSHOT</version>
+    <version>master-140a3ba58dcb5502fbcec4e07139e7fc40af117a</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
