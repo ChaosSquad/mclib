@@ -4,13 +4,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -127,6 +131,75 @@ public final class MiscUtils {
         } catch (Exception e) {
             plugin.getLogger().log(Level.WARNING, "Error while reading embedded resource " + filename, e);
             return null;
+        }
+
+    }
+
+    /**
+     * Deletes the specific directory, even if it is not empty.
+     * @param path path of the directory to delete
+     * @return success
+     */
+    public static boolean deleteDirectory(Path path) {
+        path = path.toAbsolutePath().normalize();
+        if (!Files.exists(path) || !Files.isDirectory(path)) return false;
+
+        try {
+
+            Files.walk(path)
+                    .sorted(Comparator.reverseOrder())
+                    .forEach(p -> {
+                        try {
+                            Files.delete(p);
+                        } catch (IOException ignored) {}
+                    });
+
+            return true;
+
+        } catch (IOException e) {
+            return false;
+        }
+
+    }
+
+    /**
+     * Copies an entire file tree.
+     * Only works if the target directory does not exist.
+     * @param source source directory
+     * @param target target directory
+     * @return success
+     */
+    public static boolean copyDirectory(Path source, Path target) {
+
+        if (Files.exists(target) || Files.isDirectory(target)) return false;
+        if (!Files.isDirectory(source)) return false;
+
+        try {
+
+            Files.walkFileTree(source, new SimpleFileVisitor<>() {
+
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                    Path targetDir = target.resolve(source.relativize(dir));
+                    try {
+                        Files.copy(dir, targetDir);
+                    } catch (FileAlreadyExistsException e) {
+                        // Already exists, continue
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Files.copy(file, target.resolve(source.relativize(file)));
+                    return FileVisitResult.CONTINUE;
+                }
+
+            });
+
+            return true;
+        } catch (IOException e) {
+            return false;
         }
 
     }

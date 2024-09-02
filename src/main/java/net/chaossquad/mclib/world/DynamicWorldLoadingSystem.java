@@ -1,191 +1,68 @@
 package net.chaossquad.mclib.world;
 
+import net.chaossquad.mclib.MiscUtils;
+import net.chaossquad.mclib.WorldUtils;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 /**
- * The dynamic world loading system allows you to create a copy of a template world and load it.
- * The system can create multiple copies of the specified template.
- * Dynamic worlds will be automatically deleted when they are not loaded anymore.
+ * <h3>DynamicWorldLoadingSystem</h3>
  * <p>
- * Known drawbacks/issues:
- * 1. The {@link this#getTemplateWorldName(World)} is unsafe because it generates the template world name of the world name.
- * 2. Dynamic worlds cannot be cleaned up when the plugin is disabled or the server is stopped, because worlds are not unloaded synchronously. The world only can be cleaned up when the dynamic world loading system was created again.
+ *     <h6>What is it?</h6>
+ *     The dynamic world loading system allows you to create a copy of a template world and load it.<br/>
+ *     The system can create multiple copies of the specified template.<br/>
+ *     Dynamic worlds will be automatically deleted when they are not loaded anymore.
+ * </p>
  * <p>
- * Normal usage:
- * - Create a world of a template by using {@link this#createWorldFromTemplate(String)}.
- * - Unload the world as you would unload any normal bukkit world ({@link org.bukkit.Server#unloadWorld(String, boolean)}) and the world folder of the dynamic world will be cleaned up.
- * - Running {@link this#cleanupDynamicWorldDirectory(String)} or {@link this#cleanupUnloadedDynamicWorldDirectories()} is not required, only use them if you know what you are doing.
- * - If you want to remove/disable the DynamicWorldLoadingSystem manually, you can call {@link this#remove()}, but be aware that there is no way back.
+ *     <br/>
+ *     <h6>How to use it?</h6>
+ *     You need to have a template world directory inside your server folder (like a normal world on the server).<br/>
+ *     Then you can create a new dynamic world of that template using {@link this#createWorldFromTemplate(String)}. The template world is then copied and loaded.<br/>
+ *     Dynamic worlds are automatically deleted when it is no longer required.
+ * <p/>
+ * <p>
+ *     <br/>
+ *     <h6>What do I need to know?</h6>
+ *     - You need to call {@link this#remove()} inside your {@link Plugin#onDisable()} method to delete all dynamic worlds.<br/>
+ *     - Creating a DynamicWorldLoadingSystem will automatically delete all existing dynamic worlds.<br/>
+ *     - Worlds that have names starting with <code>dynamicworlds-PLUGIN_NAME-</code> will be considered as dynamic worlds and are therefore affected by actions of the DynamicWorldLoadingSystem, even if you have copied them manually to the server directory!
+ * </p>
  */
-public final class DynamicWorldLoadingSystem implements Listener {
+public class DynamicWorldLoadingSystem implements Runnable {
     public static final List<String> DISALLOWED_WORLD_NAMES = List.of("cache", "config", "libraries", "logs", "plugins", "versions", "world");
     private static final String PREFIX = "dynamicworlds-";
 
-    // UTILITY CLASSES
-
-    public static final class DefaultCleanupTask extends BukkitRunnable {
-        private final DynamicWorldLoadingSystem system;
-
-        private DefaultCleanupTask(DynamicWorldLoadingSystem system) {
-            this.system = system;
-        }
-
-        @Override
-        public void run() {
-            this.system.cleanupUnloadedDynamicWorldDirectories();
-        }
-
-        public DynamicWorldLoadingSystem getSystem() {
-            return system;
-        }
-
-    }
-
-    public static final class SingleWorldCleanupTask extends BukkitRunnable {
-        private final DynamicWorldLoadingSystem system;
-        private final World world;
-
-        private SingleWorldCleanupTask(DynamicWorldLoadingSystem system, World world) {
-            this.system = system;
-            this.world = world;
-        }
-
-        @Override
-        public void run() {
-
-            if (this.system.getPlugin().getServer().getWorld(this.world.getUID()) == null) {
-                this.system.cleanupDynamicWorldDirectory(this.world.getName());
-                this.cancel();
-                return;
-            }
-
-        }
-
-        public DynamicWorldLoadingSystem getSystem() {
-            return system;
-        }
-
-    }
-
-    /**
-     * Event Listener.
-     */
-    public static final class EventListener implements Listener {
-        private final DynamicWorldLoadingSystem system;
-
-        public EventListener(DynamicWorldLoadingSystem system) {
-            this.system = system;
-        }
-
-        @EventHandler(priority = EventPriority.MONITOR)
-        public void onPluginDisable(PluginDisableEvent event) {
-            if (event.getPlugin() != this.system.getPlugin()) return;
-            if (this.system.getDynamicWorlds().isEmpty()) return;
-            this.system.getPlugin().getLogger().log(
-                    Level.WARNING,
-                    "\n" +
-                    "---------- WARNING ----------\n" +
-                    "There are still dynamic worlds loaded.\n" +
-                    "They will not be cleaned up because it is not possible.\n" +
-                    "All tasks of the plugin will be stopped when the plugin disables, so it is not possible to wait until the world is unloaded.\n" +
-                    "-------------------"
-            );
-        }
-
-        /**
-         * Cleans up the dynamic world when has been unloaded successfully.
-         */
-        @EventHandler(priority = EventPriority.MONITOR)
-        public void onWorldUnload(WorldUnloadEvent event) {
-            if (event.isCancelled()) return;
-            if (!this.system.getDynamicWorlds().contains(event.getWorld())) return;
-            new SingleWorldCleanupTask(this.system, event.getWorld()).runTaskTimer(this.system.getPlugin(), 1, 1);
-        }
-
-        public DynamicWorldLoadingSystem getSystem() {
-            return system;
-        }
-
-    }
-
-    // MAIN CLASS
-
     private final Plugin plugin;
     private final BukkitTask task;
-    private final EventListener listener;
-    private int nextId;
+    private final AtomicInteger nextId;
 
-    public DynamicWorldLoadingSystem(Plugin plugin) {
+    public DynamicWorldLoadingSystem(@NotNull Plugin plugin) {
         this.plugin = plugin;
-        this.listener = new EventListener(this);
-        this.nextId = 0;
+        this.task = this.plugin.getServer().getScheduler().runTaskTimer(this.plugin, this, 1, 10*20);
+        this.nextId = new AtomicInteger(1);
 
-        this.task = new DefaultCleanupTask(this).runTaskTimer(this.plugin, 1, 1200);
-        this.plugin.getServer().getPluginManager().registerEvents(this.listener, this.plugin);
+        this.unloadAndDeleteAllDynamicWorlds();
     }
 
-    // WORLD DIRECTORIES
+    // TASK
 
-    /**
-     * Cleans up a single dynamic world directory if it is not loaded.
-     * @param name world name
-     * @return success
-     */
-    public boolean cleanupDynamicWorldDirectory(String name) {
-        Path serverDirectory = this.getServerDirectory();
-        Path worldPath = serverDirectory.resolve(name).toAbsolutePath().normalize();
-
-        if (!Files.isDirectory(worldPath)) return false;
-        if (!worldPath.startsWith(serverDirectory)) return false;
-        if (!worldPath.getFileName().toString().startsWith(this.getPrefix())) return false;
-
-        World world = this.plugin.getServer().getWorld(name);
-        if (world != null) return false;
-
-        if (deleteDirectory(worldPath)) {
-            this.plugin.getLogger().log(Level.INFO, "Deleted dynamic world " + worldPath.getFileName().toString());
-            return true;
-        }
-
-        return false;
+    @Override
+    public void run() {
+        this.deleteUnloadedDynamicWorlds();
     }
 
-    /**
-     * Cleans up all dynamic world directories of worlds that are not loaded.
-     */
-    public void cleanupUnloadedDynamicWorldDirectories() {
-        try {
-
-            Path serverDirectory = this.getServerDirectory();
-
-            for (Path path : Files.list(serverDirectory).toList()) {
-                this.cleanupDynamicWorldDirectory(path.getFileName().toString());
-            }
-
-        } catch (Exception e) {
-            this.plugin.getLogger().log(Level.WARNING, "Failed to cleanup unloaded worlds", e);
-        }
-    }
-
-    // WORLD LOADING
+    // WORLD LOADING/UNLOADING
 
     /**
      * Creates a full copy of a world and loads it.
@@ -193,6 +70,7 @@ public final class DynamicWorldLoadingSystem implements Listener {
      * @return loaded world or null if the world was not loaded
      */
     public World createWorldFromTemplate(String name) {
+        if (this.isRemoved()) return null;
         if (DISALLOWED_WORLD_NAMES.contains(name)) return null;
 
         // Check if directory exists
@@ -202,10 +80,10 @@ public final class DynamicWorldLoadingSystem implements Listener {
 
         // Copy world directory
 
-        String directoryName = this.getPrefix() + name + "-" + (++this.nextId);
+        String directoryName = this.getPrefix() + name + "-" + (this.nextId.getAndAdd(1));
         Path copyPath = this.getServerDirectory().resolve(directoryName);
         if (Files.exists(copyPath) || Files.isDirectory(copyPath)) return null;
-        if (!copyDirectory(worldPath, copyPath)) return null;
+        if (!MiscUtils.copyDirectory(worldPath, copyPath)) return null;
 
         // Load world
 
@@ -226,6 +104,75 @@ public final class DynamicWorldLoadingSystem implements Listener {
         return world;
     }
 
+    /**
+     * Unloads a world and deletes its files if it is a dynamic world.
+     * @param name world name
+     */
+    public void deleteWorld(String name) {
+
+        World world = this.plugin.getServer().getWorld(name);
+        if (world != null) {
+            WorldUtils.unloadWorld(world, false);
+        }
+
+        Path path = this.getServerDirectory().resolve(name);
+        if (!Files.exists(path)) return;
+        if (!Files.isDirectory(path)) return;
+        if (!this.isValidWorldPath(path)) return;
+
+        MiscUtils.deleteDirectory(path);
+
+    }
+
+    // ----- WORLD CLEANUP -----
+
+    /**
+     * Unloads and deletes all dynamic worlds.
+     */
+    public void unloadAndDeleteAllDynamicWorlds() {
+
+        for (Path path : this.getDynamicWorldDirectories()) {
+            this.deleteWorld(path.getFileName().toString());
+        }
+
+        for (World world : this.getDynamicWorlds()) {
+            this.deleteWorld(world.getName());
+        }
+
+    }
+
+    /**
+     * Deletes all unloaded dynamic worlds.
+     */
+    public void deleteUnloadedDynamicWorlds() {
+
+        for (Path path : this.getDynamicWorldDirectories()) {
+
+            World world = this.plugin.getServer().getWorld(path.getFileName().toString());
+            if (world == null) {
+                this.deleteWorld(path.getFileName().toString());
+            }
+
+        }
+
+    }
+
+    /**
+     * Unloads deleted dynamic worlds.
+     */
+    public void unloadDeletedDynamicWorlds() {
+
+        List<String> dynamicWorldNames = this.getDynamicWorldDirectories().stream().filter(this::isValidWorldPath).map(path -> path.getFileName().toString()).toList();
+        for (World world : this.getDynamicWorlds()) {
+
+            if (!dynamicWorldNames.contains(world.getName())) {
+                this.deleteWorld(world.getName());
+            }
+
+        }
+
+    }
+
     // WORLD INFO
 
     /**
@@ -237,7 +184,7 @@ public final class DynamicWorldLoadingSystem implements Listener {
 
         for (World world : List.copyOf(this.plugin.getServer().getWorlds())) {
 
-            if (world.getName().startsWith(this.getPrefix())) {
+            if (this.isDynamicWorld(world)) {
                 worlds.add(world);
             }
 
@@ -247,32 +194,73 @@ public final class DynamicWorldLoadingSystem implements Listener {
     }
 
     /**
-     * Returns the name of the template world.
-     * @deprecated Unsafe, only use it if you absolutely must.
-     * @return
+     * Returns a list of all dynamic world paths.
+     * @return list of dynamic world paths
      */
-    @Deprecated
-    public String getTemplateWorldName(World world) {
-        if (world == null || !this.getDynamicWorlds().contains(world)) return null;
+    public List<Path> getDynamicWorldDirectories() {
 
         try {
+            List<Path> paths = new LinkedList<>();
 
-            Path serverDirectory = this.getServerDirectory();
-            for (Path path : Files.list(serverDirectory).toList()) {
-                if (!Files.exists(path) || !Files.isDirectory(path)) continue;
-                if (!path.getFileName().toString().equals(world.getName())) continue;
-
-                String worldName = world.getName().replace(this.getPrefix(), "");
-                String[] splittedWorldName = worldName.split("-");
-
-                return splittedWorldName[0];
+            for (Path path : Files.list(this.getServerDirectory()).toList()) {
+                path = path.toAbsolutePath().normalize();
+                if (!this.isValidWorldPath(path)) continue;
+                paths.add(path);
             }
 
+            return List.copyOf(paths);
         } catch (IOException e) {
-            return null;
+            this.plugin.getLogger().log(Level.SEVERE, "Failed to get dynamic world directories", e);
+            return List.of();
         }
 
-        return null;
+    }
+
+    /**
+     * Returns if the specified path is a valid world path.
+     * This does not check if the world directory does exist.
+     * @param path path to check
+     * @return true if world path is valid
+     */
+    public boolean isValidWorldPath(@NotNull Path path) {
+
+        boolean isAbsolute = path.isAbsolute();
+        boolean isDirectory = Files.isDirectory(path);
+        boolean isInServerDirectory = path.startsWith(this.getServerDirectory());
+        boolean hasDynamicWorldsPrefix = path.getFileName().toString().startsWith(this.getPrefix());
+        boolean isNoForbiddenDirectory = !DISALLOWED_WORLD_NAMES.contains(path.getFileName().toString());
+
+        return isAbsolute && isDirectory && isInServerDirectory && hasDynamicWorldsPrefix && isNoForbiddenDirectory;
+    }
+
+    /**
+     * Returns true if the specified world is a dynamic world.
+     * @param world world to check
+     * @return true if world is dynamic world
+     */
+    public boolean isDynamicWorld(@NotNull World world) {
+        return world.getName().startsWith(this.getPrefix());
+    }
+
+    // REMOVE
+
+    public void remove() {
+        this.task.cancel();
+        this.unloadAndDeleteAllDynamicWorlds();
+    }
+
+    // OTHER
+
+    public Plugin getPlugin() {
+        return plugin;
+    }
+
+    public int getNextId() {
+        return this.nextId.get();
+    }
+
+    public boolean isRemoved() {
+        return this.task.isCancelled();
     }
 
     // UTILITIES
@@ -291,123 +279,6 @@ public final class DynamicWorldLoadingSystem implements Listener {
      */
     public Path getServerDirectory() {
         return this.plugin.getServer().getWorldContainer().toPath().toAbsolutePath().normalize();
-    }
-
-    // GETTER
-
-    public DynamicWorldLoadingSystem getSelf() {
-        return this;
-    }
-
-    public Plugin getPlugin() {
-        return plugin;
-    }
-
-    /**
-     * Returns the event listener of this system.
-     * This listener must be added to the exception list if you are using a dynamic world listener system.
-     * @return event listener of this system
-     */
-    public EventListener getListener() {
-        return this.listener;
-    }
-
-    // REMOVE
-
-    /**
-     * Removes the bukkit task and the event handlers.
-     * @param cleanup If true, all dynamically loaded worlds will be cleaned up. Else, they will persist until you delete them manually or there is another DynamicWorldLoadingSystem that deletes it.
-     */
-    public void remove(boolean cleanup) {
-
-        if (cleanup) {
-            this.getDynamicWorlds().forEach(world -> {
-                this.plugin.getServer().unloadWorld(world, false);
-                new SingleWorldCleanupTask(this, world).runTaskTimer(this.plugin, 1, 1);
-            });
-        }
-
-        this.task.cancel();
-        HandlerList.unregisterAll(this);
-    }
-
-    /**
-     * Removes the bukkit task and the event handlers.
-     * Does not clean up the worlds.
-     */
-    public void remove() {
-        this.remove(false);
-    }
-
-    // STATIC
-
-    /**
-     * Copies an entire file tree.
-     * Only works if the target directory does not exist.
-     * @param source source directory
-     * @param target target directory
-     * @return success
-     */
-    public static boolean copyDirectory(Path source, Path target) {
-
-        if (Files.exists(target) || Files.isDirectory(target)) return false;
-        if (!Files.isDirectory(source)) return false;
-
-        try {
-
-            Files.walkFileTree(source, new SimpleFileVisitor<>() {
-
-                @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                    Path targetDir = target.resolve(source.relativize(dir));
-                    try {
-                        Files.copy(dir, targetDir);
-                    } catch (FileAlreadyExistsException e) {
-                        // Already exists, continue
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
-
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    Files.copy(file, target.resolve(source.relativize(file)));
-                    return FileVisitResult.CONTINUE;
-                }
-
-            });
-
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
-
-    }
-
-    /**
-     * Deletes the specific directory, even if it is not empty.
-     * @param path path of the directory to delete
-     * @return success
-     */
-    public static boolean deleteDirectory(Path path) {
-        path = path.toAbsolutePath().normalize();
-        if (!Files.exists(path) || !Files.isDirectory(path)) return false;
-
-        try {
-
-            Files.walk(path)
-                    .sorted(Comparator.reverseOrder())
-                    .forEach(p -> {
-                        try {
-                            Files.delete(p);
-                        } catch (IOException ignored) {}
-                    });
-
-            return true;
-
-        } catch (IOException e) {
-            return false;
-        }
-
     }
 
 }

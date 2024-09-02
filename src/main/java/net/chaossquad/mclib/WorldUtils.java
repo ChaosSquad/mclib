@@ -3,16 +3,15 @@ package net.chaossquad.mclib;
 import net.chaossquad.mclib.blocks.BlockBox;
 import net.chaossquad.mclib.blocks.BlockStructure;
 import net.chaossquad.mclib.blocks.BlockStructureEntry;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Utilities related to worlds.
@@ -20,6 +19,75 @@ import java.util.List;
 public final class WorldUtils {
 
     private WorldUtils() {}
+
+    // UNLOAD
+
+    /**
+     * Unload a world by world object.
+     * @param world world to unload
+     * @param save if the world should be saved
+     * @return success
+     */
+    public static boolean unloadWorld(@NotNull World world, boolean save) {
+
+        // Prevent unloading null worlds, the default world, an unmanaged world or an not existing world
+
+        if (Bukkit.getServer().getWorlds().get(0) == world || !Bukkit.getServer().getWorlds().contains(world)) return false;
+
+        // Prepare values for log message
+
+        UUID uid = world.getUID();
+        int index = Bukkit.getServer().getWorlds().indexOf(world);
+        String name = world.getName();
+
+        // Remove all players from the map (else the unload will fail)
+
+        World worldDefault = Bukkit.getServer().getWorlds().get(0);
+        for (Player player : world.getPlayers()) {
+            player.teleport(worldDefault.getSpawnLocation().clone());
+        }
+
+        // Unload the world
+
+        boolean success = Bukkit.getServer().unloadWorld(world, save);
+
+        // Log the world unload
+
+        if (success) {
+            Bukkit.getLogger().info("Unloaded world [" + index + "] " + uid + " (" + name + ")");
+        } else {
+            Bukkit.getLogger().warning("Error white unloading world [" + index + "] " + uid + " (" + name + ")");
+        }
+
+        // Return the success
+
+        return success;
+
+    }
+
+    /**
+     * Unload a world by name.
+     * @param name world name
+     * @param save if the world should be saved
+     * @return success
+     */
+    public static boolean unloadWorld(@NotNull String name, boolean save) {
+        World world = Bukkit.getServer().getWorld(name);
+        if (world == null) return false;
+        return unloadWorld(world, save);
+    }
+
+    /**
+     * Unload a world by uid.
+     * @param uid world uid
+     * @param save if the world should be saved
+     * @return success
+     */
+    public static boolean unloadWorld(@NotNull UUID uid, boolean save) {
+        World world = Bukkit.getWorld(uid);
+        if (world == null) return false;
+        return unloadWorld(world, save);
+    }
 
     // WEATHER
 
