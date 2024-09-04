@@ -16,7 +16,11 @@ public class EntityManagingWallGUIProvider extends WallGUIProvider {
     private final List<ItemFrame> itemFrames;
 
     public EntityManagingWallGUIProvider(@NotNull String layoutId, @NotNull Location location, @NotNull Direction direction, int interactionRadius) {
-        super(layoutId, location, direction, interactionRadius);
+        this(layoutId, new GuiLocation(location, direction), interactionRadius);
+    }
+
+    public EntityManagingWallGUIProvider(@NotNull String layoutId, @NotNull GuiLocation guiLocation, int interactionRadius) {
+        super(layoutId, guiLocation, interactionRadius);
         this.itemFrames = new ArrayList<>();
     }
 

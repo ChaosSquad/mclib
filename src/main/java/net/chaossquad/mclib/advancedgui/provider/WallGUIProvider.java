@@ -22,6 +22,10 @@ public class WallGUIProvider {
     private GuiWallInstance instance;
 
     public WallGUIProvider(@NotNull String layoutId, @NotNull Location location, @NotNull Direction direction, int interactionRadius) {
+        this(layoutId, new GuiLocation(location, direction), interactionRadius);
+    }
+
+    public WallGUIProvider(@NotNull String layoutId, @NotNull GuiLocation guiLocation, int interactionRadius) {
         Layout layout = LayoutManager.getInstance().getLayout(layoutId);
 
         if (layout == null) {
@@ -29,7 +33,7 @@ public class WallGUIProvider {
         }
 
         this.layout = layout;
-        this.location = new GuiLocation(location.clone(), direction);
+        this.location = guiLocation;
         this.interactionRadius = interactionRadius;
 
         this.instance = null;
