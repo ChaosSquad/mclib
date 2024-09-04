@@ -1,6 +1,7 @@
 package net.chaossquad.mclib.advancedgui.synchronization;
 
 import me.leoko.advancedgui.utils.Direction;
+import me.leoko.advancedgui.utils.GuiLocation;
 import me.leoko.advancedgui.utils.components.GroupComponent;
 import me.leoko.advancedgui.utils.interactions.Interaction;
 import net.chaossquad.mclib.AdvancedGUIUtils;
@@ -8,6 +9,7 @@ import net.chaossquad.mclib.advancedgui.other.ComponentTreeProvider;
 import net.chaossquad.mclib.advancedgui.provider.WallGUIProvider;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -15,7 +17,11 @@ public class SynchronizedScreen extends WallGUIProvider implements ComponentTree
     private final GroupComponent componentTree;
 
     public SynchronizedScreen(String layoutId, Location location, Direction direction, int interactionRadius) {
-        super(layoutId, location, direction, interactionRadius);
+        this(layoutId, new GuiLocation(location, direction), interactionRadius);
+    }
+
+    public SynchronizedScreen(@NotNull String layoutId, @NotNull GuiLocation location, int interactionRadius) {
+        super(layoutId, location, interactionRadius);
         this.componentTree = this.getLayout().getTemplateComponentTree().clone(null);
     }
 
