@@ -42,6 +42,7 @@ import java.util.logging.Level;
 public class DynamicWorldLoadingSystem implements Runnable {
     public static final List<String> DISALLOWED_WORLD_NAMES = List.of("cache", "config", "libraries", "logs", "plugins", "versions", "world");
     private static final String PREFIX = "dynamicworlds-";
+    private static final String UID_FILE_NAME = "uid.dat";
 
     private final Plugin plugin;
     private final BukkitTask task;
@@ -81,9 +82,18 @@ public class DynamicWorldLoadingSystem implements Runnable {
         // Copy world directory
 
         String directoryName = this.getPrefix() + name + "-" + (this.nextId.getAndAdd(1));
-        Path copyPath = this.getServerDirectory().resolve(directoryName);
+        Path copyPath = this.getServerDirectory().resolve(directoryName).toAbsolutePath();
         if (Files.exists(copyPath) || Files.isDirectory(copyPath)) return null;
         if (!MiscUtils.copyDirectory(worldPath, copyPath)) return null;
+
+        // Delete UID file
+
+        try {
+            Path uidFilePath = copyPath.resolve(UID_FILE_NAME).toAbsolutePath();
+            Files.deleteIfExists(uidFilePath);
+        } catch (IOException e) {
+            this.plugin.getLogger().log(Level.WARNING, "Failed to delete UID file in world " + directoryName, e);
+        }
 
         // Load world
 
