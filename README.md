@@ -30,7 +30,7 @@ Add Dependency:
 <dependency>
   <groupId>net.chaossquad</groupId>
   <artifactId>mclib</artifactId>
-  <version>master-58563998d631a7b495b272ad448062bc2e5a3869</version>
+  <version>master-ca5aaa6399cdd3a18c46e5af4d750659b8d8883c</version>
 </dependency>
 ```
 ### Version Support
