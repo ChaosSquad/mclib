@@ -34,6 +34,6 @@ Add Dependency:
 </dependency>
 ```
 ### Version Support
-Game version for NMS features: **1.21**.  
+Game version for NMS features: **1.21.1**.  
 Most of the non-NMS features also work in different versions, but are not officially supported.  
 If you need support for previous versions, checkout a revision in the commit history and build it yourself (or try to find that commit id in our repository).
