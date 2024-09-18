@@ -5,6 +5,7 @@ import net.chaossquad.mclib.command.SubcommandEntry;
 import net.chaossquad.mclib.json.array.JSONEditorArraySubcommand;
 import net.chaossquad.mclib.json.object.JSONEditorObjectSubcommand;
 import net.chaossquad.mclib.json.utility.JSONEditorCleanupSubcommand;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -18,15 +19,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class JSONEditorCommand extends SubcommandCommand {
+/**
+ * Command that allows editing JSON Objects and JSON Arrays.
+ */
+public final class JSONEditorCommand extends SubcommandCommand {
 
     @NotNull private final Map<UUID, JSONObject> playerJSONObjectEditables;
     @NotNull private final Map<UUID, JSONArray> playerJSONArrayEditables;
     @Nullable private JSONObject consoleJSONObjectEditable;
     @Nullable private JSONArray consoleJSONArrayEditable;
 
-    public JSONEditorCommand(@NotNull Plugin plugin) {
-        super(plugin, "Available subcommands: cleanup, object, array");
+    public JSONEditorCommand(@NotNull Plugin plugin, @Nullable String permission) {
+        super(plugin, permission);
 
         this.playerJSONObjectEditables = new HashMap<>();
         this.playerJSONArrayEditables = new HashMap<>();
@@ -42,6 +46,7 @@ public class JSONEditorCommand extends SubcommandCommand {
 
     // GLOBAL
 
+    @Nullable
     public JSONObject getJSONObjectEditable(@NotNull CommandSender sender) {
 
         if (sender instanceof Player player) {
@@ -54,6 +59,7 @@ public class JSONEditorCommand extends SubcommandCommand {
 
     }
 
+    @Nullable
     public JSONArray getJSONArrayEditable(@NotNull CommandSender sender) {
 
         if (sender instanceof Player player) {
@@ -141,6 +147,14 @@ public class JSONEditorCommand extends SubcommandCommand {
     public void setConsoleJSONArrayEditable(@Nullable JSONArray editable) {
         this.consoleJSONArrayEditable = editable;
     }
+
+    // ----- NO SUBCOMMANDS -----
+
+    @Override
+    protected void onExecutionWithoutSubcommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label) {
+        sender.sendMessage("§cUsage: " + label + " (cleanup|object [...]|array [...])");
+    }
+
 
     // ----- TASK -----
 

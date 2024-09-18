@@ -4,37 +4,50 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.logging.Level;
 
 /**
- * A command that can has multiple commands as subcommands.
- * You can add subcommands with {@link this#addSubcommand(String, SubcommandEntry)}.
- * You can remove subcommands with {@link this#removeSubcommand(String)}.
- * You can set a {@link DynamicSubcommandProvider} that can provide subcommands dynamically in the constructor.
+ * A command that can has multiple commands as subcommands.<br/>
+ * You can add subcommands with {@link this#addSubcommand(String, SubcommandEntry)}.<br/>
+ * You can remove subcommands with {@link this#removeSubcommand(String)}.<br/>
+ * You can set a global permission for the command in the constructor<br/>
+ * You can set a {@link DynamicSubcommandProvider} that can provide subcommands dynamically in the constructor.<br/>
+ * You can override {@link this#onExecutionWithoutSubcommand(CommandSender, Command, String)} to run code when the command is executed without subcommands.
  */
 public class SubcommandCommand implements TabCompletingCommandExecutor {
-    private final Plugin plugin;
-    private final Map<String, SubcommandEntry> entries;
-    private final DynamicSubcommandProvider dynamicSubcommandProvider;
-    private String availableSubcommandsMessage;
+    @NotNull private final Plugin plugin;
+    @NotNull private final Map<String, SubcommandEntry> entries;
+    @Nullable private final DynamicSubcommandProvider dynamicSubcommandProvider;
+    @Nullable private final String permission;
 
-    public SubcommandCommand(Plugin plugin, DynamicSubcommandProvider dynamicSubcommandProvider, String availableSubcommandsMessage) {
+    public SubcommandCommand(@NotNull Plugin plugin, @Nullable String permission, @Nullable DynamicSubcommandProvider dynamicSubcommandProvider) {
         this.plugin = plugin;
         this.entries = new HashMap<>();
         this.dynamicSubcommandProvider = dynamicSubcommandProvider;
-        this.availableSubcommandsMessage = Objects.requireNonNullElse(availableSubcommandsMessage, "");
+        this.permission = permission;
     }
 
-    public SubcommandCommand(Plugin plugin, String availableSubcommandsMessage) {
-        this(plugin, null, availableSubcommandsMessage);
+    public SubcommandCommand(@NotNull Plugin plugin, @Nullable String permission) {
+        this(plugin, permission, null);
+    }
+
+    public SubcommandCommand(@NotNull Plugin plugin) {
+        this(plugin, null);
     }
 
     // COMMAND
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    public final boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
+
+        if (!this.hasPermission(sender)) {
+            sender.sendMessage("§cNo permission");
+            return true;
+        }
 
         if (args.length > 0) {
 
@@ -57,30 +70,18 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
             subcommand.executor().onCommand(sender, cmd, args[0], this.subcommandArguments(args));
 
         } else {
-
-            String message = this.availableSubcommandsMessage;
-
-            Iterator<String> iterator = this.getSubcommandList(sender).iterator();
-            while (iterator.hasNext()) {
-                String subcommand = iterator.next();
-
-                message = message + subcommand;
-
-                if (iterator.hasNext()) {
-                    message = message + ", ";
-                }
-
-            }
-
-            sender.sendMessage(message);
-
+            this.onExecutionWithoutSubcommand(sender, cmd, label);
         }
 
         return true;
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+    public final List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+
+        if (!this.hasPermission(sender)) {
+            return List.of();
+        }
 
         if (args.length > 1) {
 
@@ -101,7 +102,33 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
 
     }
 
-    // UTILITIES
+    // ----- NO SUBCOMMAND ACTION -----
+
+    protected void onExecutionWithoutSubcommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label) {
+
+        String message = "§cAvailable subcommands: ";
+
+        Iterator<String> iterator = this.getSubcommandList(sender).iterator();
+        while (iterator.hasNext()) {
+            String subcommand = iterator.next();
+
+            message = message + subcommand;
+
+            if (iterator.hasNext()) {
+                message = message + ", ";
+            }
+
+        }
+
+        sender.sendMessage(message);
+
+    }
+
+    // ----- UTILITIES -----
+
+    private boolean hasPermission(CommandSender sender) {
+        return this.permission == null || this.plugin.getServer().getConsoleSender() == sender || sender.hasPermission(this.permission);
+    }
 
     private String[] subcommandArguments(String[] args) {
 
@@ -171,14 +198,16 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
 
     }
 
-    // MANAGE SUBCOMMANDS
+    // ----- MANAGE SUBCOMMANDS -----
 
     /**
      * Adds a subcommand.
      * @param command command string
      * @param data command data
+     * @throws IllegalArgumentException when subcommand already exists
      */
-    public void addSubcommand(String command, SubcommandEntry data) {
+    public final void addSubcommand(String command, SubcommandEntry data) {
+        if (this.entries.containsKey(command)) throw new IllegalArgumentException("Duplicate subcommand");
         this.entries.put(command, data);
     }
 
@@ -186,24 +215,25 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
      * Removes a subcommand.
      * @param command command string
      */
-    public void removeSubcommand(String command) {
+    public final void removeSubcommand(String command) {
         this.entries.remove(command);
     }
 
     /**
      * Clears all subcommands.
      */
-    public void clearSubcommands() {
+    public final void clearSubcommands() {
         this.entries.clear();
     }
 
-    // GETTER / SETTER
+    // ----- GETTER / SETTER -----
 
     /**
      * Returns the plugin.
      * @return plugin
      */
-    public Plugin getPlugin() {
+    @NotNull
+    public final Plugin getPlugin() {
         return this.plugin;
     }
 
@@ -211,7 +241,8 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
      * Returns a map of all registered subcommands.
      * @return map of subcommands
      */
-    public Map<String, SubcommandEntry> getSubcommands() {
+    @NotNull
+    public final Map<String, SubcommandEntry> getSubcommands() {
         return Map.copyOf(this.entries);
     }
 
@@ -220,24 +251,9 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
      * Read {@link DynamicSubcommandProvider} for more information.
      * @return dynamic subcommand provider
      */
-    public DynamicSubcommandProvider getDynamicSubcommandProvider() {
+    @Nullable
+    public final DynamicSubcommandProvider getDynamicSubcommandProvider() {
         return this.dynamicSubcommandProvider;
-    }
-
-    /**
-     * Get message that is displayed when the user runs the command without arguments.
-     * @return available subcommands message
-     */
-    public String getAvailableSubcommandsMessage() {
-        return availableSubcommandsMessage;
-    }
-
-    /**
-     * Set message that is displayed when the user runs the command without arguments.
-     * @param availableSubcommandsMessage available subcommands message
-     */
-    public void setAvailableSubcommandsMessage(String availableSubcommandsMessage) {
-        this.availableSubcommandsMessage = Objects.requireNonNullElse(availableSubcommandsMessage, "");
     }
 
 }
