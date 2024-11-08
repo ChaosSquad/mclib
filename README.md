@@ -21,7 +21,7 @@ Add Repository:
 <repository>
   <id>ChaosSquad-Repository-snapshots</id>
   <name>ChaosSquad Repository</name>
-  <url>https://chaossquad.net:8443/snapshots</url>
+  <url>https://maven.chaossquad.net/snapshots</url>
 </repository>
 ```
 
