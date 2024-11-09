@@ -38,6 +38,7 @@ public class DataStorage implements Iterable<Map.Entry<String, Object>> {
             case String s -> this.storage.put(key, value);
             case Byte b -> this.storage.put(key, value);
             case Short s -> this.storage.put(key, value);
+            case Character v -> this.storage.put(key, value);
             default -> this.storage.put(key, value.toString());
         }
 
@@ -154,6 +155,12 @@ public class DataStorage implements Iterable<Map.Entry<String, Object>> {
     public short optShort(@NotNull String key, short defaultValue) {
         Object value = this.storage.get(key);
         if (value instanceof Short v) return v;
+        return defaultValue;
+    }
+
+    public char optChar(@NotNull String key, char defaultValue) {
+        Object value = this.storage.get(key);
+        if (value instanceof Character v) return v;
         return defaultValue;
     }
 
