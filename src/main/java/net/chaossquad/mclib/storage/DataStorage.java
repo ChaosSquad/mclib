@@ -3,16 +3,22 @@ package net.chaossquad.mclib.storage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class DataStorage implements Iterable<Map.Entry<String, Object>> {
     @NotNull private final Map<String, Object> storage;
 
     public DataStorage() {
         this.storage = new HashMap<>();
+    }
+
+    public DataStorage(@NotNull Map<?, ?> storage) {
+        this();
+
+        for (Map.Entry<?, ?> entry : storage.entrySet()) {
+            this.storage.put(entry.getKey().toString(), DataStorage.convertObject(entry.getValue()));
+        }
+
     }
 
     // --- BASIC OPERATIONS ---
@@ -29,19 +35,17 @@ public class DataStorage implements Iterable<Map.Entry<String, Object>> {
             return;
         }
 
-        switch (value) {
-            case Integer i -> this.storage.put(key, value);
-            case Long l -> this.storage.put(key, value);
-            case Double v -> this.storage.put(key, value);
-            case Float v -> this.storage.put(key, value);
-            case Boolean b -> this.storage.put(key, value);
-            case String s -> this.storage.put(key, value);
-            case Byte b -> this.storage.put(key, value);
-            case Short s -> this.storage.put(key, value);
-            case Character v -> this.storage.put(key, value);
-            default -> this.storage.put(key, value.toString());
+        if (value instanceof DataStorage s) {
+            this.mergeSection(key, s);
+            return;
         }
 
+        if (value instanceof Map<?, ?> m) {
+            this.mergeSection(key, new DataStorage(m));
+            return;
+        }
+
+        this.storage.put(key, convertObject(value));
     }
 
     @Nullable
@@ -171,5 +175,25 @@ public class DataStorage implements Iterable<Map.Entry<String, Object>> {
         DataStorage storage = new DataStorage();
         storage.storage.putAll(this.storage);
         return storage;
+    }
+
+    // --- STATIC ---
+
+    @NotNull
+    public static Object convertObject(@NotNull Object o) {
+
+        return switch (o) {
+            case Integer i -> i;
+            case Long l -> l;
+            case Double d -> d;
+            case Float f -> f;
+            case Boolean b -> b;
+            case String s -> s;
+            case Byte b -> b;
+            case Short s -> s;
+            case Character c -> c;
+            default -> o.toString();
+        };
+
     }
 }
