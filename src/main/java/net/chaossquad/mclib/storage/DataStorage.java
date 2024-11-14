@@ -30,6 +30,14 @@ public class DataStorage implements Iterable<Map.Entry<String, Object>> {
 
     public final void set(@NotNull String key, @Nullable Object value) {
 
+        if (key.contains(" ")) {
+            throw new IllegalArgumentException("Key must not contain spaces");
+        }
+        
+        if (!key.matches("^[a-zA-Z0-9.,:;\\-_]+$")) {
+            throw new IllegalArgumentException("key must only contain letters, numbers, points or underscores");
+        }
+
         if (value == null) {
             this.storage.remove(key);
             return;
@@ -88,6 +96,26 @@ public class DataStorage implements Iterable<Map.Entry<String, Object>> {
             String mergedKey = key + "." + sectionKey;
 
             this.set(mergedKey, value);
+        }
+    }
+
+    public Map<String, DataStorage> getSections() {
+        Map<String, DataStorage> sections = new HashMap<>();
+
+        for (String key : this.storage.keySet()) {
+            String[] sectionKey  = key.split("\\.");
+            if (sectionKey.length <= 1) continue;
+            sections.put(sectionKey[0], this.getSection(sectionKey[0]));
+        }
+
+        return sections;
+    }
+
+    // --- MERGE ---
+
+    public void merge(@NotNull DataStorage other) {
+        for (Map.Entry<String, Object> entry : other) {
+            this.set(entry.getKey(), entry.getValue());
         }
     }
 
