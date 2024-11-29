@@ -2,6 +2,7 @@ package net.chaossquad.mclib;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -202,6 +203,40 @@ public final class MiscUtils {
             return false;
         }
 
+    }
+
+    /**
+     * Parses a location list in the following format:<br/>
+     * X Y Z<br/>
+     * X Y Z<br/>
+     * X  Z<br/>
+     * ...
+     * @param data location list
+     * @return list of location vectors
+     */
+    public static List<Vector> parseLocationList(String data) {
+        List<Vector> locations = new ArrayList<>();
+
+        String[] lines = data.split("\\R"); // "\\R" line breaks for all os
+        for (String line : lines) {
+            if (line.trim().isEmpty()) continue;
+
+            String[] parts = line.trim().split("\\s+");
+            if (parts.length == 3) {
+                try {
+                    double x = Double.parseDouble(parts[0]);
+                    double y = Double.parseDouble(parts[1]);
+                    double z = Double.parseDouble(parts[2]);
+                    locations.add(new Vector(x, y, z));
+                } catch (NumberFormatException e) {
+                    throw new NumberFormatException("Not a Number: " + line);
+                }
+            } else {
+                throw new NumberFormatException("Invalid coordinates: " + line);
+            }
+        }
+
+        return locations;
     }
 
 }
