@@ -2,6 +2,7 @@ package net.chaossquad.mclib;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import net.minecraft.world.item.component.ResolvableProfile;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,7 +26,7 @@ public final class ItemUtils {
         try {
             Field field = skullMeta.getClass().getDeclaredField("profile");
             field.setAccessible(true);
-            field.set(skullMeta, cameraProfile);
+            field.set(skullMeta, new ResolvableProfile(cameraProfile));
         } catch (Exception e) {
             e.printStackTrace();
         }
