@@ -329,12 +329,23 @@ public final class WorldUtils {
     }
 
     /**
+     * Returns the chunk coordinates of the specified world coordinates.
+     * @param locationX world X
+     * @param locationZ world Z
+     * @return int[]{chunkX,chunkY}
+     */
+    public static int[] getChunkCoordinates(int locationX, int locationZ) {
+        return new int[]{locationX >> 4, locationZ >> 4};
+    }
+
+    /**
      * Returns if the chunk at the specified location is loaded without loading it.
      * @param location location of the chunk
      * @return result
      */
     public static boolean isChunkLoaded(@NotNull Location location) {
-        return Objects.requireNonNull(location.getWorld()).isChunkLoaded(location.getBlockX() >> 4, location.getBlockZ() >> 4);
+        int[] chunkCoordinates = getChunkCoordinates(location.getBlockX(), location.getBlockZ());
+        return Objects.requireNonNull(location.getWorld()).isChunkLoaded(chunkCoordinates[0], chunkCoordinates[1]);
     }
 
 }
