@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -325,6 +326,15 @@ public final class WorldUtils {
         }
 
         return List.copyOf(blockDisplays);
+    }
+
+    /**
+     * Returns if the chunk at the specified location is loaded without loading it.
+     * @param location location of the chunk
+     * @return result
+     */
+    public static boolean isChunkLoaded(@NotNull Location location) {
+        return Objects.requireNonNull(location.getWorld()).isChunkLoaded(location.getBlockX() >> 4, location.getBlockZ() >> 4);
     }
 
 }
