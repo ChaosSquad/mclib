@@ -13,8 +13,8 @@ import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.EntityType;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_21_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_21_R1.block.data.CraftBlockData;
+import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
@@ -34,7 +34,7 @@ public final class PacketUtils {
 
         try {
             ServerGamePacketListenerImpl serverGamePacketListener = serverPlayer.connection;
-            Field field = ServerCommonPacketListenerImpl.class.getDeclaredField("e");
+            Field field = ServerCommonPacketListenerImpl.class.getDeclaredField("connection");
             field.setAccessible(true);
 
             return  (Connection) field.get(serverGamePacketListener);
