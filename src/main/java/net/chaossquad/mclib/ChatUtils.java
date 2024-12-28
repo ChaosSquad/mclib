@@ -104,7 +104,7 @@ public final class ChatUtils {
         try {
             playerId = UUID.fromString(playerString);
         } catch (IllegalArgumentException e) {
-            OfflinePlayer player = Bukkit.getServer().getPlayer(playerString);
+            OfflinePlayer player = Bukkit.getServer().getOfflinePlayer(playerString);
             if (player != null) {
                 playerId = player.getUniqueId();
             }
