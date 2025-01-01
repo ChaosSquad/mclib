@@ -22,27 +22,35 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
     @NotNull private final Plugin plugin;
     @NotNull private final Map<String, SubcommandEntry> entries;
     @Nullable private final DynamicSubcommandProvider dynamicSubcommandProvider;
-    @Nullable private final String permission;
+    @Nullable private final PermissionProvider permissionProvider;
 
-    public SubcommandCommand(@NotNull Plugin plugin, @Nullable String permission, @Nullable DynamicSubcommandProvider dynamicSubcommandProvider) {
+    public SubcommandCommand(@NotNull Plugin plugin, @Nullable PermissionProvider permissionProvider, @Nullable DynamicSubcommandProvider dynamicSubcommandProvider) {
         this.plugin = plugin;
         this.entries = new HashMap<>();
         this.dynamicSubcommandProvider = dynamicSubcommandProvider;
-        this.permission = permission;
+        this.permissionProvider = permissionProvider;
+    }
+
+    public SubcommandCommand(@NotNull Plugin plugin, @NotNull PermissionProvider permissionProvider) {
+        this(plugin, permissionProvider, null);
+    }
+
+    public SubcommandCommand(@NotNull Plugin plugin) {
+        this(plugin, (PermissionProvider) null, null);
+    }
+
+    public SubcommandCommand(@NotNull Plugin plugin, @Nullable String permission, @Nullable DynamicSubcommandProvider dynamicSubcommandProvider) {
+        this(plugin, permission != null ? sender -> sender.hasPermission(permission) : null, dynamicSubcommandProvider);
     }
 
     public SubcommandCommand(@NotNull Plugin plugin, @Nullable String permission) {
         this(plugin, permission, null);
     }
 
-    public SubcommandCommand(@NotNull Plugin plugin) {
-        this(plugin, null);
-    }
-
     // COMMAND
 
     @Override
-    public final boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
+    public final boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String @NotNull [] args) {
 
         if (!this.hasPermission(sender)) {
             sender.sendMessage("§cNo permission");
@@ -77,7 +85,7 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
     }
 
     @Override
-    public final List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+    public final List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String @NotNull [] args) {
 
         if (!this.hasPermission(sender)) {
             return List.of();
@@ -126,8 +134,17 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
 
     // ----- UTILITIES -----
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean hasPermission(CommandSender sender) {
-        return this.permission == null || this.plugin.getServer().getConsoleSender() == sender || sender.hasPermission(this.permission);
+        if (this.permissionProvider == null) return true;
+        if (sender == this.plugin.getServer().getConsoleSender()) return true;
+
+        try {
+            return this.permissionProvider.hasPermission(sender);
+        } catch (Exception e) {
+            this.plugin.getLogger().log(Level.WARNING, "Failed to check command permission: Exception in permission provider", e);
+            return false;
+        }
     }
 
     private String[] subcommandArguments(String[] args) {
@@ -254,6 +271,12 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
     @Nullable
     public final DynamicSubcommandProvider getDynamicSubcommandProvider() {
         return this.dynamicSubcommandProvider;
+    }
+
+    // ----- INNER CLASSES -----
+
+    public interface PermissionProvider {
+        boolean hasPermission(@NotNull CommandSender sender);
     }
 
 }
