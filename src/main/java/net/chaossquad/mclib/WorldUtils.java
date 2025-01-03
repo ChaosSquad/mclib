@@ -29,6 +29,7 @@ public final class WorldUtils {
      * @param save if the world should be saved
      * @return success
      */
+    @SuppressWarnings("UnstableApiUsage")
     public static boolean unloadWorld(@NotNull World world, boolean save) {
 
         // Prevent unloading null worlds, the default world, an unmanaged world or an not existing world

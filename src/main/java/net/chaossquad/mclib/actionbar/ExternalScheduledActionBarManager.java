@@ -1,7 +1,9 @@
 package net.chaossquad.mclib.actionbar;
 
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * See {@link ActionBarManager}.
@@ -9,7 +11,7 @@ import org.bukkit.plugin.Plugin;
  */
 public class ExternalScheduledActionBarManager extends ActionBarManager implements Runnable {
 
-    public ExternalScheduledActionBarManager(Plugin plugin, BaseComponent splitter) {
+    public ExternalScheduledActionBarManager(@NotNull Plugin plugin, @NotNull Component splitter) {
         super(plugin, splitter);
     }
 

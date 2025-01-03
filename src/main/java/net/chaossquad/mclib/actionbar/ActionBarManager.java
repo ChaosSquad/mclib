@@ -1,27 +1,26 @@
 package net.chaossquad.mclib.actionbar;
 
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 /**
- * Solves the problem of handling multiple actionbars at once.
- * With {@link org.bukkit.entity.Player.Spigot#sendMessage(ChatMessageType, BaseComponent...)}, one actionbar would remove another actionbar.
+ * Solves the problem of handling multiple actionbars at once.<br/>
+ * With {@link Player#sendActionBar(Component)}, one actionbar would remove another actionbar.<br/>
  * With the ActionBarManager, it is possible to display multiple actionbars at once.
  */
 public abstract class ActionBarManager {
     private final Plugin plugin;
     private final Map<Player, Map<String, ActionBarText>> texts;
-    private final BaseComponent splitter;
+    private final Component splitter;
     private long tick;
 
     // CONSTRUCTOR
 
-    public ActionBarManager(Plugin plugin, BaseComponent splitter) {
+    public ActionBarManager(@NotNull Plugin plugin, @NotNull Component splitter) {
         this.plugin = plugin;
         this.texts = new HashMap<>();
         this.splitter = splitter;
@@ -50,8 +49,7 @@ public abstract class ActionBarManager {
 
         // Create component list and add empty component to prevent the first component giving the format for all components
 
-        List<BaseComponent> components = new ArrayList<>();
-        components.add(new TextComponent(" "));
+        Component component = Component.empty();
 
         // Manage components
 
@@ -68,11 +66,11 @@ public abstract class ActionBarManager {
             if (text != null && this.tick <= text.removeAt()) {
 
                 // Add components
-                components.addAll(Arrays.stream(text.content()).toList());
+                component = component.append(text.content());
 
                 // Add splitter when it is required
-                if (iterator.hasNext() && this.splitter != null) {
-                    components.add(this.splitter);
+                if (iterator.hasNext()) {
+                    component = component.append(this.splitter);
                 }
 
             } else {
@@ -82,14 +80,10 @@ public abstract class ActionBarManager {
 
         }
 
-        // Add another empty component to keep text symmetrical
-
-        components.add(new TextComponent(" "));
-
         // Sends the action bar to the player when there are components available or when there were components removed (to clear the actionbar)
 
-        if (components.size() > 2 || hasRemovedContents) {
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, components.toArray(new BaseComponent[0]));
+        if (!component.children().isEmpty() || hasRemovedContents) {
+            player.sendActionBar(component);
         }
 
     }
@@ -152,6 +146,7 @@ public abstract class ActionBarManager {
      * Returns a list of all players that have a registered actionbar.
      * @return list of players with registered actionbar
      */
+    @SuppressWarnings("unused")
     public List<Player> getRegisteredPlayers() {
         return List.copyOf(this.texts.keySet());
     }
@@ -161,6 +156,7 @@ public abstract class ActionBarManager {
      * @param player player
      * @return actionbars of specified player
      */
+    @SuppressWarnings("unused")
     public Map<String, ActionBarText> getPlayerActionBar(Player player) {
         return Map.copyOf(this.getPlayerTextMap(player));
     }
@@ -169,12 +165,13 @@ public abstract class ActionBarManager {
      * Adds an actionbar text for the specified player
      * @param player player
      * @param id actionbar id
-     * @param components chat components of the action bar
+     * @param component chat component to send
      * @param duration how long the action bar should be displayed
      */
-    public void sendActionBarMessage(Player player, String id, BaseComponent[] components, int duration) {
-        if (player == null || !player.isOnline() || id == null || components == null) return;
-        this.getPlayerTextMap(player).put(id, new ActionBarText(components, this.tick + 1 + duration));
+    @SuppressWarnings("unused")
+    public void sendActionBarMessage(Player player, String id, int duration, Component component) {
+        if (player == null || !player.isOnline() || id == null || component == null) return;
+        this.getPlayerTextMap(player).put(id, new ActionBarText(component, this.tick + 1 + duration));
     }
 
     /**
@@ -182,6 +179,7 @@ public abstract class ActionBarManager {
      * @param player player
      * @param id actionbar text id
      */
+    @SuppressWarnings("unused")
     public void removeActionBarMessage(Player player, String id) {
         if (player == null || id == null) return;
         this.getPlayerTextMap(player).remove(id);
@@ -191,6 +189,7 @@ public abstract class ActionBarManager {
      * Clears all actionbar texts of the specified player.
      * @param player player
      */
+    @SuppressWarnings("unused")
     public void clearActionBarMessages(Player player) {
         this.texts.remove(player);
     }
@@ -201,12 +200,9 @@ public abstract class ActionBarManager {
         return this.plugin;
     }
 
+    @SuppressWarnings("unused")
     public long getTick() {
         return this.tick;
-    }
-
-    public ActionBarManager getSelf() {
-        return this;
     }
 
 }

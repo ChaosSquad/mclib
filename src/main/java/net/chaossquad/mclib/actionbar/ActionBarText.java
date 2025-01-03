@@ -1,5 +1,5 @@
 package net.chaossquad.mclib.actionbar;
 
-import net.md_5.bungee.api.chat.BaseComponent;
+import net.kyori.adventure.text.Component;
 
-public record ActionBarText(BaseComponent[] content, long removeAt) {}
+public record ActionBarText(Component content, long removeAt) {}
