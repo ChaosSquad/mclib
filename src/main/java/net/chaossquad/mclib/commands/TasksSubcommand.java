@@ -4,11 +4,10 @@ import net.chaossquad.mclib.scheduler.OneTimeTask;
 import net.chaossquad.mclib.scheduler.RepeatingTask;
 import net.chaossquad.mclib.scheduler.Task;
 import net.chaossquad.mclib.scheduler.TaskScheduler;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
@@ -24,10 +23,10 @@ public class TasksSubcommand {
 
             if (args.length < 1) {
 
-                ComponentBuilder out = new ComponentBuilder();
+                Component out = Component.empty();
 
-                out.append("");
-                out.append("Registered Tasks:\n").color(ChatColor.GRAY).bold(true);
+                out = out.append(Component.text("Registered Tasks:").color(NamedTextColor.GRAY).decorate(TextDecoration.BOLD));
+                out = out.appendNewline();
 
                 Map<Long, Task> taskMap = taskScheduler.getTasks();
 
@@ -38,27 +37,33 @@ public class TasksSubcommand {
                         long taskId = iterator.next();
                         Task task = taskMap.get(taskId);
 
-                        TextComponent component = new TextComponent();
-                        component.setText("[" + taskId + "] " + task.getLabel() + (iterator.hasNext() ? ", " : ""));
-                        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(
-                                "ID: " + taskId + "\n" +
-                                        "Label: " + task.getLabel() + "\n" +
-                                        "Type: " + task
-                        )));
+                        Component component = Component.empty();
+                        component = component.append(Component.text("[" + taskId + "] " + task.getLabel()).color(NamedTextColor.GRAY));
+                        if (iterator.hasNext()) component = component.append(Component.text(", ").color(NamedTextColor.GRAY));
 
-                        out.color(ChatColor.GRAY);
-                        out.bold(false);
-                        out.append(component);
+                        component = component.hoverEvent(HoverEvent.showText(
+                                Component.text("ID: " + task.getId()).color(NamedTextColor.GRAY)
+                                        .appendNewline()
+                                        .append(Component.text("Label: " + task.getLabel())).color(NamedTextColor.GRAY)
+                                        .appendNewline()
+                                        .append(Component.text("Type: " + task)).color(NamedTextColor.GRAY)
+                        ));
+
+                        out = out.append(component);
 
                     }
 
                 } else {
-                    out.append("None").color(ChatColor.GRAY).bold(false);
+                    out = out.append(Component.text("None").color(NamedTextColor.GRAY));
                 }
 
-                out.append("\nTask amount: " + taskMap.size() + "\nCurrent Tick: " + taskScheduler.getTick()).color(ChatColor.GRAY).bold(false);
+                out = out.append(Component.newline()
+                        .append(Component.text("Task amount: " + taskMap.size()).color(NamedTextColor.GRAY))
+                                .appendNewline()
+                        .append(Component.text("Current Tick: " + taskScheduler.getTick()).color(NamedTextColor.GRAY))
+                );
 
-                sender.spigot().sendMessage(out.create());
+                sender.sendMessage(out);
 
                 return true;
             }
