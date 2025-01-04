@@ -1,6 +1,7 @@
 package net.chaossquad.mclib;
 
-import com.google.common.collect.Multimap;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -8,7 +9,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ItemType;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -347,18 +347,20 @@ public final class JSONConfigUtils {
 
         // Display Name
 
-        if (!meta.getDisplayName().isEmpty()) {
-            data.put("displayName", meta.getDisplayName());
+        Component displayName = meta.displayName();
+        if (displayName != null) {
+            data.put("displayName", MiniMessage.miniMessage().serialize(displayName));
         }
 
         // Lore
 
-        if (meta.getLore() != null) {
-            JSONArray lore = new JSONArray();
-            for (String line : meta.getLore()) {
-                lore.put(line);
+        List<Component> lore = meta.lore();
+        if (lore != null) {
+            JSONArray loreData = new JSONArray();
+            for (Component component : lore) {
+                loreData.put(MiniMessage.miniMessage().serialize(component));
             }
-            data.put("lore", lore);
+            data.put("lore", loreData);
         }
 
         // Enchantments
@@ -439,21 +441,20 @@ public final class JSONConfigUtils {
     public static void deserializeItemMeta(JSONObject data, ItemMeta target) {
 
         // Display Name
-
-        String displayName = data.optString("displayName");
-        if (displayName != null) target.setDisplayName(displayName);
+        String displayNameStr = data.optString("displayName");
+        if (displayNameStr != null) target.displayName(MiniMessage.miniMessage().deserialize(displayNameStr));
 
         // Lore
 
         JSONArray loreData = data.optJSONArray("lore");
         if (loreData != null) {
-            List<String> lore = new ArrayList<>();
+            List<Component> lore = new ArrayList<>();
             for (int i = 0; i < loreData.length(); i++) {
                 String line = loreData.optString(i);
                 if (line == null) continue;
-                lore.add(line);
+                lore.add(MiniMessage.miniMessage().deserialize(line));
             }
-            target.setLore(lore);
+            target.lore(lore);
         }
 
         // Enchantments
