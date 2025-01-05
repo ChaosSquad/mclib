@@ -267,7 +267,7 @@ public final class MiscUtils {
         meta.addAttributeModifier(Attribute.ARMOR, new AttributeModifier(Registry.ATTRIBUTE.getKeyOrThrow(Attribute.ARMOR), 10000, AttributeModifier.Operation.ADD_NUMBER));
         meta.addAttributeModifier(Attribute.ARMOR_TOUGHNESS, new AttributeModifier(Registry.ATTRIBUTE.getKeyOrThrow(Attribute.ARMOR_TOUGHNESS), 10000, AttributeModifier.Operation.ADD_NUMBER));
         meta.addAttributeModifier(Attribute.ATTACK_SPEED, new AttributeModifier(Registry.ATTRIBUTE.getKeyOrThrow(Attribute.ATTACK_SPEED), 10000, AttributeModifier.Operation.ADD_NUMBER));
-        meta.addAttributeModifier(Attribute.MOVEMENT_SPEED, new AttributeModifier(Registry.ATTRIBUTE.getKeyOrThrow(Attribute.MOVEMENT_SPEED), 10000, AttributeModifier.Operation.ADD_NUMBER));
+        meta.addAttributeModifier(Attribute.MOVEMENT_SPEED, new AttributeModifier(Registry.ATTRIBUTE.getKeyOrThrow(Attribute.MOVEMENT_SPEED), 0.3, AttributeModifier.Operation.ADD_NUMBER));
         meta.addAttributeModifier(Attribute.KNOCKBACK_RESISTANCE, new AttributeModifier(Registry.ATTRIBUTE.getKeyOrThrow(Attribute.KNOCKBACK_RESISTANCE), 10000, AttributeModifier.Operation.ADD_NUMBER));
         meta.addAttributeModifier(Attribute.ATTACK_DAMAGE, new AttributeModifier(Registry.ATTRIBUTE.getKeyOrThrow(Attribute.ATTACK_DAMAGE), 10000, AttributeModifier.Operation.ADD_NUMBER));
         meta.addAttributeModifier(Attribute.FOLLOW_RANGE, new AttributeModifier(Registry.ATTRIBUTE.getKeyOrThrow(Attribute.FOLLOW_RANGE), 10000, AttributeModifier.Operation.ADD_NUMBER));
