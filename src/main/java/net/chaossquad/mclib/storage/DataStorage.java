@@ -88,15 +88,34 @@ public class DataStorage implements Iterable<Map.Entry<String, Object>> {
         return sectionStorage;
     }
 
-    public void mergeSection(@NotNull String key, @NotNull DataStorage section) {
+    /**
+     * Merge another DataStorage into this DataStorage as a section.<br/>
+     * This means if you merge "section1.section2" into this DataStorage with key "section0", the value in this DataStorage will be "section0.section1.section2".
+     * @param key section key
+     * @param section section
+     * @param overwrite when true, existing values will be replaced (recommended)
+     */
+    public void mergeSection(@NotNull String key, @NotNull DataStorage section, boolean overwrite) {
         for (Map.Entry<String, Object> entry : section.storage.entrySet()) {
             String sectionKey = entry.getKey();
             Object value = entry.getValue();
 
             String mergedKey = key + "." + sectionKey;
 
+            if (!overwrite && this.storage.containsKey(mergedKey)) continue;
             this.set(mergedKey, value);
         }
+    }
+
+    /**
+     * Merge another DataStorage into this DataStorage as a section.<br/>
+     * This means if you merge "section1.section2" into this DataStorage with key "section0", the value in this DataStorage will be "section0.section1.section2".<br/>
+     * This method has "overwrite" set to true.
+     * @param key
+     * @param section
+     */
+    public void mergeSection(@NotNull String key, @NotNull DataStorage section) {
+        this.mergeSection(key, section, true);
     }
 
     public Map<String, DataStorage> getSections() {
@@ -113,10 +132,25 @@ public class DataStorage implements Iterable<Map.Entry<String, Object>> {
 
     // --- MERGE ---
 
-    public void merge(@NotNull DataStorage other) {
+    /**
+     * Merge the values of another DataStorage into this DataStorage.
+     * @param other other data storage
+     * @param overwrite when true, existing values will be replaced (recommended)
+     */
+    public void merge(@NotNull DataStorage other, boolean overwrite) {
         for (Map.Entry<String, Object> entry : other) {
+            if (!overwrite && this.storage.containsKey(entry.getKey())) continue;
             this.set(entry.getKey(), entry.getValue());
         }
+    }
+
+    /**
+     * Merge the values of another DataStorage into this DataStorage.<br/>
+     * This method has "overwrite" set to true.
+     * @param other other data storage
+     */
+    public void merge(@NotNull DataStorage other) {
+        this.merge(other, true);
     }
 
     // --- ITERABLE ---
