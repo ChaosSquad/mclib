@@ -1,5 +1,6 @@
 package net.chaossquad.mclib;
 
+import net.chaossquad.mclib.blocks.BlockBox;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -13,6 +14,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
 import java.io.BufferedReader;
@@ -220,7 +222,7 @@ public final class MiscUtils {
      * Parses a location list in the following format:<br/>
      * X Y Z<br/>
      * X Y Z<br/>
-     * X  Z<br/>
+     * X Y Z<br/>
      * ...
      * @param data location list
      * @return list of location vectors
@@ -239,6 +241,43 @@ public final class MiscUtils {
                     double y = Double.parseDouble(parts[1]);
                     double z = Double.parseDouble(parts[2]);
                     locations.add(new Vector(x, y, z));
+                } catch (NumberFormatException e) {
+                    throw new NumberFormatException("Not a Number: " + line);
+                }
+            } else {
+                throw new NumberFormatException("Invalid coordinates: " + line);
+            }
+        }
+
+        return locations;
+    }
+
+    /**
+     * Parses an area list in the following format:<br/>
+     * X1 Y1 Z1 X2 Y2 Z2<br/>
+     * X1 Y1 Z1 X2 Y2 Z2<br/>
+     * X1 Y1 Z1 X2 Y2 Z2<br/>
+     * ...
+     * @param data location list
+     * @return list of location vectors
+     */
+    public static List<BoundingBox> parseAreaList(String data) {
+        List<BoundingBox> locations = new ArrayList<>();
+
+        String[] lines = data.split("\\R"); // "\\R" line breaks for all os
+        for (String line : lines) {
+            if (line.trim().isEmpty()) continue;
+
+            String[] parts = line.trim().split("\\s+");
+            if (parts.length == 6) {
+                try {
+                    double ax = Double.parseDouble(parts[0]);
+                    double ay = Double.parseDouble(parts[1]);
+                    double az = Double.parseDouble(parts[2]);
+                    double bx = Double.parseDouble(parts[3]);
+                    double by = Double.parseDouble(parts[4]);
+                    double bz = Double.parseDouble(parts[5]);
+                    locations.add(new BoundingBox(ax, ay ,az, bx, by, bz));
                 } catch (NumberFormatException e) {
                     throw new NumberFormatException("Not a Number: " + line);
                 }
