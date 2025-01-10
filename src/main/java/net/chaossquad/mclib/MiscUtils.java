@@ -235,7 +235,7 @@ public final class MiscUtils {
             if (line.trim().isEmpty()) continue;
 
             String[] parts = line.trim().split("\\s+");
-            if (parts.length == 3) {
+            if (parts.length >= 3) {
                 try {
                     double x = Double.parseDouble(parts[0]);
                     double y = Double.parseDouble(parts[1]);
@@ -269,7 +269,7 @@ public final class MiscUtils {
             if (line.trim().isEmpty()) continue;
 
             String[] parts = line.trim().split("\\s+");
-            if (parts.length == 6) {
+            if (parts.length >= 6) {
                 try {
                     double ax = Double.parseDouble(parts[0]);
                     double ay = Double.parseDouble(parts[1]);
