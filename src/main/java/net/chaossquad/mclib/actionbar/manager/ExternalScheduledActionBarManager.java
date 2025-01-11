@@ -1,7 +1,6 @@
-package net.chaossquad.mclib.actionbar;
+package net.chaossquad.mclib.actionbar.manager;
 
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 

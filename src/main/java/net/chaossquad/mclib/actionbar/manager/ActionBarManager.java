@@ -1,4 +1,4 @@
-package net.chaossquad.mclib.actionbar;
+package net.chaossquad.mclib.actionbar.manager;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
