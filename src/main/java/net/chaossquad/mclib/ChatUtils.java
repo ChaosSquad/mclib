@@ -1,11 +1,14 @@
 package net.chaossquad.mclib;
 
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -59,6 +62,30 @@ public final class ChatUtils {
             default -> null;
         };
 
+    }
+
+    // NEW AND LEGACY COLORS
+
+    /**
+     * Converts the {@link NamedTextColor} from net.kyori.adventure to legacy {@link ChatColor}.
+     * @param color original
+     * @return converted
+     */
+    public static @NotNull ChatColor getChatColorFromTextColor(@NotNull NamedTextColor color) {
+        try {
+            return ChatColor.valueOf(color.toString().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Convert the legacy {@link ChatColor} to the {@link NamedTextColor} from net.kyori.adventure.
+     * @param chatColor original
+     * @return converted
+     */
+    public static @Nullable NamedTextColor getTextColorFromChatColor(@NotNull ChatColor chatColor) {
+        return NamedTextColor.NAMES.value(chatColor.name());
     }
 
     // PLAYER STRINGS
