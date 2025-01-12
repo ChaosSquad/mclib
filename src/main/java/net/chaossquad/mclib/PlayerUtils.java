@@ -75,6 +75,7 @@ public class PlayerUtils {
             if (prefix == null) return Component.empty();
 
             if (allowLegacyColors) prefix = ChatColor.translateAlternateColorCodes('&', prefix);
+            else prefix = prefix.replaceAll("§", "");
 
             return MiniMessage.miniMessage().deserialize(prefix);
         }
@@ -85,7 +86,16 @@ public class PlayerUtils {
             if (rsp == null) return Component.empty();
             Chat chat = rsp.getProvider();
 
-            return MiniMessage.miniMessage().deserialize(chat.getPlayerPrefix(player));
+            String prefix = chat.getPlayerPrefix(player);
+            if (prefix == null) return Component.empty();
+
+            if (allowLegacyColors) prefix = ChatColor.translateAlternateColorCodes('&', prefix);
+            else prefix = prefix.replaceAll("§", "");
+
+            if (allowLegacyColors) prefix = ChatColor.translateAlternateColorCodes('&', prefix);
+            else prefix = prefix.replaceAll("§", "");
+
+            return MiniMessage.miniMessage().deserialize(prefix);
         }
 
         return Component.empty();
@@ -120,6 +130,7 @@ public class PlayerUtils {
             if (prefix == null) return Component.empty();
 
             if (allowLegacyColors) prefix = ChatColor.translateAlternateColorCodes('&', prefix);
+            else prefix = prefix.replaceAll("§", "");
 
             return MiniMessage.miniMessage().deserialize(prefix);
         }
@@ -130,7 +141,16 @@ public class PlayerUtils {
             if (rsp == null) return Component.empty();
             Chat chat = rsp.getProvider();
 
-            return MiniMessage.miniMessage().deserialize(chat.getPlayerSuffix(player));
+            String suffix = chat.getPlayerSuffix(player);
+            if (suffix == null) return Component.empty();
+
+            if (allowLegacyColors) suffix = ChatColor.translateAlternateColorCodes('&', suffix);
+            else suffix = suffix.replaceAll("§", "");
+
+            if (allowLegacyColors) suffix = ChatColor.translateAlternateColorCodes('&', suffix);
+            else suffix = suffix.replaceAll("§", "");
+
+            return MiniMessage.miniMessage().deserialize(suffix);
         }
 
         return Component.empty();
