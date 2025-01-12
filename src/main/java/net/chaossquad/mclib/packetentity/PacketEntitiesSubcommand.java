@@ -1,6 +1,7 @@
 package net.chaossquad.mclib.packetentity;
 
 import net.chaossquad.mclib.ChatUtils;
+import net.chaossquad.mclib.PlayerUtils;
 import net.chaossquad.mclib.command.TabCompletingCommandExecutor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import org.bukkit.command.Command;
@@ -153,7 +154,7 @@ public class PacketEntitiesSubcommand implements TabCompletingCommandExecutor {
 
                                         if (args.length > 3) {
 
-                                            Player player = ChatUtils.getPlayerFromString(args[3]);
+                                            Player player = PlayerUtils.getPlayerFromString(args[3]);
                                             if (player == null) {
                                                 sender.sendMessage("§cPlayer does not exist");
                                                 return true;
@@ -170,7 +171,7 @@ public class PacketEntitiesSubcommand implements TabCompletingCommandExecutor {
 
                                         if (args.length > 3) {
 
-                                            Player player = ChatUtils.getPlayerFromString(args[3]);
+                                            Player player = PlayerUtils.getPlayerFromString(args[3]);
                                             if (player == null) {
                                                 sender.sendMessage("§cPlayer does not exist");
                                                 return true;
@@ -198,7 +199,7 @@ public class PacketEntitiesSubcommand implements TabCompletingCommandExecutor {
 
                                         if (args.length > 4) {
 
-                                            Player player = ChatUtils.getPlayerFromString(args[4]);
+                                            Player player = PlayerUtils.getPlayerFromString(args[4]);
                                             if (player == null) {
                                                 sender.sendMessage("§cPlayer does not exist");
                                                 return true;

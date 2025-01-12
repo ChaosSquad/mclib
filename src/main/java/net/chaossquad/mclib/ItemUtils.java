@@ -2,16 +2,48 @@ package net.chaossquad.mclib;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.world.item.component.ResolvableProfile;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.UUID;
 
 public final class ItemUtils {
+    private static final Map<Integer, TrimMaterial> TEXT_COLOR_TRIM_MATERIALS = Map.ofEntries(
+            Map.entry(NamedTextColor.RED.value(), TrimMaterial.REDSTONE),
+            Map.entry(NamedTextColor.DARK_RED.value(), TrimMaterial.REDSTONE),
+            Map.entry(NamedTextColor.YELLOW.value(), TrimMaterial.GOLD),
+            Map.entry(NamedTextColor.GOLD.value(), TrimMaterial.GOLD),
+            Map.entry(NamedTextColor.GREEN.value(), TrimMaterial.EMERALD),
+            Map.entry(NamedTextColor.DARK_GREEN.value(), TrimMaterial.EMERALD),
+            Map.entry(NamedTextColor.AQUA.value(), TrimMaterial.DIAMOND),
+            Map.entry(NamedTextColor.DARK_AQUA.value(), TrimMaterial.DIAMOND),
+            Map.entry(NamedTextColor.BLUE.value(), TrimMaterial.LAPIS),
+            Map.entry(NamedTextColor.DARK_BLUE.value(), TrimMaterial.LAPIS),
+            Map.entry(NamedTextColor.DARK_PURPLE.value(), TrimMaterial.AMETHYST),
+            Map.entry(NamedTextColor.LIGHT_PURPLE.value(), TrimMaterial.AMETHYST),
+            Map.entry(NamedTextColor.WHITE.value(), TrimMaterial.QUARTZ),
+            Map.entry(NamedTextColor.DARK_GRAY.value(), TrimMaterial.NETHERITE),
+            Map.entry(NamedTextColor.BLACK.value(), TrimMaterial.NETHERITE),
+            Map.entry(NamedTextColor.GRAY.value(), TrimMaterial.IRON)
+    );
 
     private ItemUtils() {}
+
+    /**
+     * Returns the {@link TrimMaterial} for the specified {@link NamedTextColor}.
+     * @param color text color
+     * @return trim material
+     */
+    @Nullable
+    public static TrimMaterial translateTextColorToTrimMaterial(@NotNull NamedTextColor color) {
+        return TEXT_COLOR_TRIM_MATERIALS.getOrDefault(color.value(), null);
+    }
 
     /**
      * Set a base64 encoded custom head to a {@link SkullMeta}.
