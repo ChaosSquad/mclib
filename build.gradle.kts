@@ -18,6 +18,10 @@ repositories {
         name = "respark-releases"
         url = uri("https://maven.respark.dev/releases")
     }
+    maven {
+        name = "jitpack"
+        url = uri("https://jitpack.io")
+    }
 }
 
 paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
@@ -26,6 +30,8 @@ dependencies {
     paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
     compileOnly("org.json:json:20240303")
     compileOnly("me.leoko.advancedgui:AdvancedGUI:2.2.9")
+    compileOnly("net.luckperms:api:5.4")
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
 }
 
 // gradle publish{PUBLICATION_NAME}To{REPOSITORY_NAME}Repository
