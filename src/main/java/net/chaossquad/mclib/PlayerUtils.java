@@ -1,7 +1,9 @@
 package net.chaossquad.mclib;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
@@ -58,11 +60,10 @@ public class PlayerUtils {
     /**
      * Get the player prefix.
      * @param player player
-     * @param allowLegacyColors allow old '&' color codes.
      * @return prefix
      */
     @NotNull
-    public static Component getPlayerPrefix(@NotNull Player player, boolean allowLegacyColors) {
+    public static Component getPlayerPrefix(@NotNull Player player) {
 
         if (Bukkit.getServer().getPluginManager().getPlugin("LuckPerms") != null) {
             LuckPerms luckPerms = LuckPermsProvider.get();
@@ -74,10 +75,10 @@ public class PlayerUtils {
             String prefix = metaData.getPrefix();
             if (prefix == null) return Component.empty();
 
-            if (allowLegacyColors) prefix = ChatColor.translateAlternateColorCodes('&', prefix);
-            else prefix = prefix.replaceAll("§", "");
+            TextComponent component = LegacyComponentSerializer.legacy('&').deserialize(prefix);
+            String miniMessage = MiniMessage.miniMessage().serialize(component);
 
-            return MiniMessage.miniMessage().deserialize(prefix);
+            return MiniMessage.miniMessage().deserialize(miniMessage);
         }
 
         if (Bukkit.getServer().getPluginManager().getPlugin("Vault") != null) {
@@ -89,68 +90,10 @@ public class PlayerUtils {
             String prefix = chat.getPlayerPrefix(player);
             if (prefix == null) return Component.empty();
 
-            if (allowLegacyColors) prefix = ChatColor.translateAlternateColorCodes('&', prefix);
-            else prefix = prefix.replaceAll("§", "");
+            TextComponent component = LegacyComponentSerializer.legacy('&').deserialize(prefix);
+            String miniMessage = MiniMessage.miniMessage().serialize(component);
 
-            if (allowLegacyColors) prefix = ChatColor.translateAlternateColorCodes('&', prefix);
-            else prefix = prefix.replaceAll("§", "");
-
-            return MiniMessage.miniMessage().deserialize(prefix);
-        }
-
-        return Component.empty();
-    }
-
-    /**
-     * Get the player prefix.
-     * @param player player
-     * @return prefix
-     */
-    public static Component getPlayerPrefix(@NotNull Player player) {
-        return getPlayerPrefix(player, false);
-    }
-
-    /**
-     * Get the player suffix.
-     * @param player player
-     * @param allowLegacyColors allow old '&' color codes.
-     * @return suffix
-     */
-    @NotNull
-    public static Component getPlayerSuffix(@NotNull Player player, boolean allowLegacyColors) {
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("LuckPerms") != null) {
-            LuckPerms luckPerms = LuckPermsProvider.get();
-
-            User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-            if (user == null) return Component.empty();
-
-            CachedMetaData metaData = user.getCachedData().getMetaData();
-            String prefix = metaData.getSuffix();
-            if (prefix == null) return Component.empty();
-
-            if (allowLegacyColors) prefix = ChatColor.translateAlternateColorCodes('&', prefix);
-            else prefix = prefix.replaceAll("§", "");
-
-            return MiniMessage.miniMessage().deserialize(prefix);
-        }
-
-        if (Bukkit.getServer().getPluginManager().getPlugin("Vault") != null) {
-
-            RegisteredServiceProvider<Chat> rsp = Bukkit.getServer().getServicesManager().getRegistration(Chat.class);
-            if (rsp == null) return Component.empty();
-            Chat chat = rsp.getProvider();
-
-            String suffix = chat.getPlayerSuffix(player);
-            if (suffix == null) return Component.empty();
-
-            if (allowLegacyColors) suffix = ChatColor.translateAlternateColorCodes('&', suffix);
-            else suffix = suffix.replaceAll("§", "");
-
-            if (allowLegacyColors) suffix = ChatColor.translateAlternateColorCodes('&', suffix);
-            else suffix = suffix.replaceAll("§", "");
-
-            return MiniMessage.miniMessage().deserialize(suffix);
+            return MiniMessage.miniMessage().deserialize(miniMessage);
         }
 
         return Component.empty();
@@ -163,7 +106,39 @@ public class PlayerUtils {
      */
     @NotNull
     public static Component getPlayerSuffix(@NotNull Player player) {
-        return getPlayerSuffix(player, false);
+
+        if (Bukkit.getServer().getPluginManager().getPlugin("LuckPerms") != null) {
+            LuckPerms luckPerms = LuckPermsProvider.get();
+
+            User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+            if (user == null) return Component.empty();
+
+            CachedMetaData metaData = user.getCachedData().getMetaData();
+            String suffix = metaData.getSuffix();
+            if (suffix == null) return Component.empty();
+
+            TextComponent component = LegacyComponentSerializer.legacy('&').deserialize(suffix);
+            String miniMessage = MiniMessage.miniMessage().serialize(component);
+
+            return MiniMessage.miniMessage().deserialize(miniMessage);
+        }
+
+        if (Bukkit.getServer().getPluginManager().getPlugin("Vault") != null) {
+
+            RegisteredServiceProvider<Chat> rsp = Bukkit.getServer().getServicesManager().getRegistration(Chat.class);
+            if (rsp == null) return Component.empty();
+            Chat chat = rsp.getProvider();
+
+            String suffix = chat.getPlayerSuffix(player);
+            if (suffix == null) return Component.empty();
+
+            TextComponent component = LegacyComponentSerializer.legacy('&').deserialize(suffix);
+            String miniMessage = MiniMessage.miniMessage().serialize(component);
+
+            return MiniMessage.miniMessage().deserialize(miniMessage);
+        }
+
+        return Component.empty();
     }
 
 }
