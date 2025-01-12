@@ -58,6 +58,7 @@ public class PlayerUtils {
     /**
      * Get the player prefix.
      * @param player player
+     * @param allowLegacyColors allow old '&' color codes.
      * @return prefix
      */
     @NotNull
@@ -91,8 +92,18 @@ public class PlayerUtils {
     }
 
     /**
+     * Get the player prefix.
+     * @param player player
+     * @return prefix
+     */
+    public static Component getPlayerPrefix(@NotNull Player player) {
+        return getPlayerPrefix(player, false);
+    }
+
+    /**
      * Get the player suffix.
      * @param player player
+     * @param allowLegacyColors allow old '&' color codes.
      * @return suffix
      */
     @NotNull
@@ -123,6 +134,16 @@ public class PlayerUtils {
         }
 
         return Component.empty();
+    }
+
+    /**
+     * Get the player suffix.
+     * @param player player
+     * @return suffix
+     */
+    @NotNull
+    public static Component getPlayerSuffix(@NotNull Player player) {
+        return getPlayerSuffix(player, false);
     }
 
 }
