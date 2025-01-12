@@ -8,6 +8,7 @@ import net.luckperms.api.cacheddata.CachedMetaData;
 import net.luckperms.api.model.user.User;
 import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -60,7 +61,7 @@ public class PlayerUtils {
      * @return prefix
      */
     @NotNull
-    public static Component getPlayerPrefix(@NotNull Player player) {
+    public static Component getPlayerPrefix(@NotNull Player player, boolean allowLegacyColors) {
 
         if (Bukkit.getServer().getPluginManager().getPlugin("LuckPerms") != null) {
             LuckPerms luckPerms = LuckPermsProvider.get();
@@ -71,6 +72,8 @@ public class PlayerUtils {
             CachedMetaData metaData = user.getCachedData().getMetaData();
             String prefix = metaData.getPrefix();
             if (prefix == null) return Component.empty();
+
+            if (allowLegacyColors) prefix = ChatColor.translateAlternateColorCodes('&', prefix);
 
             return MiniMessage.miniMessage().deserialize(prefix);
         }
@@ -93,7 +96,7 @@ public class PlayerUtils {
      * @return suffix
      */
     @NotNull
-    public static Component getPlayerSuffix(@NotNull Player player) {
+    public static Component getPlayerSuffix(@NotNull Player player, boolean allowLegacyColors) {
 
         if (Bukkit.getServer().getPluginManager().getPlugin("LuckPerms") != null) {
             LuckPerms luckPerms = LuckPermsProvider.get();
@@ -104,6 +107,8 @@ public class PlayerUtils {
             CachedMetaData metaData = user.getCachedData().getMetaData();
             String prefix = metaData.getSuffix();
             if (prefix == null) return Component.empty();
+
+            if (allowLegacyColors) prefix = ChatColor.translateAlternateColorCodes('&', prefix);
 
             return MiniMessage.miniMessage().deserialize(prefix);
         }
