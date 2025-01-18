@@ -22,6 +22,9 @@ repositories {
         name = "jitpack"
         url = uri("https://jitpack.io")
     }
+    maven {
+        url = uri("https://repo.extendedclip.com/releases/")
+    }
 }
 
 paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
@@ -32,6 +35,7 @@ dependencies {
     compileOnly("me.leoko.advancedgui:AdvancedGUI:2.2.9")
     compileOnly("net.luckperms:api:5.4")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
+    compileOnly("me.clip:placeholderapi:2.11.6")
 }
 
 // gradle publish{PUBLICATION_NAME}To{REPOSITORY_NAME}Repository

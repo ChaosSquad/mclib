@@ -1,6 +1,9 @@
 package net.chaossquad.mclib;
 
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.jetbrains.annotations.NotNull;
@@ -53,6 +56,16 @@ public final class ChatCompatibilityUtils {
      */
     public static @Nullable NamedTextColor getTextColorFromChatColor(@NotNull ChatColor chatColor) {
         return NamedTextColor.NAMES.value(chatColor.name());
+    }
+
+    /**
+     * Converts legacy color codes to mini message.
+     * @param message message with legacy color codes
+     * @param character legacy color code character
+     * @return message in minimessage format
+     */
+    public static @NotNull String convertLegacyChatToMiniMessage(@NotNull String message, char character) {
+        return MiniMessage.miniMessage().serialize(LegacyComponentSerializer.legacy(character).deserialize(message));
     }
 
 }
