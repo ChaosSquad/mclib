@@ -9,6 +9,9 @@ import org.bukkit.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public final class ChatCompatibilityUtils {
 
     private ChatCompatibilityUtils() {}
@@ -65,7 +68,36 @@ public final class ChatCompatibilityUtils {
      * @return message in minimessage format
      */
     public static @NotNull String convertLegacyChatToMiniMessage(@NotNull String message, char character) {
-        return MiniMessage.miniMessage().serialize(LegacyComponentSerializer.legacy(character).deserialize(message));
+        Map<String, String> replacements = Map.ofEntries(
+                Map.entry(character + "0", "<reset><black>"),
+                Map.entry(character + "1", "<reset><dark_blue>"),
+                Map.entry(character + "2", "<reset><dark_green>"),
+                Map.entry(character + "3", "<reset><dark_aqua>"),
+                Map.entry(character + "4", "<reset><dark_red>"),
+                Map.entry(character + "5", "<reset><dark_purple>"),
+                Map.entry(character + "6", "<reset><gold>"),
+                Map.entry(character + "7", "<reset><gray>"),
+                Map.entry(character + "8", "<reset><dark_gray>"),
+                Map.entry(character + "9", "<reset><blue>"),
+                Map.entry(character + "a", "<reset><green>"),
+                Map.entry(character + "b", "<reset><aqua>"),
+                Map.entry(character + "c", "<reset><red>"),
+                Map.entry(character + "d", "<reset><light_purple>"),
+                Map.entry(character + "e", "<reset><yellow>"),
+                Map.entry(character + "f", "<reset><white>"),
+                Map.entry(character + "k", "<obfuscated>"),
+                Map.entry(character + "l", "<bold>"),
+                Map.entry(character + "m", "<strikethrough>"),
+                Map.entry(character + "n", "<underline>"),
+                Map.entry(character + "o", "<italic>"),
+                Map.entry(character + "p", "<reset>")
+        );
+
+        for (Map.Entry<String, String> entry : replacements.entrySet()) {
+            message = message.replace(entry.getKey(), entry.getValue());
+        }
+
+        return message;
     }
 
 }

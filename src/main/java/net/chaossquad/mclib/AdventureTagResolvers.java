@@ -110,7 +110,7 @@ public final class AdventureTagResolvers {
 
             final Component componentPlaceholder = MiniMessage.miniMessage().deserialize(parsedPlaceholder);
 
-            return Tag.selfClosingInserting(componentPlaceholder);
+            return Tag.inserting(componentPlaceholder);
         });
     }
 
