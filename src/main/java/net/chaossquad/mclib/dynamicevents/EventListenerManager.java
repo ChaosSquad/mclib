@@ -13,11 +13,13 @@ import java.util.List;
 public final class EventListenerManager {
     @NotNull private final Plugin plugin;
     @NotNull private final List<ListenerOwnerSource> sources;
+    @NotNull private final List<ExtendedListenerOwnerSource> extendedSources;
     @NotNull private final List<Listener> exceptedListeners;
 
     public EventListenerManager(@NotNull Plugin plugin) {
         this.plugin = plugin;
         this.sources = Collections.synchronizedList(new ArrayList<>());
+        this.extendedSources = Collections.synchronizedList(new ArrayList<>());
         this.exceptedListeners = Collections.synchronizedList(new ArrayList<>());
     }
 
@@ -99,13 +101,25 @@ public final class EventListenerManager {
         this.sources.add(source);
     }
 
+    public void addSource(@NotNull ExtendedListenerOwnerSource source) {
+        this.extendedSources.add(source);
+    }
+
     public void removeSource(ListenerOwnerSource source) {
         this.sources.remove(source);
+    }
+
+    public void removeSource(@NotNull ExtendedListenerOwnerSource source) {
+        this.extendedSources.remove(source);
     }
 
     @NotNull
     public List<ListenerOwnerSource> getSources() {
         return List.copyOf(this.sources);
+    }
+
+    public @NotNull List<ExtendedListenerOwnerSource> getExtendedSources() {
+        return extendedSources;
     }
 
     public void addExceptedListener(@NotNull Listener exceptedListener) {
@@ -152,12 +166,18 @@ public final class EventListenerManager {
     @NotNull
     public List<ListenerOwner> getListenerOwners() {
         List<ListenerOwner> listenerOwners = new ArrayList<>();
+
         for (ListenerOwnerSource source : List.copyOf(this.sources)) {
-            if (source == null) continue;
             ListenerOwner owner = source.get();
             if (owner == null) continue;
             listenerOwners.add(owner);
         }
+
+        for (ExtendedListenerOwnerSource source : List.copyOf(this.extendedSources)) {
+            List<ListenerOwner> owners = source.get();
+            owners.addAll(listenerOwners);
+        }
+
         return listenerOwners;
     }
 
