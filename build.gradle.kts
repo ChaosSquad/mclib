@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "net.chaossquad"
-version = "master-b46c7e4a1680312417e9041129440dfb5e50c05d"
+version = "1.0-SNAPSHOT"
 
 repositories {
     mavenLocal()
