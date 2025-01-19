@@ -175,7 +175,7 @@ public final class EventListenerManager {
 
         for (ExtendedListenerOwnerSource source : List.copyOf(this.extendedSources)) {
             List<ListenerOwner> owners = source.get();
-            owners.addAll(listenerOwners);
+            listenerOwners.addAll(owners);
         }
 
         return listenerOwners;
