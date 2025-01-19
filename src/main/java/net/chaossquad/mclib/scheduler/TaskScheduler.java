@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A custom task scheduler.
@@ -16,13 +17,13 @@ import java.util.logging.Level;
  * You can for example integrate this scheduler inside a gamemode class, and as soon as the gamemode has ended, all tasks are gone because the {@link this#tick()} method if this scheduler is no longer called.
  */
 public final class TaskScheduler implements SchedulerInterface {
-    private final Plugin plugin;
+    private final Logger logger;
     private final Map<Long, Task> tasks;
     private long nextTaskId;
     private long tick;
 
-    public TaskScheduler(Plugin plugin) {
-        this.plugin = plugin;
+    public TaskScheduler(Logger logger) {
+        this.logger = logger;
         this.tasks = Collections.synchronizedMap(new HashMap<>());
         this.nextTaskId = 1;
         this.tick = 0;
@@ -66,7 +67,7 @@ public final class TaskScheduler implements SchedulerInterface {
             try {
                 task.run();
             } catch (Exception e) {
-                this.plugin.getLogger().log(Level.WARNING, "Exception in scheduler task (id=" + taskId + ")", e);
+                this.logger.log(Level.WARNING, "Exception in scheduler task (id=" + taskId + ")", e);
             }
 
         }
@@ -159,10 +160,6 @@ public final class TaskScheduler implements SchedulerInterface {
 
     public long getTick() {
         return this.tick;
-    }
-
-    public Plugin getPlugin() {
-        return this.plugin;
     }
 
 }
