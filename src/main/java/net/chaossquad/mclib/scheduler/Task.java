@@ -1,5 +1,6 @@
 package net.chaossquad.mclib.scheduler;
 
+import net.chaossquad.mclib.misc.Removable;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,12 +13,12 @@ public abstract class Task {
     private final long id;
     private final TaskScheduler scheduler;
     private final TaskRunnable runnable;
-    private final RemoveCondition removeCondition;
+    private final Removable removeCondition;
     private final String label;
     private boolean removed;
     private boolean paused;
 
-    protected Task(long id, @NotNull TaskScheduler scheduler, @NotNull TaskRunnable runnable, @Nullable Task.RemoveCondition removeCondition, @Nullable String label) {
+    protected Task(long id, @NotNull TaskScheduler scheduler, @NotNull TaskRunnable runnable, @Nullable Removable removeCondition, @Nullable String label) {
         this.id = id;
         this.scheduler = scheduler;
         this.runnable = runnable;
@@ -133,7 +134,7 @@ public abstract class Task {
      * Returns the remove condition object.
      * @return remove condition
      */
-    public final RemoveCondition getRemoveCondition() {
+    public final Removable getRemoveCondition() {
         return this.removeCondition;
     }
 
@@ -147,8 +148,10 @@ public abstract class Task {
     /**
      * Stop condition for custom tasks.
      * When {@link this#toBeRemoved()} returns true, the task will automatically be removed from the {@link TaskScheduler}.
+     * @deprecated Use {@link Removable} directly
      */
-    public interface RemoveCondition {
+    @Deprecated
+    public interface RemoveCondition extends Removable {
         boolean toBeRemoved();
     }
 

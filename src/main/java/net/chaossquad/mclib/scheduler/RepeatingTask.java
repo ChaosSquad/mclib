@@ -1,17 +1,18 @@
 package net.chaossquad.mclib.scheduler;
 
+import net.chaossquad.mclib.misc.Removable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Repeating task for the {@link TaskScheduler}.
- * See {@link TaskScheduler#scheduleRepeatingTask(TaskRunnable, long, long, RemoveCondition, String)}
+ * See {@link TaskScheduler#scheduleRepeatingTask(TaskRunnable, long, long, net.chaossquad.mclib.misc.Removable, String)}
  */
 public class RepeatingTask extends Task {
     private final long interval;
     private long lastExecutionTick;
 
-    protected RepeatingTask(long id, @NotNull TaskScheduler scheduler, @NotNull TaskRunnable runnable, @Nullable Task.RemoveCondition removeCondition, @Nullable String label, long initialDelay, long interval) {
+    protected RepeatingTask(long id, @NotNull TaskScheduler scheduler, @NotNull TaskRunnable runnable, @Nullable Removable removeCondition, @Nullable String label, long initialDelay, long interval) {
         super(id, scheduler, runnable, removeCondition, label);
 
         this.interval = interval;

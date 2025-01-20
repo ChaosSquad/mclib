@@ -1,5 +1,6 @@
 net.chaossquad.mclib
-net.chaossquad.mclib.actionbar
+net.chaossquad.mclib.actionbar.manager
+net.chaossquad.mclib.actionbar.playerinfo
 net.chaossquad.mclib.advancedgui.dynamic_components
 net.chaossquad.mclib.advancedgui.other
 net.chaossquad.mclib.advancedgui.provider
@@ -9,6 +10,8 @@ net.chaossquad.mclib.combattracking
 net.chaossquad.mclib.command
 net.chaossquad.mclib.commands
 net.chaossquad.mclib.dynamicevents
+net.chaossquad.mclib.entity
+net.chaossquad.mclib.executable
 net.chaossquad.mclib.immutables
 net.chaossquad.mclib.json
 net.chaossquad.mclib.json.array
@@ -16,8 +19,10 @@ net.chaossquad.mclib.json.array.subcommands
 net.chaossquad.mclib.json.object
 net.chaossquad.mclib.json.object.subcommands
 net.chaossquad.mclib.json.utility
+net.chaossquad.mclib.misc
 net.chaossquad.mclib.packetentity
 net.chaossquad.mclib.packetevents
 net.chaossquad.mclib.scheduler
 net.chaossquad.mclib.storage
 net.chaossquad.mclib.world
+net.chaossquad.mclib.yml
