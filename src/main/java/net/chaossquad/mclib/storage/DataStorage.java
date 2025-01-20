@@ -3,7 +3,10 @@ package net.chaossquad.mclib.storage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 public class DataStorage implements Iterable<Map.Entry<String, Object>> {
     @NotNull private final Map<String, Object> storage;

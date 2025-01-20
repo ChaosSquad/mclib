@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 import java.util.List;
-import java.util.Objects;
 
 public class JSONEditorObjectClearSubcommand implements TabCompletingCommandExecutor {
     @NotNull private final JSONEditorObjectSubcommand parent;

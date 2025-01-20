@@ -1,11 +1,9 @@
 package net.chaossquad.mclib.entity;
 
-import net.chaossquad.mclib.WorldUtils;
 import net.chaossquad.mclib.executable.ManagedListener;
 import net.chaossquad.mclib.misc.ListenerRegistrar;
 import net.chaossquad.mclib.misc.Removable;
 import net.chaossquad.mclib.scheduler.SchedulerInterface;
-import net.chaossquad.mclib.scheduler.Task;
 import net.chaossquad.mclib.scheduler.TaskRunnable;
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.ApiStatus;
