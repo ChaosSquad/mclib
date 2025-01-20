@@ -17,6 +17,7 @@ public final class WorldsCommand {
 
     private WorldsCommand() {}
 
+    @SuppressWarnings("SameReturnValue")
     public static boolean onCommand(@NotNull CommandSender sender, @NotNull String[] args) {
 
         if (args.length < 1) {

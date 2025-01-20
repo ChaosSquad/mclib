@@ -12,6 +12,7 @@ public final class DataStorageEditorCommand {
 
     private DataStorageEditorCommand() {}
 
+    @SuppressWarnings("SameReturnValue")
     public static boolean onCommand(@NotNull DataStorage storage, @NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
 
         if (args.length < 1) {

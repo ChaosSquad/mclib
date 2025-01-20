@@ -62,13 +62,12 @@ public class RespawningManagedEntity<ENTITY_TYPE extends Entity> extends Managed
 
     }
 
-    /**
-     * For subclasses.
-     * @param event interact event
-     * @return null = can be opened, not null for cannot be opened with string as error message
-     */
-    public String canBeOpened(PlayerInteractEntityEvent event) {
-        return null;
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @NotNull

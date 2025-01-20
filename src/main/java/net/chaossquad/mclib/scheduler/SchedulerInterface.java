@@ -43,10 +43,12 @@ public interface SchedulerInterface {
         return this.scheduleRepeatingTask(runnable, delay, interval, removeCondition, null);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     default long scheduleRepeatingTask(@NotNull Runnable runnable, long delay, long interval, @Nullable String label) {
         return this.scheduleRepeatingTask(runnable, delay, interval, null, label);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     default long scheduleRepeatingTask(@NotNull Runnable runnable, long delay, long interval) {
         return this.scheduleRepeatingTask(runnable, delay, interval, (Removable) null);
     }

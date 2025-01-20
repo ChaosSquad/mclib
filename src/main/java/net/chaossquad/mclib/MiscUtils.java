@@ -71,6 +71,7 @@ public final class MiscUtils {
      * @return true if all objects in the cloneFrom list were cloned. false if at least one object has not been cloned successfully.
      * @param <T> type
      */
+    @SuppressWarnings("UnusedReturnValue")
     public static <T> boolean cloneObjectsInto(List<T> cloneFrom, List<T> cloneInto, Class<T> clazz) {
         boolean success = true;
 
@@ -152,6 +153,7 @@ public final class MiscUtils {
      * @param path path of the directory to delete
      * @return success
      */
+    @SuppressWarnings("UnusedReturnValue")
     public static boolean deleteDirectory(Path path) {
         path = path.toAbsolutePath().normalize();
         if (!Files.exists(path) || !Files.isDirectory(path)) return false;

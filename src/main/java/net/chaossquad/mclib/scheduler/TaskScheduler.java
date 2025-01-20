@@ -31,6 +31,7 @@ public final class TaskScheduler implements SchedulerInterface {
 
     // TICK
 
+    @SuppressWarnings("UnusedReturnValue")
     public boolean tick() {
         boolean hadException = false;
 

@@ -82,6 +82,7 @@ public abstract class CoreExecutable implements ListenerOwner, ListenerRegistrar
      * @return true if the tasks should be executed
      * @apiNote override only, this method always returns true in the base class
      */
+    @SuppressWarnings("SameReturnValue")
     @ApiStatus.OverrideOnly
     public boolean shouldExecute() {
         return true;

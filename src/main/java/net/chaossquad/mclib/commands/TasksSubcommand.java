@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 public class TasksSubcommand {
 
+    @SuppressWarnings("SameReturnValue")
     public static boolean onCommand(TaskScheduler taskScheduler, CommandSender sender, String[] args) {
         try {
 

@@ -69,6 +69,7 @@ public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements Manag
      * This method is for overriding in superclasses.<br/>
      * It is called when the entity
      */
+    @SuppressWarnings("EmptyMethod")
     @ApiStatus.OverrideOnly
     protected void onEntitySet() {}
 
