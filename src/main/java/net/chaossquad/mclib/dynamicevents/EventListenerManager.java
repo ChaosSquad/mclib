@@ -101,7 +101,7 @@ public final class EventListenerManager {
         this.sources.add(source);
     }
 
-    public void addSource(@NotNull ExtendedListenerOwnerSource source) {
+    public void addExtendedSource(@NotNull ExtendedListenerOwnerSource source) {
         this.extendedSources.add(source);
     }
 
@@ -109,7 +109,7 @@ public final class EventListenerManager {
         this.sources.remove(source);
     }
 
-    public void removeSource(@NotNull ExtendedListenerOwnerSource source) {
+    public void removeExtendedSource(@NotNull ExtendedListenerOwnerSource source) {
         this.extendedSources.remove(source);
     }
 
@@ -119,7 +119,7 @@ public final class EventListenerManager {
     }
 
     public @NotNull List<ExtendedListenerOwnerSource> getExtendedSources() {
-        return extendedSources;
+        return List.copyOf(this.extendedSources);
     }
 
     public void addExceptedListener(@NotNull Listener exceptedListener) {
