@@ -129,7 +129,7 @@ public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements Manag
 
     @Override
     public String toString() {
-        return "ManagedEntity_" + System.identityHashCode(this) + "_";
+        return "ManagedEntity_" + System.identityHashCode(this);
     }
 
     /**
