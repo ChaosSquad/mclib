@@ -32,14 +32,20 @@ public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements Manag
         this.removed = false;
 
         // This task is scheduled directly by the specified task scheduler because it has a different remove condition. All other tasks are scheduled via the internal methods.
-        this.scheduler.scheduleRepeatingTask(this::entityCleanupTask, 1, 200, () -> (this.entity == null || this.entity.isDead()) && this.toBeRemoved(), this + "entity_cleanup");
+        this.scheduler.scheduleRepeatingTask(this::entityCleanupTask, 1, 200, () -> (this.entity == null || this.entity.isDead()) && this.removed, this + "entity_cleanup");
 
         registrar.registerListener(this);
     }
 
     // ----- TASKS -----
 
+    /**
+     * Stays active until the ManagedEntity is set as removed and the ManagedEntity is dead.<br/>
+     * Sets removed to true if the other remove condition is met, and removes the Entity currently managed by this ManagedEntity.
+     */
     private void entityCleanupTask() {
+        if (this.toBeRemoved()) this.removed = true;
+
         if (this.toBeRemoved() && this.entity != null && !this.entity.isDead()) {
             this.entity.remove();
         }
@@ -101,7 +107,14 @@ public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements Manag
 
     @Override
     public final boolean toBeRemoved() {
-        return this.removed || this.removable.toBeRemoved();
+        if (this.removed) return true;
+
+        if (this.removable.toBeRemoved()) {
+            this.removed = true;
+            return true;
+        }
+
+        return false;
     }
 
     /**
