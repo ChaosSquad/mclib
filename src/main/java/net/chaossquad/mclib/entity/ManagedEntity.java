@@ -52,6 +52,7 @@ public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements Manag
     }
 
     protected final void setEntity(@NotNull ENTITY_TYPE entity) {
+        if (this.toBeRemoved()) throw new IllegalStateException("ManagedEntity is already removed");
 
         // Remove previously existing entity
         if (this.entity != null && !this.entity.isDead()) {
