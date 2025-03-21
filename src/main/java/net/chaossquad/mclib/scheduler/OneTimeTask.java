@@ -1,5 +1,6 @@
 package net.chaossquad.mclib.scheduler;
 
+import net.chaossquad.mclib.misc.Removable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,7 +13,7 @@ public class OneTimeTask extends Task {
     private final long addedTick;
     private boolean executed;
 
-    protected OneTimeTask(long id, @NotNull TaskScheduler scheduler, @NotNull TaskRunnable runnable, @Nullable Task.RemoveCondition removeCondition, @Nullable String label, long delay) {
+    protected OneTimeTask(long id, @NotNull TaskScheduler scheduler, @NotNull TaskRunnable runnable, @Nullable Removable removeCondition, @Nullable String label, long delay) {
         super(id, scheduler, runnable, removeCondition, label);
         this.delay = delay;
         this.addedTick = this.getScheduler().getTick();

@@ -22,6 +22,7 @@ public final class AdvancedGUIUtils {
      * @param id the new id
      * @return success
      */
+    @SuppressWarnings("UnusedReturnValue")
     public static boolean updateComponentId(Component component, String id) {
         try {
             Field idFIeld = Component.class.getDeclaredField("id");
@@ -55,6 +56,7 @@ public final class AdvancedGUIUtils {
      * @param componentTree GroupComponent to set
      * @return success
      */
+    @SuppressWarnings("UnusedReturnValue")
     public static boolean setInteractionComponentTree(@NotNull Interaction target, @NotNull GroupComponent componentTree) {
 
         try {

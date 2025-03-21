@@ -1,5 +1,6 @@
 package net.chaossquad.mclib.scheduler;
 
+import net.chaossquad.mclib.misc.Removable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,9 +19,9 @@ public interface SchedulerInterface {
      * @param label task label
      * @return task id (positive if successfully added)
      */
-    long scheduleRepeatingTask(@NotNull TaskRunnable runnable, long delay, long interval, @Nullable Task.RemoveCondition removeCondition, @Nullable String label);
+    long scheduleRepeatingTask(@NotNull TaskRunnable runnable, long delay, long interval, @Nullable Removable removeCondition, @Nullable String label);
 
-    default long scheduleRepeatingTask(@NotNull TaskRunnable runnable, long delay, long interval, @Nullable Task.RemoveCondition removeCondition) {
+    default long scheduleRepeatingTask(@NotNull TaskRunnable runnable, long delay, long interval, @Nullable Removable removeCondition) {
         return this.scheduleRepeatingTask(runnable, delay, interval, removeCondition, null);
     }
 
@@ -29,25 +30,27 @@ public interface SchedulerInterface {
     }
 
     default long scheduleRepeatingTask(@NotNull TaskRunnable runnable, long delay, long interval) {
-        return this.scheduleRepeatingTask(runnable, delay, interval, (Task.RemoveCondition) null);
+        return this.scheduleRepeatingTask(runnable, delay, interval, (Removable) null);
     }
 
     // With Runnable
 
-    default long scheduleRepeatingTask(@NotNull Runnable runnable, long delay, long interval, @Nullable Task.RemoveCondition removeCondition, String label) {
+    default long scheduleRepeatingTask(@NotNull Runnable runnable, long delay, long interval, @Nullable Removable removeCondition, String label) {
         return this.scheduleRepeatingTask(TaskRunnable.fromRunnable(runnable), delay, interval, removeCondition, label);
     }
 
-    default long scheduleRepeatingTask(@NotNull Runnable runnable, long delay, long interval, @Nullable Task.RemoveCondition removeCondition) {
+    default long scheduleRepeatingTask(@NotNull Runnable runnable, long delay, long interval, @Nullable Removable removeCondition) {
         return this.scheduleRepeatingTask(runnable, delay, interval, removeCondition, null);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     default long scheduleRepeatingTask(@NotNull Runnable runnable, long delay, long interval, @Nullable String label) {
         return this.scheduleRepeatingTask(runnable, delay, interval, null, label);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     default long scheduleRepeatingTask(@NotNull Runnable runnable, long delay, long interval) {
-        return this.scheduleRepeatingTask(runnable, delay, interval, (Task.RemoveCondition) null);
+        return this.scheduleRepeatingTask(runnable, delay, interval, (Removable) null);
     }
 
     // ----- ONE TIME TASKS -----
@@ -62,9 +65,9 @@ public interface SchedulerInterface {
      * @param label task label
      * @return task id (positive if successfully added)
      */
-    long runTaskLater(@NotNull TaskRunnable runnable, long delay, @Nullable Task.RemoveCondition removeCondition, @Nullable String label);
+    long runTaskLater(@NotNull TaskRunnable runnable, long delay, @Nullable Removable removeCondition, @Nullable String label);
 
-    default long runTaskLater(@NotNull TaskRunnable runnable, long delay, @Nullable Task.RemoveCondition removeCondition) {
+    default long runTaskLater(@NotNull TaskRunnable runnable, long delay, @Nullable Removable removeCondition) {
         return this.runTaskLater(runnable, delay, removeCondition, null);
     }
 
@@ -78,11 +81,11 @@ public interface SchedulerInterface {
 
     // With Runnable
 
-    default long runTaskLater(@NotNull Runnable runnable, long delay, @Nullable Task.RemoveCondition removeCondition, String label) {
+    default long runTaskLater(@NotNull Runnable runnable, long delay, @Nullable Removable removeCondition, String label) {
         return this.runTaskLater(TaskRunnable.fromRunnable(runnable), delay, removeCondition, label);
     }
 
-    default long runTaskLater(@NotNull Runnable runnable, long delay, @Nullable Task.RemoveCondition removeCondition) {
+    default long runTaskLater(@NotNull Runnable runnable, long delay, @Nullable Removable removeCondition) {
         return this.runTaskLater(runnable, delay, removeCondition, null);
     }
 

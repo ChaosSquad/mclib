@@ -12,7 +12,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class JSONEditorArraySetObjectSubcommand implements TabCompletingCommandExecutor {
     @NotNull private final JSONEditorArraySubcommand parent;

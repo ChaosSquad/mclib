@@ -149,6 +149,7 @@ public class DynamicComponentHandler {
      * @param dynamicObjectId dynamic object id
      * @return group component of the specified door
      */
+    @SuppressWarnings("UnusedReturnValue")
     public GroupComponent addDynamicObjectComponent(String dynamicObjectId) {
         GroupComponent dynamicObjectComponent = this.getDynamicObjectComponent(dynamicObjectId);
         if (dynamicObjectComponent != null) return dynamicObjectComponent;

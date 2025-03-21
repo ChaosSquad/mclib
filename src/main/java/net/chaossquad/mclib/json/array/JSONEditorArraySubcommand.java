@@ -9,7 +9,8 @@ import org.jetbrains.annotations.NotNull;
 public class JSONEditorArraySubcommand extends SubcommandCommand {
     public static final String NO_EDITABLE_MESSAGE = "§cThere is currently no editable json array loaded";
 
-    @NotNull JSONEditorCommand manager;
+    @NotNull
+    final JSONEditorCommand manager;
 
     public JSONEditorArraySubcommand(@NotNull JSONEditorCommand manager) {
         super(manager.getPlugin(), "§cUsage: [...] config (info|unload|show|get <key>|set <key> <type> <value>|remove|load-object|load-array|load-empty)");

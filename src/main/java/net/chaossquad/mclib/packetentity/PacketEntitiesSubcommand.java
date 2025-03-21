@@ -1,6 +1,5 @@
 package net.chaossquad.mclib.packetentity;
 
-import net.chaossquad.mclib.ChatUtils;
 import net.chaossquad.mclib.PlayerUtils;
 import net.chaossquad.mclib.command.TabCompletingCommandExecutor;
 import net.minecraft.network.syncher.SynchedEntityData;

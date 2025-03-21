@@ -9,12 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class JSONEditorArrayRemoveSubcommand implements TabCompletingCommandExecutor {
     @NotNull private final JSONEditorArraySubcommand parent;

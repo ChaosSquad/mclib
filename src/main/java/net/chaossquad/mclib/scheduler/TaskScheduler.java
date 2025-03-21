@@ -1,6 +1,6 @@
 package net.chaossquad.mclib.scheduler;
 
-import org.bukkit.plugin.Plugin;
+import net.chaossquad.mclib.misc.Removable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,6 +31,7 @@ public final class TaskScheduler implements SchedulerInterface {
 
     // TICK
 
+    @SuppressWarnings("UnusedReturnValue")
     public boolean tick() {
         boolean hadException = false;
 
@@ -137,7 +138,7 @@ public final class TaskScheduler implements SchedulerInterface {
      * @param removeCondition the condition the task should be stopped and removed
      * @return task id
      */
-    public long scheduleRepeatingTask(@NotNull TaskRunnable runnable, long delay, long interval, @Nullable Task.RemoveCondition removeCondition, @Nullable String label) {
+    public long scheduleRepeatingTask(@NotNull TaskRunnable runnable, long delay, long interval, @Nullable Removable removeCondition, @Nullable String label) {
         long taskId = this.getFreeTaskId();
         this.tasks.put(taskId, new RepeatingTask(taskId, this, runnable, removeCondition, label, delay, interval));
         return taskId;
@@ -150,7 +151,7 @@ public final class TaskScheduler implements SchedulerInterface {
      * @param removeCondition the condition the task should be stopped and removed
      * @return task id
      */
-    public long runTaskLater(@NotNull TaskRunnable runnable, long delay, @Nullable Task.RemoveCondition removeCondition, @Nullable String label) {
+    public long runTaskLater(@NotNull TaskRunnable runnable, long delay, @Nullable Removable removeCondition, @Nullable String label) {
         long taskId = this.getFreeTaskId();
         this.tasks.put(taskId, new OneTimeTask(taskId, this, runnable, removeCondition, label, delay));
         return taskId;
