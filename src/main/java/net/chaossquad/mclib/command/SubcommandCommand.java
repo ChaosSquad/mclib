@@ -12,11 +12,13 @@ import java.util.logging.Level;
 
 /**
  * A command that can has multiple commands as subcommands.<br/>
- * You can add subcommands with {@link SubcommandCommand#addSubcommand(String, SubcommandEntry)}.<br/>
- * You can remove subcommands with {@link SubcommandCommand#removeSubcommand(String)}.<br/>
+ * You can add subcommands with {@link #addSubcommand(String, SubcommandEntry)}.<br/>
+ * You can remove subcommands with {@link #removeSubcommand(String)}.<br/>
  * You can set a global permission for the command in the constructor<br/>
  * You can set a {@link DynamicSubcommandProvider} that can provide subcommands dynamically in the constructor.<br/>
- * You can override {@link SubcommandCommand#onExecutionWithoutSubcommand(CommandSender, Command, String)} to run code when the command is executed without subcommands.
+ * You can override {@link #onExecutionWithoutSubcommand(CommandSender, Command, String)} to run code when the command is executed without subcommands.<br/>
+ * You can override {@link #onExecutionWithoutPermission(CommandSender, Command, String, String[], String)} to run code when the sender does not have the permission for the command.<br/>
+ * You can override {@link #onExecutionWithUnknownSubcommand(CommandSender, Command, String, String[])} to run code when the given subcommand does not exist.
  */
 public class SubcommandCommand implements TabCompletingCommandExecutor {
     @NotNull private final Plugin plugin;
@@ -79,7 +81,7 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
     public final boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String @NotNull [] args) {
 
         if (!this.hasPermission(sender)) {
-            sender.sendMessage("§cNo permission");
+            this.onExecutionWithoutPermission(sender, cmd, label, args, null);
             return true;
         }
 
@@ -87,7 +89,7 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
 
             SubcommandEntry subcommand = this.getSubcommand(args[0]);
             if (subcommand == null) {
-                sender.sendMessage("§cUnknown subcommand");
+                this.onExecutionWithUnknownSubcommand(sender, cmd, label, args);
                 return true;
             }
 
@@ -97,7 +99,7 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
             }
 
             if (!this.hasCommandPermission(subcommand, sender)) {
-                sender.sendMessage("§cNo permission");
+                this.onExecutionWithoutPermission(sender, cmd, label, args, args[0]);
                 return true;
             }
 
@@ -162,6 +164,29 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
 
         sender.sendMessage(message);
 
+    }
+
+    /**
+     * This is executed when the sender has no permission for the command.
+     * @param sender sender
+     * @param cmd command
+     * @param label label
+     * @param args args
+     * @param subcommand the subcommand the sender has executed (null if it is the main command)
+     */
+    protected void onExecutionWithoutPermission(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args, @Nullable String subcommand) {
+        sender.sendMessage("§cNo permission");
+    }
+
+    /**
+     * This is executed when the specified subcommand does not exist.
+     * @param sender sender
+     * @param cmd cmd
+     * @param label label
+     * @param args args
+     */
+    protected void onExecutionWithUnknownSubcommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
+        sender.sendMessage("§cUnknown subcommand");
     }
 
     // ----- UTILITIES -----
