@@ -30,10 +30,10 @@ Add Dependency:
 <dependency>
   <groupId>net.chaossquad</groupId>
   <artifactId>mclib</artifactId>
-  <version>master-ca5aaa6399cdd3a18c46e5af4d750659b8d8883c</version>
+  <version>master-d7d92b1765d275ae2aa8669a7e1b36fd809de861</version>
 </dependency>
 ```
 ### Version Support
-Game version for NMS features: **1.21.1**.  
+Game version for NMS features: **1.21.4**.  
 Most of the non-NMS features also work in different versions, but are not officially supported.  
 If you need support for previous versions, checkout a revision in the commit history and build it yourself (or try to find that commit id in our repository).
