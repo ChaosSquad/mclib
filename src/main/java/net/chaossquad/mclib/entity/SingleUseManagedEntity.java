@@ -11,6 +11,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public class SingleUseManagedEntity<ENTITY_TYPE extends Entity> extends ManagedEntity<ENTITY_TYPE> {
 
+    /**
+     * Creates a new SingleUseManagedEntity.
+     * @param scheduler scheduler
+     * @param listenerRegistrar listener registrar
+     * @param creator creator
+     */
     public SingleUseManagedEntity(@NotNull SchedulerInterface scheduler, @NotNull ListenerRegistrar listenerRegistrar, @NotNull EntityCreator<ENTITY_TYPE> creator) {
         super(scheduler, listenerRegistrar);
         this.setEntity(creator.create());

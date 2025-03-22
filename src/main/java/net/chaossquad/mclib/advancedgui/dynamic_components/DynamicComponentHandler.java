@@ -11,11 +11,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Handles dynamic component creation/deletion for AdvancedGUI.<br/>
+ * This does basically the same as {@link DynamicComponentSystem}.
+ */
 public class DynamicComponentHandler {
     private final String DYNAMIC_OBJECT_COMPONENT_GROUP_ID;
     private final String TEMPLATE_COMPONENT_GROUP_ID;
     private final DynamicObjectProvider provider;
 
+    /**
+     * Creates a DynamicComponentHandler.
+     * @param DYNAMIC_OBJECT_COMPONENT_GROUP_ID the component group id of the component that contains the dynamically created components
+     * @param TEMPLATE_COMPONENT_GROUP_ID the component group id of the component that contains the template components
+     * @param provider the provider that provides the ids of the dynamic objects the DynamicComponentHandler should create dynamic components for.
+     */
     public DynamicComponentHandler(
             @NotNull String DYNAMIC_OBJECT_COMPONENT_GROUP_ID,
             @NotNull String TEMPLATE_COMPONENT_GROUP_ID,
@@ -171,6 +181,10 @@ public class DynamicComponentHandler {
 
     // SYNC
 
+    /**
+     * Synchronizes the dynamic components with the object ids provides by the DynamicObjectProvider.<br/>
+     * This has to be called by the user of this (for example in a Bukkit task) class and does the job for which this class is supposed to do.
+     */
     public void syncDoorComponents() {
 
         for (GroupComponent dynamicObjectComponent : this.getDynamicObjectComponents()) {
@@ -204,8 +218,17 @@ public class DynamicComponentHandler {
 
     // INNER CLASSES
 
+    /**
+     * Provides ids of the dynamic objects.
+     */
     public interface DynamicObjectProvider extends ComponentTreeProvider {
+
+        /**
+         * Provides ids of the dynamic objects.
+         * @return set of dynamic object ids
+         */
         Set<String> getDynamicObjectIds();
+
     }
 
 }

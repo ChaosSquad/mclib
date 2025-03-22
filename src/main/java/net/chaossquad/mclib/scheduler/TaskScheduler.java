@@ -12,9 +12,9 @@ import java.util.logging.Logger;
 
 /**
  * A custom task scheduler.
- * The {@link this#tick()} method needs to be called in a bukkit task every tick.
+ * The {@link TaskScheduler#tick()} method needs to be called in a bukkit task every tick.
  * The purpose of this class is to provide a custom task scheduler so that you don't need to remove tasks manually from the bukkit scheduler.
- * You can for example integrate this scheduler inside a gamemode class, and as soon as the gamemode has ended, all tasks are gone because the {@link this#tick()} method if this scheduler is no longer called.
+ * You can for example integrate this scheduler inside a gamemode class, and as soon as the gamemode has ended, all tasks are gone because the {@link TaskScheduler#tick()} method if this scheduler is no longer called.
  */
 public final class TaskScheduler implements SchedulerInterface {
     private final Logger logger;
@@ -22,6 +22,10 @@ public final class TaskScheduler implements SchedulerInterface {
     private long nextTaskId;
     private long tick;
 
+    /**
+     * Creates a task scheduler.
+     * @param logger logger
+     */
     public TaskScheduler(Logger logger) {
         this.logger = logger;
         this.tasks = Collections.synchronizedMap(new HashMap<>());
@@ -31,6 +35,11 @@ public final class TaskScheduler implements SchedulerInterface {
 
     // TICK
 
+    /**
+     * This method runs the scheduler.<br/>
+     * Call it using a repeating bukkit task or something similar.
+     * @return success
+     */
     @SuppressWarnings("UnusedReturnValue")
     public boolean tick() {
         boolean hadException = false;
@@ -107,6 +116,11 @@ public final class TaskScheduler implements SchedulerInterface {
         return this.tasks.size();
     }
 
+    /**
+     * Returns the task with the specified id.
+     * @param taskId task id
+     * @return task
+     */
     public Task getTask(long taskId) {
         return this.tasks.get(taskId);
     }
@@ -159,6 +173,10 @@ public final class TaskScheduler implements SchedulerInterface {
 
     // OTHER
 
+    /**
+     * Returns the current scheduler tick.
+     * @return tick
+     */
     public long getTick() {
         return this.tick;
     }

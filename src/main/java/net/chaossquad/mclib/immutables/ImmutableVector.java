@@ -5,22 +5,43 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * An immutable version of {@link Vector}
+ * An immutable version of {@link Vector}.
  */
 public class ImmutableVector extends Vector {
 
+    /**
+     * Creates an immutable vector.
+     */
     public ImmutableVector() {
         super();
     }
 
+    /**
+     * Creates an immutable vector.
+     * @param x x
+     * @param y y
+     * @param z z
+     */
     public ImmutableVector(int x, int y, int z) {
         super(x, y, z);
     }
 
+    /**
+     * Creates an immutable vector.
+     * @param x x
+     * @param y y
+     * @param z z
+     */
     public ImmutableVector(double x, double y, double z) {
         super(x, y, z);
     }
 
+    /**
+     * Creates an immutable vector.
+     * @param x x
+     * @param y y
+     * @param z z
+     */
     public ImmutableVector(float x, float y, float z) {
         super(x, y, z);
     }

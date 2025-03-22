@@ -27,6 +27,10 @@ public final class PacketEventHandler implements Listener {
     private final Plugin plugin;
     private final UUID uuid;
 
+    /**
+     * Creates the PacketEventHandler.
+     * @param plugin plugin
+     */
     public PacketEventHandler(Plugin plugin) {
         this.plugin = plugin;
         this.uuid = UUID.randomUUID();
@@ -35,6 +39,10 @@ public final class PacketEventHandler implements Listener {
 
     // PACKET LISTENERS
 
+    /**
+     * Injects the packet listener into the players pipeline.
+     * @param event event
+     */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
 
@@ -104,6 +112,10 @@ public final class PacketEventHandler implements Listener {
 
     }
 
+    /**
+     * Removes the packet entity listener from the player's pipeline.
+     * @param event event
+     */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
 
@@ -129,18 +141,35 @@ public final class PacketEventHandler implements Listener {
 
     // GETTER
 
+    /**
+     * Returns the plugin.
+     * @return plugin
+     */
     public Plugin getPlugin() {
         return plugin;
     }
 
+    /**
+     * Returns the UUID of the PacketEventHandler.<br/>
+     * It is used for identification of the pipeline listeners
+     * @return uuid
+     */
     public UUID getUuid() {
         return uuid;
     }
 
+    /**
+     * Returns the packet reader name.
+     * @return packet reader name
+     */
     public String getReaderName() {
         return "MCLIB-READER-" + uuid.toString();
     }
 
+    /**
+     * Returns the packet writer name.
+     * @return packet writer name
+     */
     public String getWriterName() {
         return "MCLIB-WRITER-" + uuid.toString();
     }

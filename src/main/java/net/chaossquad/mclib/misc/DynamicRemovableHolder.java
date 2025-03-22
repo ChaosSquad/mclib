@@ -8,5 +8,11 @@ import org.jetbrains.annotations.Nullable;
  * That removable can set after the object creation or change.
  */
 public interface DynamicRemovableHolder extends RemovableHolder {
+
+    /**
+     * Sets the removable.
+     * @param removable removable
+     */
     void setRemovable(@Nullable Removable removable);
+
 }

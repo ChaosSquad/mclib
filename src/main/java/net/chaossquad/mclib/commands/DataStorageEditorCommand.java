@@ -1,6 +1,7 @@
 package net.chaossquad.mclib.commands;
 
 import net.chaossquad.mclib.storage.DataStorage;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,10 +9,23 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A command which allows to edit a data storage.<br/>
+ * You need your own command executor and call the methods in this class.
+ */
 public final class DataStorageEditorCommand {
 
     private DataStorageEditorCommand() {}
 
+    /**
+     * Runs the command.<br/>
+     * {@link org.bukkit.command.CommandExecutor#onCommand(CommandSender, Command, String, String[])}.
+     * @param storage data storage
+     * @param sender sender
+     * @param label label
+     * @param args args
+     * @return result
+     */
     @SuppressWarnings("SameReturnValue")
     public static boolean onCommand(@NotNull DataStorage storage, @NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
 
@@ -131,6 +145,14 @@ public final class DataStorageEditorCommand {
         return true;
     }
 
+    /**
+     * TabCompletes the command.<br/>
+     * {@link org.bukkit.command.TabCompleter#onTabComplete(CommandSender, Command, String, String[])}.
+     * @param storage data storage
+     * @param sender sender
+     * @param args args
+     * @return list of completion
+     */
     public static List<String> onTabComplete(@NotNull DataStorage storage, @NotNull CommandSender sender, @NotNull String[] args) {
 
         if (args.length < 1) {

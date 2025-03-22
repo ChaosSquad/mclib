@@ -4,15 +4,24 @@ import net.chaossquad.mclib.command.TabCompletingCommandExecutor;
 import net.chaossquad.mclib.json.array.JSONEditorArraySubcommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 
 import java.util.List;
 
+/**
+ * {@link net.chaossquad.mclib.json.JSONEditorCommand}.
+ */
 public class JSONEditorArraySizeSubcommand implements TabCompletingCommandExecutor {
     @NotNull private final JSONEditorArraySubcommand parent;
 
+    /**
+     * Creates the object
+     * @param parent parent
+     */
+    @ApiStatus.Internal
     public JSONEditorArraySizeSubcommand(@NotNull JSONEditorArraySubcommand parent) {
         this.parent = parent;
     }
@@ -36,6 +45,10 @@ public class JSONEditorArraySizeSubcommand implements TabCompletingCommandExecut
         return List.of();
     }
 
+    /**
+     * Returns the parent
+     * @return parent
+     */
     public @NotNull JSONEditorArraySubcommand getParent() {
         return parent;
     }

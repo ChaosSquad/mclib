@@ -11,10 +11,21 @@ import org.bukkit.command.TabCompleter;
  */
 public record SubcommandEntry(CommandExecutor executor, TabCompleter tabCompleter, String permission) {
 
+    /**
+     * Creates a SubcommandEntry.
+     * @param command command with CommandExecutor and TabCompleter
+     * @param permission permission
+     * @return SubcommandEntry
+     */
     public static SubcommandEntry of(TabCompletingCommandExecutor command, String permission) {
         return new SubcommandEntry(command, command, permission);
     }
 
+    /**
+     * Creates a SubcommandEntry.
+     * @param command command with CommandExecutor and TabCompleter
+     * @return SubcommandEntry
+     */
     public static SubcommandEntry of(TabCompletingCommandExecutor command) {
         return new SubcommandEntry(command, command, null);
     }

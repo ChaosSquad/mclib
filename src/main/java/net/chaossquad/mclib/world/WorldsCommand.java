@@ -13,10 +13,19 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * A command for managing worlds.
+ */
 public final class WorldsCommand {
 
     private WorldsCommand() {}
 
+    /**
+     * Call with {@link org.bukkit.command.CommandExecutor}.
+     * @param sender sender
+     * @param args args
+     * @return success
+     */
     @SuppressWarnings("SameReturnValue")
     public static boolean onCommand(@NotNull CommandSender sender, @NotNull String[] args) {
 
@@ -166,6 +175,11 @@ public final class WorldsCommand {
         }
     }
 
+    /**
+     * Call with {@link org.bukkit.command.TabCompleter}.
+     * @param args args
+     * @return completions list
+     */
     public static List<String> onTabComplete(String[] args) {
 
         switch (args.length) {

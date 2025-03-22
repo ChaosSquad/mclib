@@ -17,7 +17,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public class PlayerUtils {
+/**
+ * Contains utilities for players.
+ */
+public final class PlayerUtils {
+
+    private PlayerUtils() {}
 
     /**
      * Returns the UUID of a player if the string is a valid UUID or an offline player with that UUID exists.

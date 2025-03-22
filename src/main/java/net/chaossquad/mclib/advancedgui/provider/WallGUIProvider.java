@@ -21,10 +21,23 @@ public class WallGUIProvider {
     private final int interactionRadius;
     private GuiWallInstance instance;
 
+    /**
+     * Creates a WallGUIProvider.
+     * @param layoutId layout id
+     * @param location location
+     * @param direction direction
+     * @param interactionRadius interaction radius
+     */
     public WallGUIProvider(@NotNull String layoutId, @NotNull Location location, @NotNull Direction direction, int interactionRadius) {
         this(layoutId, new GuiLocation(location, direction), interactionRadius);
     }
 
+    /**
+     * Creates a WallGUIProvider.
+     * @param layoutId layout id
+     * @param guiLocation gui location
+     * @param interactionRadius interaction radius
+     */
     public WallGUIProvider(@NotNull String layoutId, @NotNull GuiLocation guiLocation, int interactionRadius) {
         Layout layout = LayoutManager.getInstance().getLayout(layoutId);
 
@@ -41,14 +54,26 @@ public class WallGUIProvider {
 
     // LAYOUT
 
+    /**
+     * Returns the AdvancedGUI layout.
+     * @return layout
+     */
     public Layout getLayout() {
         return this.layout;
     }
 
+    /**
+     * Returns the GUI Location.
+     * @return GUILocation
+     */
     public GuiLocation getLocation() {
         return this.location;
     }
 
+    /**
+     * Returns the interaction radius
+     * @return interaction radius
+     */
     public int getInteractionRadius() {
         return this.interactionRadius;
     }

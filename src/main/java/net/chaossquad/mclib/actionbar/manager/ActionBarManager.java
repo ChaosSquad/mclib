@@ -23,6 +23,11 @@ public abstract class ActionBarManager {
 
     // CONSTRUCTOR
 
+    /**
+     * Creates an ActionBarManager.
+     * @param plugin the plugin
+     * @param splitter the splitter between the different messages
+     */
     public ActionBarManager(@NotNull Plugin plugin, @NotNull Component splitter) {
         this.plugin = plugin;
         this.texts = new HashMap<>();
@@ -199,10 +204,18 @@ public abstract class ActionBarManager {
 
     // GETTER
 
+    /**
+     * Returns the plugin
+     * @return plugin
+     */
     public Plugin getPlugin() {
         return this.plugin;
     }
 
+    /**
+     * Returns the current tick.
+     * @return tick
+     */
     @SuppressWarnings("unused")
     public long getTick() {
         return this.tick;

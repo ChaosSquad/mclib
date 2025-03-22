@@ -16,8 +16,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class TasksSubcommand {
+/**
+ * A command for managing tasks of the {@link TaskScheduler}.
+ */
+public final class TasksSubcommand {
 
+    private TasksSubcommand() {}
+
+    /**
+     * Call it with {@link org.bukkit.command.CommandExecutor}.
+     * @param taskScheduler task scheduler
+     * @param sender sender
+     * @param args args
+     * @return success
+     */
     @SuppressWarnings("SameReturnValue")
     public static boolean onCommand(TaskScheduler taskScheduler, CommandSender sender, String[] args) {
         try {
@@ -167,6 +179,13 @@ public class TasksSubcommand {
         }
     }
 
+    /**
+     * Call it with {@link org.bukkit.command.TabCompleter}.
+     * @param taskScheduler task scheduler
+     * @param sender sender
+     * @param args args
+     * @return completions list
+     */
     public static List<String> onTabComplete(TaskScheduler taskScheduler, CommandSender sender, String[] args) {
 
         return switch (args.length) {

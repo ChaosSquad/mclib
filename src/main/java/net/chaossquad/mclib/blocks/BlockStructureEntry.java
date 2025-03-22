@@ -12,11 +12,20 @@ public class BlockStructureEntry {
     private Material type;
     private BlockData data;
 
+    /**
+     * Creates a BlockStructureEntry.
+     * @param type material
+     * @param data data
+     */
     public BlockStructureEntry(Material type, BlockData data) {
         this.type = type != null ? type : Material.AIR;
         this.data = data.clone();
     }
 
+    /**
+     * Creates a BlockStructureEntry.
+     * @param entry object to copy
+     */
     public BlockStructureEntry(BlockStructureEntry entry) {
         this.type = entry.type;
         this.data = entry.data.clone();

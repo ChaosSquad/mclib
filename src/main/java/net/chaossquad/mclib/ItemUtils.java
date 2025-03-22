@@ -13,6 +13,9 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Contains utilities for items.
+ */
 public final class ItemUtils {
     private static final Map<Integer, TrimMaterial> TEXT_COLOR_TRIM_MATERIALS = Map.ofEntries(
             Map.entry(NamedTextColor.RED.value(), TrimMaterial.REDSTONE),

@@ -30,6 +30,11 @@ public final class PacketUtils {
 
     // CONNECTION
 
+    /**
+     * Returns the connection of a NMS Player.
+     * @param serverPlayer nms player
+     * @return connection
+     */
     public static Connection getConnection(ServerPlayer serverPlayer) {
 
         try {
@@ -48,7 +53,7 @@ public final class PacketUtils {
 
     /**
      * Key of relative position of a spawned block structure.
-     * Will be added when a {@link BlockStructure} is spawned by {@link this#spawnBlockStructure(PacketEntityManager, BlockStructure, Location, List)}.
+     * Will be added when a {@link BlockStructure} is spawned by {@link #spawnBlockStructure(PacketEntityManager, BlockStructure, Location, List)}.
      */
     public static final String DATA_VALUE_BLOCKSTRUCTURE_RELATIVE_POSITION = "mclib.blockstructure.relativeposition";
 

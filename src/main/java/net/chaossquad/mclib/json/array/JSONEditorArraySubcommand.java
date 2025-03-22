@@ -4,14 +4,27 @@ import net.chaossquad.mclib.command.SubcommandCommand;
 import net.chaossquad.mclib.command.SubcommandEntry;
 import net.chaossquad.mclib.json.JSONEditorCommand;
 import net.chaossquad.mclib.json.array.subcommands.*;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Manages arrays for the {@link JSONEditorCommand}.
+ */
 public class JSONEditorArraySubcommand extends SubcommandCommand {
+
+    /**
+     * The message shown when no editable json array is loaded into the command.
+     */
     public static final String NO_EDITABLE_MESSAGE = "§cThere is currently no editable json array loaded";
 
     @NotNull
     final JSONEditorCommand manager;
 
+    /**
+     * Creates the JSONEditorArraySubcommand.
+     * @param manager manager
+     */
+    @ApiStatus.Internal
     public JSONEditorArraySubcommand(@NotNull JSONEditorCommand manager) {
         super(manager.getPlugin(), "§cUsage: [...] config (info|unload|show|get <key>|set <key> <type> <value>|remove|load-object|load-array|load-empty)");
         this.manager = manager;
@@ -31,6 +44,10 @@ public class JSONEditorArraySubcommand extends SubcommandCommand {
         this.addSubcommand("clear", SubcommandEntry.of(new JSONEditorArrayClearSubcommand(this)));
     }
 
+    /**
+     * JSONEditorCommand.
+     * @return JSONEditorCommand
+     */
     public @NotNull JSONEditorCommand getManager() {
         return manager;
     }

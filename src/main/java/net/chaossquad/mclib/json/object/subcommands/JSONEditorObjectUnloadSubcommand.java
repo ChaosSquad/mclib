@@ -11,9 +11,16 @@ import org.json.JSONObject;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * {@link net.chaossquad.mclib.json.JSONEditorCommand}.
+ */
 public class JSONEditorObjectUnloadSubcommand implements TabCompletingCommandExecutor {
     @NotNull private final JSONEditorObjectSubcommand parent;
 
+    /**
+     * Creates the object.
+     * @param parent parent
+     */
     public JSONEditorObjectUnloadSubcommand(@NotNull JSONEditorObjectSubcommand parent) {
         this.parent = parent;
     }
@@ -38,6 +45,10 @@ public class JSONEditorObjectUnloadSubcommand implements TabCompletingCommandExe
         return List.of();
     }
 
+    /**
+     * Returns the parent
+     * @return parent
+     */
     public @NotNull JSONEditorObjectSubcommand getParent() {
         return parent;
     }

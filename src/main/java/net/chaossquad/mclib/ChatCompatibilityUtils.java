@@ -8,6 +8,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
+/**
+ * Contains utilities for legacy chat with component/minimessage chat.
+ */
 public final class ChatCompatibilityUtils {
 
     private ChatCompatibilityUtils() {}

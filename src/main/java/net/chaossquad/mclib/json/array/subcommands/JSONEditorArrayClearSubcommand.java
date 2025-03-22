@@ -10,9 +10,16 @@ import org.json.JSONArray;
 
 import java.util.List;
 
+/**
+ * {@link net.chaossquad.mclib.json.JSONEditorCommand}.
+ */
 public class JSONEditorArrayClearSubcommand implements TabCompletingCommandExecutor {
     @NotNull private final JSONEditorArraySubcommand parent;
 
+    /**
+     * Creates the object.
+     * @param parent parent command
+     */
     public JSONEditorArrayClearSubcommand(@NotNull JSONEditorArraySubcommand parent) {
         this.parent = parent;
     }
@@ -37,6 +44,10 @@ public class JSONEditorArrayClearSubcommand implements TabCompletingCommandExecu
         return List.of();
     }
 
+    /**
+     * Returns the parent command.
+     * @return parent command
+     */
     public @NotNull JSONEditorArraySubcommand getParent() {
         return parent;
     }

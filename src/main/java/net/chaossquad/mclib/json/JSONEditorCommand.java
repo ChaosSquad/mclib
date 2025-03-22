@@ -29,6 +29,11 @@ public final class JSONEditorCommand extends SubcommandCommand {
     @Nullable private JSONObject consoleJSONObjectEditable;
     @Nullable private JSONArray consoleJSONArrayEditable;
 
+    /**
+     * Creates the JSONEditorCommand.
+     * @param plugin plugin
+     * @param permission permission
+     */
     public JSONEditorCommand(@NotNull Plugin plugin, @Nullable String permission) {
         super(plugin, permission);
 
@@ -46,6 +51,11 @@ public final class JSONEditorCommand extends SubcommandCommand {
 
     // GLOBAL
 
+    /**
+     * Returns the JSONObject the specified sender is currently editing.
+     * @param sender sender
+     * @return JSONObject editable
+     */
     @Nullable
     public JSONObject getJSONObjectEditable(@NotNull CommandSender sender) {
 
@@ -59,6 +69,11 @@ public final class JSONEditorCommand extends SubcommandCommand {
 
     }
 
+    /**
+     * Returns the JSONArray the specified sender is currently editing.
+     * @param sender sender
+     * @return JSONArray editable
+     */
     @Nullable
     public JSONArray getJSONArrayEditable(@NotNull CommandSender sender) {
 
@@ -72,6 +87,11 @@ public final class JSONEditorCommand extends SubcommandCommand {
 
     }
 
+    /**
+     * Sets the JSONObject editable for the specified sender.
+     * @param sender sender
+     * @param editable editable
+     */
     public void setJSONObjectEditable(@NotNull CommandSender sender, @Nullable JSONObject editable) {
 
         if (sender instanceof Player player) {
@@ -84,6 +104,11 @@ public final class JSONEditorCommand extends SubcommandCommand {
 
     }
 
+    /**
+     * Sets the JSONArray editable for the specified sender.
+     * @param sender sender
+     * @param editable editable
+     */
     public void setJSONArrayEditable(@NotNull CommandSender sender, @Nullable JSONArray editable) {
 
         if (sender instanceof Player player) {
@@ -98,11 +123,21 @@ public final class JSONEditorCommand extends SubcommandCommand {
 
     // PLAYER
 
+    /**
+     * Returns the JSONObject editable for the specified player.
+     * @param player player
+     * @return JSONObject editable
+     */
     @Nullable
     public JSONObject getPlayerJSONObjectEditable(@NotNull UUID player) {
         return this.playerJSONObjectEditables.get(player);
     }
 
+    /**
+     * Sets the JSONObject Editable for the specified player.
+     * @param player player
+     * @param editable editable
+     */
     public void setPlayerJSONObjectEditable(@NotNull UUID player, @Nullable JSONObject editable) {
 
         if (editable != null) {
@@ -113,11 +148,21 @@ public final class JSONEditorCommand extends SubcommandCommand {
 
     }
 
+    /**
+     * Returns the JSONArray editable for the specified player.
+     * @param player player
+     * @return editable
+     */
     @Nullable
     public JSONArray getPlayerJSONArrayEditable(@NotNull UUID player) {
         return this.playerJSONArrayEditables.get(player);
     }
 
+    /**
+     * Sets the JSONArray editable for the specified player.
+     * @param player player
+     * @param editable editable
+     */
     public void setPlayerJSONArrayEditable(@NotNull UUID player, @Nullable JSONArray editable) {
 
         if (editable != null) {
@@ -130,20 +175,36 @@ public final class JSONEditorCommand extends SubcommandCommand {
 
     // CONSOLE
 
+    /**
+     * Returns the JSONObject editable of the console.
+     * @return JSONObject editable
+     */
     @Nullable
     public JSONObject getConsoleJSONObjectEditable() {
         return this.consoleJSONObjectEditable;
     }
 
+    /**
+     * Sets the JSONObject editable for the console.
+     * @param editable editable
+     */
     public void setConsoleJSONObjectEditable(@Nullable JSONObject editable) {
         this.consoleJSONObjectEditable = editable;
     }
 
+    /**
+     * Returns the JSONArray editable of the console.
+     * @return editable
+     */
     @Nullable
     public JSONArray getConsoleJSONArrayEditable() {
         return this.consoleJSONArrayEditable;
     }
 
+    /**
+     * Returns the JSONArray editable of the console.
+     * @param editable editable
+     */
     public void setConsoleJSONArrayEditable(@Nullable JSONArray editable) {
         this.consoleJSONArrayEditable = editable;
     }
@@ -158,6 +219,9 @@ public final class JSONEditorCommand extends SubcommandCommand {
 
     // ----- TASK -----
 
+    /**
+     * Removes the JSONObject and JSONArray editables of all players.
+     */
     public void cleanup() {
 
         for (UUID playerId : Map.copyOf(this.playerJSONObjectEditables).keySet()) {

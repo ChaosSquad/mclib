@@ -11,6 +11,11 @@ import org.jetbrains.annotations.NotNull;
  */
 public class SelfSchedulingActionBarManager extends ActionBarManager {
 
+    /**
+     * Creates a new self-scheduling ActionBarManager.
+     * @param plugin plugin
+     * @param splitter splitter
+     */
     public SelfSchedulingActionBarManager(@NotNull Plugin plugin, @NotNull Component splitter) {
         super(plugin, splitter);
 

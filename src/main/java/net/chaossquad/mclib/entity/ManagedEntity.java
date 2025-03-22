@@ -25,6 +25,11 @@ public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements Manag
     @Nullable private ENTITY_TYPE entity;
     private boolean removed;
 
+    /**
+     * Creates a ManagedEntity.
+     * @param scheduler Task scheduler
+     * @param registrar listener registrar
+     */
     public ManagedEntity(@NotNull SchedulerInterface scheduler, @NotNull ListenerRegistrar registrar) {
         this.removable = () -> false;
         this.scheduler = scheduler;
@@ -53,10 +58,19 @@ public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements Manag
 
     // ----- ENTITY -----
 
+    /**
+     * Returns the entity.
+     * @return entity
+     */
     public final @Nullable ENTITY_TYPE getEntity() {
         return entity;
     }
 
+    /**
+     * Sets the ManagedEntity.<br/>
+     * This will kill the old entity.
+     * @param entity entity
+     */
     protected final void setEntity(@NotNull ENTITY_TYPE entity) {
         if (this.toBeRemoved()) throw new IllegalStateException("ManagedEntity is already removed");
 
@@ -161,7 +175,13 @@ public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements Manag
      * @param <ENTITY_TYPE> entity type
      */
     public interface EntityCreator<ENTITY_TYPE extends Entity> {
+
+        /**
+         * Returns the created entity.
+         * @return created entity
+         */
         @NotNull ENTITY_TYPE create();
+
     }
 
 }

@@ -4,19 +4,34 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * An immutable version of {@link Location}
+ * An immutable version of {@link Location}.
  */
 public class ImmutableLocation extends Location {
 
-    public ImmutableLocation(World world, double x, double y, double z) {
+    /**
+     * Creates a new ImmutableLocation.
+     * @param world world
+     * @param x x
+     * @param y y
+     * @param z z
+     */
+    public ImmutableLocation(@Nullable World world, double x, double y, double z) {
         super(world, x, y, z);
     }
 
-    public ImmutableLocation(World world, double x, double y, double z, float yaw, float pitch) {
+    /**
+     * Creates a new ImmutableLocation.
+     * @param world world
+     * @param x x
+     * @param y y
+     * @param z z
+     * @param yaw yaw
+     * @param pitch pitch
+     */
+    public ImmutableLocation(@org.jetbrains.annotations.Nullable World world, double x, double y, double z, float yaw, float pitch) {
         super(world, x, y, z, yaw, pitch);
     }
 
@@ -24,7 +39,7 @@ public class ImmutableLocation extends Location {
      * Creates a new immutable location based on a mutable location.
      * @param location Bukkit Location
      */
-    public ImmutableLocation(Location location) {
+    public ImmutableLocation(@NotNull Location location) {
         super(location.getWorld(), location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
     }
 

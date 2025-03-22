@@ -7,14 +7,17 @@ import java.util.UUID;
 
 /**
  * Combat tracking system.
- * You need to call {@link this#onPlayerDamage(UUID, UUID, double)} when a player is damaged by a player and {@link this#onPlayerDeath(UUID)} when the player died.
- * You also need to call {@link this#task()} every second.
- * If you call {@link this#onPlayerDeath(UUID)}, you will get the current player fight returned, which contains the information about all players involved in this fight.
+ * You need to call {@link CombatTracker#onPlayerDamage(UUID, UUID, double)} when a player is damaged by a player and {@link CombatTracker#onPlayerDeath(UUID)} when the player died.
+ * You also need to call {@link CombatTracker#task()} every second.
+ * If you call {@link CombatTracker#onPlayerDeath(UUID)}, you will get the current player fight returned, which contains the information about all players involved in this fight.
  * Look at {@link PlayerFight} to see how to use it.
  */
 public class CombatTracker {
     private final Map<UUID, PlayerFight> playerFights;
 
+    /**
+     * Creates a CombatTracker.
+     */
     public CombatTracker() {
         this.playerFights = Collections.synchronizedMap(new HashMap<>());
     }

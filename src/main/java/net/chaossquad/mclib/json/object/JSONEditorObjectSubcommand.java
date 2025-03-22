@@ -6,10 +6,22 @@ import net.chaossquad.mclib.json.JSONEditorCommand;
 import net.chaossquad.mclib.json.object.subcommands.*;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * {@link JSONEditorCommand}.
+ */
 public class JSONEditorObjectSubcommand extends SubcommandCommand {
+
+    /**
+     * Returns the message which is sent when there is no editable JSONObject available.
+     */
     public static final String NO_EDITABLE_MESSAGE = "§cThere is currently no editable json object loaded";
+
     @NotNull private final JSONEditorCommand manager;
 
+    /**
+     * Creates the JSONEditorObjectSubcommand.
+     * @param manager manager
+     */
     public JSONEditorObjectSubcommand(@NotNull JSONEditorCommand manager) {
         super(manager.getPlugin(), "§cUsage: [...] config (info|unload|show|get <key>|set <key> <type> <value>|remove|load-object|load-array|load-empty)");
         this.manager = manager;
@@ -30,6 +42,10 @@ public class JSONEditorObjectSubcommand extends SubcommandCommand {
 
     // ----- OTHER -----
 
+    /**
+     * Returns the JSONEditorCommand.
+     * @return manager
+     */
     @NotNull
     public JSONEditorCommand getManager() {
         return this.manager;

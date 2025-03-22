@@ -25,6 +25,11 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
     private final List<Player> players;
     private final Map<String, PacketEntityData<?>> data;
 
+    /**
+     * Creates the PacketEntity.
+     * @param manager manager
+     * @param entity entity
+     */
     public PacketEntity(PacketEntityManager manager, T entity) {
         this.manager = manager;
         this.entity = entity;
@@ -37,7 +42,7 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
 
     /**
      * Returns the entity.
-     * @return
+     * @return entity
      */
     public T getEntity() {
         return this.entity;
@@ -45,7 +50,7 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
 
     /**
      * Checks if the entity is removed.
-     * @return
+     * @return removed
      */
     public boolean isRemoved() {
         return this.entity.isRemoved();
@@ -263,6 +268,10 @@ public class PacketEntity<T extends Entity> implements EntityInLevelCallback {
 
     // GETTER
 
+    /**
+     * Returns the manager.
+     * @return manager
+     */
     public PacketEntityManager getManager() {
         return manager;
     }

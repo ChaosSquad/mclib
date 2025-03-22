@@ -100,8 +100,20 @@ public final class WorldUtils {
      * The weather types can be converted by {@link WeatherType#getBukkitWeatherType()}
      */
     public enum WeatherType {
+
+        /**
+         * Sun.
+         */
         CLEAR(1, org.bukkit.WeatherType.CLEAR),
+
+        /**
+         * Rain.
+         */
         RAIN(2, org.bukkit.WeatherType.DOWNFALL),
+
+        /**
+         * Thunder.
+         */
         THUNDER(3, org.bukkit.WeatherType.DOWNFALL);
 
         WeatherType(int value, org.bukkit.WeatherType bukkitWeatherType) {
@@ -117,7 +129,7 @@ public final class WorldUtils {
          * 0 = {@link WeatherType#CLEAR}
          * 1 = {@link WeatherType#RAIN}
          * 2 = {@link WeatherType#THUNDER}
-         * @return
+         * @return value
          */
         public int getValue() {
             return value;
@@ -254,7 +266,7 @@ public final class WorldUtils {
      * @param from from location
      * @param to to location
      * @param material block
-     * @deprecated Use {@link this#fillAreaWith(World, BlockBox, Material)} instead
+     * @deprecated Use {@link #fillAreaWith(World, BlockBox, Material)} instead
      */
     @Deprecated
     public static void fillAreaWith(Location from, Location to, Material material) {
@@ -274,8 +286,19 @@ public final class WorldUtils {
 
     // BLOCK DISPLAYS
 
+    /**
+     * NamespacedKey for PersistentDataContainer.
+     */
     public static final NamespacedKey BLOCK_DISPLAY_STRUCTURE_RELATIVE_X = new NamespacedKey("net.chaossquad.mclib", "block_structure_relative_x");
+
+    /**
+     * NamespacedKey for PersistentDataContainer.
+     */
     public static final NamespacedKey BLOCK_DISPLAY_STRUCTURE_RELATIVE_Y = new NamespacedKey("net.chaossquad.mclib", "block_structure_relative_y");
+
+    /**
+     * NamespacedKey for PersistentDataContainer.
+     */
     public static final NamespacedKey BLOCK_DISPLAY_STRUCTURE_RELATIVE_Z = new NamespacedKey("net.chaossquad.mclib", "block_structure_relative_z");
 
     /**

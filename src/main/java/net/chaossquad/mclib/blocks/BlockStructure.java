@@ -107,7 +107,7 @@ public class BlockStructure {
     }
 
     /**
-     * Same as {@link this#toBlockBox(int, int, int)} with the difference that the vector is used for the shift.
+     * Same as {@link #toBlockBox(int, int, int)} with the difference that the vector is used for the shift.
      * @param vector shift vector / location vector of starting point
      * @return {@link BlockBox} with the same dimensions as this block structure.
      */

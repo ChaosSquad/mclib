@@ -12,8 +12,17 @@ import org.bukkit.util.Vector;
  */
 public class BlockBox {
 
+    /**
+     * An interface which provides the coordinates for {@link #forEach(BlockLocationProvider)}.
+     */
     public interface BlockLocationProvider {
 
+        /**
+         * Provides the coordinates.
+         * @param x x coordinate
+         * @param y y coordinate
+         * @param z z coordinate
+         */
         void provide(int x, int y, int z);
 
     }
@@ -29,12 +38,12 @@ public class BlockBox {
 
     /**
      * Creates a block box with the specified coordinates as min and max locations.
-     * @param minX
-     * @param minY
-     * @param minZ
-     * @param maxX
-     * @param maxY
-     * @param maxZ
+     * @param minX min x
+     * @param minY min y
+     * @param minZ min z
+     * @param maxX max x
+     * @param maxY max y
+     * @param maxZ max z
      */
     public BlockBox(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
         this.minX = minX;
@@ -120,50 +129,98 @@ public class BlockBox {
 
     // GETTER AND SETTER
 
+    /**
+     * Returns the min x coordinate.
+     * @return min x
+     */
     public int getMinX() {
         return minX;
     }
 
+    /**
+     * Sets the min x coordinate.
+     * @param minX min x
+     */
     public void setMinX(int minX) {
         this.minX = minX;
     }
 
+    /**
+     * Returns the min y coordinate.
+     * @return min y
+     */
     public int getMinY() {
         return minY;
     }
 
+    /**
+     * Sets the min y coordinate.
+     * @param minY min y
+     */
     public void setMinY(int minY) {
         this.minY = minY;
     }
 
+    /**
+     * Returns the min z coordinate.
+     * @return min z
+     */
     public int getMinZ() {
         return minZ;
     }
 
+    /**
+     * Sets the min z coordinate.
+     * @param minZ min z
+     */
     public void setMinZ(int minZ) {
         this.minZ = minZ;
     }
 
+    /**
+     * Returns the max x coordinate.
+     * @return max x
+     */
     public int getMaxX() {
         return maxX;
     }
 
+    /**
+     * Sets the max x coordinate.
+     * @param maxX max x
+     */
     public void setMaxX(int maxX) {
         this.maxX = maxX;
     }
 
+    /**
+     * Returns the max y coordinate.
+     * @return max y
+     */
     public int getMaxY() {
         return maxY;
     }
 
+    /**
+     * Sets the max y coordinate.
+     * @param maxY max y
+     */
     public void setMaxY(int maxY) {
         this.maxY = maxY;
     }
 
+    /**
+     * Returns the max z coordinate.
+     * @return max z
+     */
     public int getMaxZ() {
         return maxZ;
     }
 
+    /**
+     * Sets the max z coordinate.
+     * @param maxZ max z
+     */
     public void setMaxZ(int maxZ) {
         this.maxZ = maxZ;
     }
@@ -211,6 +268,10 @@ public class BlockBox {
 
     // FOR EACH
 
+    /**
+     * Iterates through every single block in the BlockBox.
+     * @param locationProvider location provider
+     */
     public void forEach(BlockLocationProvider locationProvider) {
         BlockBox box = this.clone();
         box.sort();
@@ -238,7 +299,7 @@ public class BlockBox {
 
     /**
      * Converts the BlockBox into a {@link BoundingBox} containing all blocks
-     * @return
+     * @return bounding box
      */
     public BoundingBox toBoundingBox() {
         BlockBox copy = this.clone();

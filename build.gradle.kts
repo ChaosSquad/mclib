@@ -38,6 +38,11 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.11.6")
 }
 
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
 // gradle publish{PUBLICATION_NAME}To{REPOSITORY_NAME}Repository
 // in this case: publishMavenToChaosSquadRepository
 publishing {

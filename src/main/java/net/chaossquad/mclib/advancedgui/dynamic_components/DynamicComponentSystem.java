@@ -10,11 +10,21 @@ import org.jetbrains.annotations.NotNull;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Handles dynamic component creation/deletion for AdvancedGUI.<br/>
+ * This does basically the same as {@link DynamicComponentHandler}.
+ */
 public class DynamicComponentSystem {
     private final ComponentTreeProvider provider;
     private final String targetComponentId;
     private final GroupComponent templateComponents;
 
+    /**
+     * Creates a new DynamicComponentSystem.
+     * @param provider provider of the AdvancedGUI component tree.
+     * @param targetComponentId the component group that contains the dynamic components
+     * @param templateComponents the component group that contains the template components
+     */
     public DynamicComponentSystem(@NotNull ComponentTreeProvider provider, @NotNull String targetComponentId, @NotNull GroupComponent templateComponents) {
         this.provider = provider;
         this.targetComponentId = targetComponentId;
@@ -44,6 +54,12 @@ public class DynamicComponentSystem {
         return List.copyOf(dynamicComponents);
     }
 
+    /**
+     * Builds the component id of the dynamic component id.<br/>
+     * Reverses {@link #getDynamicComponentIdIdFromComponentId(String)}.
+     * @param dynamicComponentId dynamic component id
+     * @return component id
+     */
     public String buildComponentId(@NotNull String dynamicComponentId) {
         return this.getDynamicComponentGroup().getId() + ":" + dynamicComponentId;
     }
@@ -167,6 +183,10 @@ public class DynamicComponentSystem {
 
     // OTHER
 
+    /**
+     * Returns the ComponentTreeProvider.
+     * @return component tree provider
+     */
     public ComponentTreeProvider getProvider() {
         return this.provider;
     }

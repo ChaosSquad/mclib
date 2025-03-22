@@ -12,13 +12,29 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A WallGUIProvider which manages its own item frame entities.
+ */
 public class EntityManagingWallGUIProvider extends WallGUIProvider {
     private final List<ItemFrame> itemFrames;
 
+    /**
+     * Creates a new EntityManagingWallGUIProvider.
+     * @param layoutId layout id
+     * @param location location
+     * @param direction direction
+     * @param interactionRadius interaction radius
+     */
     public EntityManagingWallGUIProvider(@NotNull String layoutId, @NotNull Location location, @NotNull Direction direction, int interactionRadius) {
         this(layoutId, new GuiLocation(location, direction), interactionRadius);
     }
 
+    /**
+     * Creates a new EntityManagingWallGUIProvider.
+     * @param layoutId layout id
+     * @param guiLocation gui location
+     * @param interactionRadius interaction radius
+     */
     public EntityManagingWallGUIProvider(@NotNull String layoutId, @NotNull GuiLocation guiLocation, int interactionRadius) {
         super(layoutId, guiLocation, interactionRadius);
         this.itemFrames = new ArrayList<>();
@@ -91,6 +107,10 @@ public class EntityManagingWallGUIProvider extends WallGUIProvider {
         this.itemFrames.add(itemFrame);
     }
 
+    /**
+     * Returns the item frames.
+     * @return list of item frames
+     */
     public final List<ItemFrame> getItemFrames() {
         return List.copyOf(this.itemFrames);
     }

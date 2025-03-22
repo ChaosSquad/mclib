@@ -13,13 +13,29 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * A specific type of WallGUIProvider that synchronizes the displayed content for all players.
+ */
 public class SynchronizedScreen extends WallGUIProvider implements ComponentTreeProvider {
     private final GroupComponent componentTree;
 
+    /**
+     * Create a new SynchronizedScreen.
+     * @param layoutId layout id
+     * @param location location
+     * @param direction direction
+     * @param interactionRadius interaction radius
+     */
     public SynchronizedScreen(String layoutId, Location location, Direction direction, int interactionRadius) {
         this(layoutId, new GuiLocation(location, direction), interactionRadius);
     }
 
+    /**
+     * Create a new SynchronizedScreen.
+     * @param layoutId layout id
+     * @param location gui location
+     * @param interactionRadius interaction radius
+     */
     public SynchronizedScreen(@NotNull String layoutId, @NotNull GuiLocation location, int interactionRadius) {
         super(layoutId, location, interactionRadius);
         this.componentTree = this.getLayout().getTemplateComponentTree().clone(null);

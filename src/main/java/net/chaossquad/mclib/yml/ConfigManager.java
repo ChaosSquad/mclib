@@ -10,10 +10,17 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 
+/**
+ * Manages a yml config.
+ */
 public final class ConfigManager {
     @NotNull private final Plugin plugin;
     @NotNull private YamlConfiguration config;
 
+    /**
+     * Creates a new ConfigManager.
+     * @param plugin plugin
+     */
     public ConfigManager(@NotNull Plugin plugin) {
         this.plugin = plugin;
         this.resetConfig();
@@ -62,6 +69,10 @@ public final class ConfigManager {
         if (!success) this.saveConfig();
     }
 
+    /**
+     * Loads the config from the config file path.
+     * @return success
+     */
     public boolean loadConfig() {
         try {
 
@@ -82,6 +93,10 @@ public final class ConfigManager {
         }
     }
 
+    /**
+     * Saves the config to the config file path.
+     * @return success
+     */
     public boolean saveConfig() {
         try {
 
@@ -102,14 +117,26 @@ public final class ConfigManager {
         }
     }
 
+    /**
+     * Returns the config file path
+     * @return
+     */
     private File getConfigFile() {
         return new File(this.plugin.getDataFolder(), "config.yml");
     }
 
+    /**
+     * Returns the plugin
+     * @return plugin
+     */
     public @NotNull Plugin getPlugin() {
         return plugin;
     }
 
+    /**
+     * Returns the config
+     * @return config
+     */
     public @NotNull YamlConfiguration getConfig() {
         return config;
     }

@@ -7,5 +7,11 @@ import org.jetbrains.annotations.Nullable;
  * It is mainly used in lambda expressions to dynamically provide remove conditions from the outside of the class where it is stored.
  */
 public interface RemovableHolder {
+
+    /**
+     * Returns the provided Removable
+     * @return Removable
+     */
     @Nullable Removable getRemovable();
+
 }

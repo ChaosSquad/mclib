@@ -12,11 +12,11 @@ import java.util.logging.Level;
 
 /**
  * A command that can has multiple commands as subcommands.<br/>
- * You can add subcommands with {@link this#addSubcommand(String, SubcommandEntry)}.<br/>
- * You can remove subcommands with {@link this#removeSubcommand(String)}.<br/>
+ * You can add subcommands with {@link SubcommandCommand#addSubcommand(String, SubcommandEntry)}.<br/>
+ * You can remove subcommands with {@link SubcommandCommand#removeSubcommand(String)}.<br/>
  * You can set a global permission for the command in the constructor<br/>
  * You can set a {@link DynamicSubcommandProvider} that can provide subcommands dynamically in the constructor.<br/>
- * You can override {@link this#onExecutionWithoutSubcommand(CommandSender, Command, String)} to run code when the command is executed without subcommands.
+ * You can override {@link SubcommandCommand#onExecutionWithoutSubcommand(CommandSender, Command, String)} to run code when the command is executed without subcommands.
  */
 public class SubcommandCommand implements TabCompletingCommandExecutor {
     @NotNull private final Plugin plugin;
@@ -24,6 +24,12 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
     @Nullable private final DynamicSubcommandProvider dynamicSubcommandProvider;
     @Nullable private final PermissionProvider permissionProvider;
 
+    /**
+     * Creates a new SubcommandCommand.
+     * @param plugin plugin
+     * @param permissionProvider permission provider
+     * @param dynamicSubcommandProvider dynamic subcommand provider
+     */
     public SubcommandCommand(@NotNull Plugin plugin, @Nullable PermissionProvider permissionProvider, @Nullable DynamicSubcommandProvider dynamicSubcommandProvider) {
         this.plugin = plugin;
         this.entries = new HashMap<>();
@@ -31,18 +37,38 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
         this.permissionProvider = permissionProvider;
     }
 
+    /**
+     * Creates a new SubcommandCommand.
+     * @param plugin plugin
+     * @param permissionProvider permission provider
+     */
     public SubcommandCommand(@NotNull Plugin plugin, @NotNull PermissionProvider permissionProvider) {
         this(plugin, permissionProvider, null);
     }
 
+    /**
+     * Creates a new SubcommandCommand.
+     * @param plugin plugin
+     */
     public SubcommandCommand(@NotNull Plugin plugin) {
         this(plugin, (PermissionProvider) null, null);
     }
 
+    /**
+     * Creates a new SubcommandCommand.
+     * @param plugin plugin
+     * @param permission permission
+     * @param dynamicSubcommandProvider dynamic subcommand provider
+     */
     public SubcommandCommand(@NotNull Plugin plugin, @Nullable String permission, @Nullable DynamicSubcommandProvider dynamicSubcommandProvider) {
         this(plugin, permission != null ? sender -> sender.hasPermission(permission) : null, dynamicSubcommandProvider);
     }
 
+    /**
+     * Creates a new SubcommandCommand.
+     * @param plugin plugin
+     * @param permission permission
+     */
     public SubcommandCommand(@NotNull Plugin plugin, @Nullable String permission) {
         this(plugin, permission, null);
     }
@@ -112,6 +138,12 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
 
     // ----- NO SUBCOMMAND ACTION -----
 
+    /**
+     * This is executed when no subcommand is specified.
+     * @param sender sender
+     * @param cmd cmd
+     * @param label label
+     */
     protected void onExecutionWithoutSubcommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label) {
 
         String message = "§cAvailable subcommands: ";
@@ -275,8 +307,19 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
 
     // ----- INNER CLASSES -----
 
+    /**
+     * Provides the permission for the command.<br/>
+     * This allows for dynamically providing a permission instead of the permission string.
+     */
     public interface PermissionProvider {
+
+        /**
+         * Returns true if the specified sender has the permission
+         * @param sender sender
+         * @return permission
+         */
         boolean hasPermission(@NotNull CommandSender sender);
+
     }
 
 }

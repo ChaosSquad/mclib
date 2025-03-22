@@ -18,6 +18,15 @@ public abstract class Task {
     private boolean removed;
     private boolean paused;
 
+    /**
+     * Creates a task.
+     * @param id id
+     * @param scheduler task scheduler
+     * @param runnable runnable
+     * @param removeCondition remove condition
+     * @param label label
+     */
+    @ApiStatus.Internal
     protected Task(long id, @NotNull TaskScheduler scheduler, @NotNull TaskRunnable runnable, @Nullable Removable removeCondition, @Nullable String label) {
         this.id = id;
         this.scheduler = scheduler;
@@ -83,7 +92,7 @@ public abstract class Task {
      * Returns if the task has been marked for removal.
      * If the task is marked for removal, it will no longer execute.
      * This method does not return if the task has been or should be removed.
-     * If you want to check if the task has been or should be removed, use {@link this#toBeRemoved()}.
+     * If you want to check if the task has been or should be removed, use {@link #toBeRemoved()}.
      * @return marked for removal
      */
     public boolean isMarkedForRemoval() {
@@ -147,7 +156,7 @@ public abstract class Task {
 
     /**
      * Stop condition for custom tasks.
-     * When {@link this#toBeRemoved()} returns true, the task will automatically be removed from the {@link TaskScheduler}.
+     * When {@link RemoveCondition#toBeRemoved()} returns true, the task will automatically be removed from the {@link TaskScheduler}.
      * @deprecated Use {@link Removable} directly
      */
     @Deprecated

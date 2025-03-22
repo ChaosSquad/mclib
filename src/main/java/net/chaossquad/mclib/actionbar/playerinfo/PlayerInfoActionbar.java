@@ -17,11 +17,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * An actionbar which shows the current player name and health in the actionbar.
+ */
 public final class PlayerInfoActionbar implements TaskRunnable {
     @NotNull private final PlayerProvider playerProvider;
     @NotNull private final ActionBarProvider actionBar;
     private final int range;
 
+    /**
+     * Creates a PlayerInfoActionbar.
+     * @param playerProvider player provider
+     * @param actionBar actionbar provider
+     * @param range range
+     */
     public PlayerInfoActionbar(@NotNull PlayerProvider playerProvider, @NotNull ActionBarProvider actionBar, int range) {
         this.playerProvider = playerProvider;
         this.actionBar = actionBar;
@@ -30,6 +39,10 @@ public final class PlayerInfoActionbar implements TaskRunnable {
 
     // ----- TASKS -----
 
+    /**
+     * Task
+     * @param task task
+     */
     @Override
     public void run(Task task) {
 
@@ -69,32 +82,72 @@ public final class PlayerInfoActionbar implements TaskRunnable {
 
     // ----- OTHER -----
 
+    /**
+     * Returns the PlayerProvider.
+     * @return player provider
+     */
     public @NotNull PlayerProvider getPlayerProvider() {
         return playerProvider;
     }
 
+    /**
+     * Returns the ActionbarProvider.
+     * @return actionbar provider
+     */
     public @NotNull ActionBarProvider getActionBarProvider() {
         return actionBar;
     }
 
+    /**
+     * Returns the range.
+     * @return range
+     */
     public int getRange() {
         return range;
     }
 
     // ----- INNER CLASSES -----
 
+    /**
+     * Provides the players for the PlayerInfoActionbar.
+     */
     public interface PlayerProvider {
+
+        /**
+         * Returns the list of the provided players.
+         * @return list of players
+         */
         @NotNull List<@NotNull Player> getPlayers();
+
     }
 
+    /**
+     * Provides the actionbar.
+     */
     public interface ActionBarProvider {
 
+        /**
+         * Sends the actionbar to the player.
+         * @param player player
+         * @param message message
+         */
         void sendActionBar(@NotNull Player player, @NotNull Component message);
 
+        /**
+         * Creates an ActionBarProvider using the MCLIB {@link ActionBarManager}.
+         * @param manager manager
+         * @param actionBarId actionbar id
+         * @param duration duration
+         * @return ActionbarProvider
+         */
         static ActionBarProvider mclib(@NotNull ActionBarManager manager, String actionBarId, int duration) {
             return (player, message) -> manager.sendActionBarMessage(player, actionBarId, duration, message);
         }
 
+        /**
+         * Creates an ActionBarProvider using the default player method to send actionbars.
+         * @return ActionBarProvider
+         */
         static ActionBarProvider vanilla() {
             return Audience::sendActionBar;
         }

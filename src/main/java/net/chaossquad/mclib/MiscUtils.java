@@ -37,6 +37,12 @@ public final class MiscUtils {
 
     private MiscUtils() {}
 
+    /**
+     * Shifts command arguments.
+     * @param array args
+     * @param shiftAmount amout to shift
+     * @return shifted array of arguments
+     */
     public static String[] shiftArgs(String[] array, int shiftAmount) {
         int newLength = array.length - shiftAmount;
         if (newLength < 0) return new String[0];
@@ -50,6 +56,11 @@ public final class MiscUtils {
         return shiftedArray;
     }
 
+    /**
+     * Formats the specified time.
+     * @param seconds time in seconds
+     * @return formatted time
+     */
     public static String getDurationFormat(long seconds) {
         Duration duration = Duration.ofSeconds(seconds);
         String formattedTime;

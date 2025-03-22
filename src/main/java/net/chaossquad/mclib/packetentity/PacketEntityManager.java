@@ -21,6 +21,10 @@ public class PacketEntityManager implements Listener {
     private final Plugin plugin;
     private final List<PacketEntity<?>> entities;
 
+    /**
+     * Creates a PacketEntityManager.
+     * @param plugin plugin
+     */
     public PacketEntityManager(Plugin plugin) {
         this.plugin = plugin;
         entities = new ArrayList<>();
@@ -38,6 +42,9 @@ public class PacketEntityManager implements Listener {
 
     // TASKS
 
+    /**
+     * Cleans up all packet entities.
+     */
     public void cleanupEntities() {
 
         for (PacketEntity<?> entity : List.copyOf(this.entities)) {
@@ -51,6 +58,9 @@ public class PacketEntityManager implements Listener {
 
     }
 
+    /**
+     * Cleans up all players of all packet entities.
+     */
     public void cleanupPlayers() {
 
         for (PacketEntity<?> entity : List.copyOf(this.entities)) {
@@ -60,6 +70,9 @@ public class PacketEntityManager implements Listener {
 
     }
 
+    /**
+     * Updates all PacketEntities for the players.
+     */
     public void updateEntities() {
 
         for (PacketEntity<?> entity : List.copyOf(this.entities)) {
@@ -80,6 +93,10 @@ public class PacketEntityManager implements Listener {
 
     // EVENTS
 
+    /**
+     * Cleanup players when the player has left the server.
+     * @param event event
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         new BukkitRunnable() {
@@ -92,6 +109,10 @@ public class PacketEntityManager implements Listener {
         }.runTaskLater(this.plugin, 1);
     }
 
+    /**
+     * Remove packet entities when the player has changed the world.
+     * @param event event
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
         new BukkitRunnable() {
@@ -104,6 +125,10 @@ public class PacketEntityManager implements Listener {
         }.runTaskLater(this.plugin, 1);
     }
 
+    /**
+     * Cleanup PacketEntities when the world has been unloaded.
+     * @param event event
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onWorldUnload(WorldUnloadEvent event) {
         new BukkitRunnable() {

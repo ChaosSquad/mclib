@@ -5,6 +5,7 @@ import net.chaossquad.mclib.json.array.JSONEditorArraySubcommand;
 import net.chaossquad.mclib.json.object.JSONEditorObjectSubcommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -13,9 +14,17 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * {@link net.chaossquad.mclib.json.JSONEditorCommand}.
+ */
 public class JSONEditorArrayRemoveSubcommand implements TabCompletingCommandExecutor {
     @NotNull private final JSONEditorArraySubcommand parent;
 
+    /**
+     * Creates the object.
+     * @param parent parent
+     */
+    @ApiStatus.Internal
     public JSONEditorArrayRemoveSubcommand(@NotNull JSONEditorArraySubcommand parent) {
         this.parent = parent;
     }
@@ -75,6 +84,10 @@ public class JSONEditorArrayRemoveSubcommand implements TabCompletingCommandExec
         return List.of();
     }
 
+    /**
+     * Returns the parent
+     * @return parent
+     */
     public @NotNull JSONEditorArraySubcommand getParent() {
         return parent;
     }

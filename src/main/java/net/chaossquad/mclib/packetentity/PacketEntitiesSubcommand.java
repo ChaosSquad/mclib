@@ -11,10 +11,18 @@ import org.bukkit.plugin.Plugin;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A command which manages packet entities created by the {@link PacketEntityManager}.
+ */
 public class PacketEntitiesSubcommand implements TabCompletingCommandExecutor {
     private final PacketEntityManagerProvider provider;
     private final String permission;
 
+    /**
+     * Creates a PacketEntitiesSubcommand.
+     * @param provider provider
+     * @param permission permission
+     */
     public PacketEntitiesSubcommand(PacketEntityManagerProvider provider, String permission) {
         if (!(provider instanceof Plugin)) throw new IllegalArgumentException("Provided packet entity provider is not a plugin");
         this.provider = provider;
@@ -324,6 +332,10 @@ public class PacketEntitiesSubcommand implements TabCompletingCommandExecutor {
 
     }
 
+    /**
+     * Returns the PacketEntityManagerProvider.
+     * @return provider
+     */
     public PacketEntityManagerProvider getProvider() {
         return provider;
     }

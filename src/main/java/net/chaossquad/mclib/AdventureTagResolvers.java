@@ -17,6 +17,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+/**
+ * Contains {@link TagResolver}s for the net.kyori.adventure api.
+ */
 public final class AdventureTagResolvers {
 
     private AdventureTagResolvers() {}
@@ -98,6 +101,14 @@ public final class AdventureTagResolvers {
         }, allowLegacyFormat);
     }
 
+    /**
+     * Template parser.
+     * @param tag tag name
+     * @param player player
+     * @param parser template parser
+     * @param allowLegacyFormat if legacy color codes should be supported
+     * @return tag resolver
+     */
     public static @NotNull TagResolver template(final @NotNull String tag, final @NotNull Player player, TemplateParserProvider parser, final boolean allowLegacyFormat) {
         return TagResolver.resolver(tag, (argumentQueue, context) -> {
             final String papiPlaceholder = argumentQueue.popOr(tag + " tag requires an argument").value();
@@ -114,8 +125,19 @@ public final class AdventureTagResolvers {
         });
     }
 
+    /**
+     * A template parser for {@link #template(String, Player, TemplateParserProvider, boolean)}.
+     */
     public interface TemplateParserProvider {
+
+        /**
+         * Returns the parsed content for the specified player.
+         * @param player player
+         * @param text input text
+         * @return output text
+         */
         @NotNull String parse(final @NotNull Player player, final @NotNull String text);
+
     }
 
 }

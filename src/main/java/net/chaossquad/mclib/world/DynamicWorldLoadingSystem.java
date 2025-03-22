@@ -18,30 +18,34 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 /**
- * <h3>DynamicWorldLoadingSystem</h3>
+ * <h2>DynamicWorldLoadingSystem</h2>
+ *
+ * <h3>What is it?</h3>
  * <p>
- *     <h6>What is it?</h6>
- *     The dynamic world loading system allows you to create a copy of a template world and load it.<br/>
- *     The system can create multiple copies of the specified template.<br/>
- *     Dynamic worlds will be automatically deleted when they are not loaded anymore.
+ * The dynamic world loading system allows you to create a copy of a template world and load it.
+ * The system can create multiple copies of the specified template.
+ * Dynamic worlds will be automatically deleted when they are not loaded anymore.
  * </p>
+ *
+ * <h3>How to use it?</h3>
  * <p>
- *     <br/>
- *     <h6>How to use it?</h6>
- *     You need to have a template world directory inside your server folder (like a normal world on the server).<br/>
- *     Then you can create a new dynamic world of that template using {@link this#createWorldFromTemplate(String)}. The template world is then copied and loaded.<br/>
- *     Dynamic worlds are automatically deleted when it is no longer required.
- * <p/>
+ * You need to have a template world directory inside your server folder (like a normal world on the server).
+ * Then you can create a new dynamic world of that template using {@link #createWorldFromTemplate(String)}.
+ * The template world is then copied and loaded.
+ * Dynamic worlds are automatically deleted when they are no longer required.
+ * </p>
+ *
+ * <h3>What do I need to know?</h3>
  * <p>
- *     <br/>
- *     <h6>What do I need to know?</h6>
- *     - You need to call {@link this#remove()} inside your {@link Plugin#onDisable()} method to delete all dynamic worlds.<br/>
- *     - Creating a DynamicWorldLoadingSystem will automatically delete all existing dynamic worlds.<br/>
- *     - Worlds that have names starting with <code>dynamicworlds-PLUGIN_NAME-</code> will be considered as dynamic worlds and are therefore affected by actions of the DynamicWorldLoadingSystem, even if you have copied them manually to the server directory!
+ * - You need to call {@link #remove()} inside your {@link Plugin#onDisable()} method to delete all dynamic worlds.
+ * - Creating a DynamicWorldLoadingSystem will automatically delete all existing dynamic worlds.
+ * - Worlds that have names starting with <code>dynamicworlds-PLUGIN_NAME-</code> will be considered as dynamic worlds
+ *   and are therefore affected by actions of the DynamicWorldLoadingSystem, even if you have copied them manually to the server directory!
  * </p>
  */
 public class DynamicWorldLoadingSystem implements Runnable {
-    public static final List<String> DISALLOWED_WORLD_NAMES = List.of("cache", "config", "libraries", "logs", "plugins", "versions", "world");
+    private static final List<String> DISALLOWED_WORLD_NAMES = List.of("cache", "config", "libraries", "logs", "plugins", "versions", "world");
+
     private static final String PREFIX = "dynamicworlds-";
     private static final String UID_FILE_NAME = "uid.dat";
 
@@ -49,6 +53,10 @@ public class DynamicWorldLoadingSystem implements Runnable {
     private final BukkitTask task;
     private final AtomicInteger nextId;
 
+    /**
+     * Creates a new dynamic world loading system.
+     * @param plugin plugin
+     */
     public DynamicWorldLoadingSystem(@NotNull Plugin plugin) {
         this.plugin = plugin;
         this.task = this.plugin.getServer().getScheduler().runTaskTimer(this.plugin, this, 1, 10*20);
@@ -255,6 +263,9 @@ public class DynamicWorldLoadingSystem implements Runnable {
 
     // REMOVE
 
+    /**
+     * Deletes all dynamically created worlds and disables the dynamic world loading system.
+     */
     public void remove() {
         this.task.cancel();
         this.unloadAndDeleteAllDynamicWorlds();
@@ -262,14 +273,26 @@ public class DynamicWorldLoadingSystem implements Runnable {
 
     // OTHER
 
+    /**
+     * Returns the plugin.
+     * @return plugin
+     */
     public Plugin getPlugin() {
         return plugin;
     }
 
+    /**
+     * Returns the next world id.
+     * @return next world id
+     */
     public int getNextId() {
         return this.nextId.get();
     }
 
+    /**
+     * Returns true if the dynamic world loading system is cancelled.
+     * @return cancelled
+     */
     public boolean isRemoved() {
         return this.task.isCancelled();
     }

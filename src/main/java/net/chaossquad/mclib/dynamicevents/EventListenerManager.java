@@ -10,12 +10,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Dynamically manages event listeners.<br/>
+ * Instead of directly registering event listeners to Bukkit, listeners are registered to a {@link ListenerOwner}.<br/>
+ * The ListenerManager then keeps the listeners registered as long as the ListenerOwner provides them.<br/>
+ * If not, they are unregistered.<br/>
+ * Listeners which should not be managed by this manager has to be excepted. If not, they will be unregistered as well.
+ * Listeners of other plugins are automatically excepted.
+ */
 public final class EventListenerManager {
     @NotNull private final Plugin plugin;
     @NotNull private final List<ListenerOwnerSource> sources;
     @NotNull private final List<ExtendedListenerOwnerSource> extendedSources;
     @NotNull private final List<Listener> exceptedListeners;
 
+    /**
+     * Creates a new EventListenerManager.
+     * @param plugin plugin
+     */
     public EventListenerManager(@NotNull Plugin plugin) {
         this.plugin = plugin;
         this.sources = Collections.synchronizedList(new ArrayList<>());
@@ -97,40 +109,76 @@ public final class EventListenerManager {
 
     // ----- LISTS -----
 
+    /**
+     * Adds a ListenerOwnerSource.
+     * @param source source to add
+     */
     public void addSource(@NotNull ListenerOwnerSource source) {
         this.sources.add(source);
     }
 
+    /**
+     * Adds an ExtendedListenerOwnerSource.
+     * @param source source to add
+     */
     public void addExtendedSource(@NotNull ExtendedListenerOwnerSource source) {
         this.extendedSources.add(source);
     }
 
+    /**
+     * Removes a ListenerOwnerSource.
+     * @param source source to remove
+     */
     public void removeSource(ListenerOwnerSource source) {
         this.sources.remove(source);
     }
 
+    /**
+     * Removes an ExtendedListenerOwnerSource.
+     * @param source source to remove
+     */
     public void removeExtendedSource(@NotNull ExtendedListenerOwnerSource source) {
         this.extendedSources.remove(source);
     }
 
+    /**
+     * Returns a list of all registered ListenerOwnerSources.
+     * @return list of sources
+     */
     @NotNull
     public List<ListenerOwnerSource> getSources() {
         return List.copyOf(this.sources);
     }
 
+    /**
+     * Returns a list of all ExtendedListenerOwnerSources.
+     * @return list of sources
+     */
     public @NotNull List<ExtendedListenerOwnerSource> getExtendedSources() {
         return List.copyOf(this.extendedSources);
     }
 
+    /**
+     * Add an excepted listener.
+     * @param exceptedListener listener to except
+     */
     public void addExceptedListener(@NotNull Listener exceptedListener) {
         if (this.containsExactly(this.exceptedListeners, exceptedListener)) return;
         this.exceptedListeners.add(exceptedListener);
     }
 
+    /**
+     * Removes an excepted Listener.
+     * @param exceptedListener listener to no longer except
+     */
     public void removeExceptedListener(Listener exceptedListener) {
         this.exceptedListeners.remove(exceptedListener);
     }
 
+    /**
+     * Returns a list of all excepted listeners.
+     * @return list of excepted listeners
+     */
     @NotNull
     public List<Listener> getExceptedListeners() {
         return List.copyOf(this.exceptedListeners);
@@ -186,6 +234,10 @@ public final class EventListenerManager {
         return false;
     }
 
+    /**
+     * Returns the plugin
+     * @return plugin
+     */
     @NotNull
     public Plugin getPlugin() {
         return this.plugin;

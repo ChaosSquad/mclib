@@ -2,10 +2,17 @@ package net.chaossquad.mclib;
 
 import org.bukkit.Bukkit;
 
+/**
+ * A class which checks for plugin dependencies.
+ */
 public final class IntegrationsCheck {
 
     private IntegrationsCheck() {}
 
+    /**
+     * Checks if LuckPerms is available.
+     * @return available
+     */
     public static boolean luckPerms() {
         if (Bukkit.getPluginManager().getPlugin("LuckPerms") == null) return false;
 
@@ -19,6 +26,10 @@ public final class IntegrationsCheck {
 
     }
 
+    /**
+     * Checks if Vault is available.
+     * @return available
+     */
     public static boolean vault() {
         if (Bukkit.getPluginManager().getPlugin("Vault") == null) return false;
 
@@ -34,6 +45,10 @@ public final class IntegrationsCheck {
 
     }
 
+    /**
+     * Checks if PlaceholderAPI is available.
+     * @return available
+     */
     public static boolean placeholderAPI() {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) return false;
 

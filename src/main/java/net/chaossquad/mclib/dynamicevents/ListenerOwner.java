@@ -5,6 +5,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * A listener owner provides a list of listeners.
+ */
 public interface ListenerOwner {
 
     /**

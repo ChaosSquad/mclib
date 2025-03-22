@@ -23,6 +23,11 @@ public abstract class CoreExecutable implements ListenerOwner, ListenerRegistrar
     @NotNull private final TaskScheduler taskScheduler;
     @NotNull private final List<ManagedListener> listeners;
 
+    /**
+     * Creates a new CoreExecutable.
+     * @param eventListenerManager EventListenerManager
+     * @param logger bukkit logger
+     */
     public CoreExecutable(@NotNull EventListenerManager eventListenerManager, @NotNull Logger logger) {
         this.eventListenerManager = eventListenerManager;
         this.logger = logger;
@@ -77,10 +82,10 @@ public abstract class CoreExecutable implements ListenerOwner, ListenerRegistrar
     }
 
     /**
-     * The tasks will be executed as long as this method returns true.
-     * If it returns false, no tasks will be executed and the plugin is told that the executable should be removed.
+     * The tasks will be executed as long as this method returns true.<br/>
+     * If it returns false, no tasks will be executed and the plugin is told that the executable should be removed.<br/>
+     * <b>override only, this method always returns true in the base class</b>
      * @return true if the tasks should be executed
-     * @apiNote override only, this method always returns true in the base class
      */
     @SuppressWarnings("SameReturnValue")
     @ApiStatus.OverrideOnly

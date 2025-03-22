@@ -19,6 +19,15 @@ public class RespawningManagedEntity<ENTITY_TYPE extends Entity> extends Managed
     @NotNull private final EntityCreator<ENTITY_TYPE> creator;
     private boolean enabled;
 
+    /**
+     * Creates a new RespawningManagedEntity.
+     * @param world world
+     * @param scheduler task scheduler
+     * @param listenerRegistrar listener registrar
+     * @param location location
+     * @param entityCreator entity creator
+     * @param enabled enabled
+     */
     public RespawningManagedEntity(@NotNull World world, @NotNull SchedulerInterface scheduler, @NotNull ListenerRegistrar listenerRegistrar, @NotNull Location location, @NotNull EntityCreator<ENTITY_TYPE> entityCreator, boolean enabled) {
         super(scheduler, listenerRegistrar);
         this.world = world;
@@ -62,14 +71,26 @@ public class RespawningManagedEntity<ENTITY_TYPE extends Entity> extends Managed
 
     }
 
+    /**
+     * Returns the enabled status.
+     * @return enabled status
+     */
     public boolean isEnabled() {
         return enabled;
     }
 
+    /**
+     * Sets the enabled status.
+     * @param enabled enabled status
+     */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
+    /**
+     * Returns the world.
+     * @return world
+     */
     @NotNull
     public final World getWorld() {
         return this.world;
