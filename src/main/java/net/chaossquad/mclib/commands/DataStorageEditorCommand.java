@@ -1,6 +1,7 @@
 package net.chaossquad.mclib.commands;
 
 import net.chaossquad.mclib.storage.DataStorage;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -8,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A command which allows to edit a data storage.<br/>
@@ -24,10 +26,11 @@ public final class DataStorageEditorCommand {
      * @param sender sender
      * @param label label
      * @param args args
+     * @param censoredValues values the command will not show (useful for passwords stored in the config)
      * @return result
      */
     @SuppressWarnings("SameReturnValue")
-    public static boolean onCommand(@NotNull DataStorage storage, @NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
+    public static boolean onCommand(@NotNull DataStorage storage, @NotNull CommandSender sender, @NotNull String label, @NotNull String[] args, @NotNull Set<String> censoredValues) {
 
         if (args.length < 1) {
             sender.sendMessage("§cUsage: " + label + " (list [section]|get <key>|set <key> <type> <value...>|remove <key>)");
@@ -35,6 +38,13 @@ public final class DataStorageEditorCommand {
         }
 
         try {
+
+            DataStorage cv = new DataStorage();
+            if (sender != Bukkit.getConsoleSender()) {
+                for (String key : censoredValues) {
+                    cv.set(key, true);
+                }
+            }
 
             switch (args[0]) {
                 case "list" -> {
@@ -44,15 +54,16 @@ public final class DataStorageEditorCommand {
                     if (args.length > 1) {
 
                         DataStorage section = storage.getSection(args[1]);
+                        DataStorage cvSection = cv.getSection(args[1]);
 
                         for (Map.Entry<String, Object> entry : section.entrySet()) {
-                            sender.sendMessage("§7" + args[1] + "§r§7." + entry.getKey() + "§r§7: " + entry.getValue());
+                            sender.sendMessage("§7" + args[1] + "§r§7." + entry.getKey() + (cvSection.optBoolean(entry.getKey(), false) ? " has been censored" : "§r§7: " + entry.getValue()));
                         }
 
                     } else {
 
                         for (Map.Entry<String, Object> entry : storage) {
-                            sender.sendMessage("§7" + entry.getKey() + "§r§7: " + entry.getValue());
+                            sender.sendMessage("§7" + entry.getKey() + (cv.optBoolean(entry.getKey(), false) ? " has been censored" : "§r§7: " + entry.getValue()));
                         }
 
                     }
@@ -69,6 +80,11 @@ public final class DataStorageEditorCommand {
 
                     if (value == null) {
                         sender.sendMessage("§7Value of key " + args[1] + " not set");
+                        return true;
+                    }
+
+                    if (cv.optBoolean(args[1], false)) {
+                        sender.sendMessage("§cThe value of key " + args[1] + " has been censored");
                         return true;
                     }
 
@@ -143,6 +159,19 @@ public final class DataStorageEditorCommand {
         }
 
         return true;
+    }
+
+    /**
+     * Runs the command.<br/>
+     * {@link org.bukkit.command.CommandExecutor#onCommand(CommandSender, Command, String, String[])}.
+     * @param storage data storage
+     * @param sender sender
+     * @param label label
+     * @param args args
+     * @return result
+     */
+    public static boolean onCommand(@NotNull DataStorage storage, @NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
+        return onCommand(storage, sender, label, args, Set.of());
     }
 
     /**
