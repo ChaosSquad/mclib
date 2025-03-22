@@ -192,7 +192,15 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
     }
 
     private boolean hasCommandPermission(SubcommandEntry command, CommandSender sender) {
-        return sender == this.plugin.getServer().getConsoleSender() || command.permission() == null || sender.hasPermission(command.permission());
+        if (sender == this.plugin.getServer().getConsoleSender()) return true;
+        if (command.permission() == null) return true;
+
+        try {
+            return command.permission().hasPermission(sender);
+        } catch (Exception e) {
+            this.plugin.getLogger().log(Level.WARNING, "Failed to check command permission: Exception in permission provider", e);
+            return false;
+        }
     }
 
     private SubcommandEntry getSubcommand(String name) {
