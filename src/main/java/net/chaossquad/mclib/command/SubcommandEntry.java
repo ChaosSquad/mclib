@@ -20,7 +20,7 @@ public record SubcommandEntry(CommandExecutor executor, TabCompleter tabComplete
      * @return SubcommandEntry
      */
     public static SubcommandEntry of(@NotNull TabCompletingCommandExecutor command, @NotNull SubcommandCommand.PermissionProvider permission) {
-        return new SubcommandEntry(command, null, permission);
+        return new SubcommandEntry(command, command, permission);
     }
 
     /**
