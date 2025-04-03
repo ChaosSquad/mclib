@@ -368,4 +368,22 @@ public final class MiscUtils {
         return item;
     }
 
+    /**
+     * Returns the average of the specified numbers.
+     * @param numbers numbers
+     * @return average
+     */
+    public static double getAverage(List<Double> numbers) {
+        if (numbers == null || numbers.isEmpty()) {
+            return 0;
+        }
+
+        double sum = 0;
+        for (double value : numbers) {
+            sum += value;
+        }
+
+        return sum / (double) numbers.size();
+    }
+
 }
