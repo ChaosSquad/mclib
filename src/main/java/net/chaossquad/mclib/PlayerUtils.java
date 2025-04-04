@@ -11,9 +11,10 @@ import net.luckperms.api.model.user.User;
 import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -59,6 +60,29 @@ public final class PlayerUtils {
             return Bukkit.getServer().getPlayer(playerString);
         }
 
+    }
+
+    /**
+     * Returns the "real" entity that has caused the damage.<br/>
+     * Returns the shooter of a projectile.<br/>
+     * Returns the placer of tnt.<br/>
+     * Returns the entity itself if it does not fit into those categories.
+     * @param entity damage source from the damage event
+     * @return "real source"
+     */
+    public static @Nullable Entity getRealDamager(@Nullable Entity entity) {
+        if (entity == null) return null;
+
+        if (entity instanceof Projectile projectile) {
+            if (!(projectile.getShooter() instanceof Player shooter)) return null;
+            return shooter;
+        }
+
+        if (entity instanceof TNTPrimed tnt) {
+            return tnt.getSource();
+        }
+
+        return entity;
     }
 
     /**
