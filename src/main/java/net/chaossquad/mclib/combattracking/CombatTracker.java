@@ -78,6 +78,10 @@ public class CombatTracker {
 
     // ----- INFORMATION -----
 
+    /**
+     * Returns the map of the currently ongoing PlayerFights.
+     * @return map of player fights
+     */
     public @NotNull Map<UUID, PlayerFight> getPlayerFights() {
         return this.playerFights;
     }
