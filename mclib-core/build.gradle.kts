@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.8"
+    id("net.chaossquad.conventions.paper-plugin")
     `maven-publish`
 }
 
@@ -29,10 +29,7 @@ repositories {
     }
 }
 
-paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
-
 dependencies {
-    paperweight.paperDevBundle(paperVersion)
     compileOnly("org.json:json:20240303")
     compileOnly("me.leoko.advancedgui:AdvancedGUI:2.2.9")
     compileOnly("net.luckperms:api:5.4")
