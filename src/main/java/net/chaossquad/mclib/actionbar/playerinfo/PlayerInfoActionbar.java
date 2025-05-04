@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * An actionbar which shows the current player name and health in the actionbar.
  */
-public final class PlayerInfoActionbar implements TaskRunnable {
+public final class PlayerInfoActionbar implements Runnable {
     @NotNull private final PlayerProvider playerProvider;
     @NotNull private final ActionBarProvider actionBar;
     private final int range;
@@ -58,11 +58,10 @@ public final class PlayerInfoActionbar implements TaskRunnable {
     // ----- TASKS -----
 
     /**
-     * Task
-     * @param task task
+     * Task.
      */
     @Override
-    public void run(Task task) {
+    public void run() {
 
         for (Player player : this.playerProvider.getPlayers()) {
 
