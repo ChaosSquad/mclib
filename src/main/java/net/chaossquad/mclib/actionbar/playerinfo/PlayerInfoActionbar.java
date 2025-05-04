@@ -8,6 +8,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.FluidCollisionMode;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -73,7 +74,11 @@ public final class PlayerInfoActionbar implements TaskRunnable {
                     FluidCollisionMode.NEVER,
                     true,
                     0.5,
-                    entity -> entity != player
+                    entity -> {
+                        if (player == entity) return false;
+                        if (!player.canSee(entity)) return false;
+                        return !(entity instanceof Player target) || target.getGameMode() != GameMode.SPECTATOR;
+                    }
             );
 
             if (result == null) continue;
