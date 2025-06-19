@@ -57,7 +57,7 @@ public final class ChatCompatibilityUtils {
      * @return converted
      */
     public static @Nullable NamedTextColor getTextColorFromChatColor(@NotNull ChatColor chatColor) {
-        return NamedTextColor.NAMES.value(chatColor.name());
+        return NamedTextColor.NAMES.value(chatColor.name().toLowerCase());
     }
 
     /**
