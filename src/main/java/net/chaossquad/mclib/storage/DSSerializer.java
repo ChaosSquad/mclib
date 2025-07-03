@@ -1,5 +1,6 @@
 package net.chaossquad.mclib.storage;
 
+import net.jandie1505.datastorage.DataStorage;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;

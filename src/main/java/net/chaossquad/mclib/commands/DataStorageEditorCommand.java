@@ -1,6 +1,6 @@
 package net.chaossquad.mclib.commands;
 
-import net.chaossquad.mclib.storage.DataStorage;
+import net.jandie1505.datastorage.DataStorage;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
