@@ -31,7 +31,6 @@ public class RespawningManagedEntity<ENTITY_TYPE extends Entity> extends Managed
     public RespawningManagedEntity(@NotNull World world, @NotNull SchedulerInterface scheduler, @NotNull ListenerRegistrar listenerRegistrar, @NotNull Location location, @NotNull EntityCreator<ENTITY_TYPE> entityCreator, boolean enabled) {
         super(scheduler, listenerRegistrar);
         this.world = world;
-        this.scheduler = scheduler;
         this.location = new Location(this.world, location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         this.creator = entityCreator;
 

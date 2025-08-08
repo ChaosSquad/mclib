@@ -5,6 +5,7 @@ import net.chaossquad.mclib.misc.ListenerRegistrar;
 import net.chaossquad.mclib.misc.Removable;
 import net.chaossquad.mclib.scheduler.SchedulerInterface;
 import net.chaossquad.mclib.scheduler.TaskRunnable;
+import net.chaossquad.mclib.scheduler.WrappedTaskScheduler;
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements ManagedListener, Removable, SchedulerInterface {
     @NotNull private Removable removable;
-    @NotNull SchedulerInterface scheduler;
+    @NotNull private final WrappedTaskScheduler scheduler;
     @Nullable private ENTITY_TYPE entity;
     private boolean removed;
 
@@ -32,12 +33,12 @@ public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements Manag
      */
     public ManagedEntity(@NotNull SchedulerInterface scheduler, @NotNull ListenerRegistrar registrar) {
         this.removable = () -> false;
-        this.scheduler = scheduler;
+        this.scheduler = new WrappedTaskScheduler(scheduler, this, this.toString());
         this.entity = null;
         this.removed = false;
 
-        // This task is scheduled directly by the specified task scheduler because it has a different remove condition. All other tasks are scheduled via the internal methods.
-        this.scheduler.scheduleRepeatingTask(this::entityCleanupTask, 1, 200, () -> (this.entity == null || this.entity.isDead()) && this.removed, this + "entity_cleanup");
+        // This task is scheduled directly by the real task scheduler because it has a different remove condition. All other tasks are scheduled via the internal methods.
+        scheduler.scheduleRepeatingTask(this::entityCleanupTask, 1, 200, () -> (this.entity == null || this.entity.isDead()) && this.removed, this + "entity_cleanup");
 
         registrar.registerListener(this);
     }
@@ -94,27 +95,45 @@ public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements Manag
     @ApiStatus.OverrideOnly
     protected void onEntitySet() {}
 
-    // ----- SCHEDULER INTERFACE -----
+    // ----- SCHEDULER -----
 
-    @Override
-    public final long scheduleRepeatingTask(@NotNull TaskRunnable runnable, long delay, long interval, Removable removeCondition, @Nullable String label) {
-        return this.scheduler.scheduleRepeatingTask(
-                runnable,
-                delay,
-                interval,
-                () -> this.toBeRemoved() || (removeCondition != null && removeCondition.toBeRemoved()),
-                this + "_" + label
-        );
+    /**
+     * Returns the task scheduler of this entity.
+     * @return scheduler
+     */
+    public final WrappedTaskScheduler getTaskScheduler() {
+        return this.scheduler;
     }
 
+    /**
+     * Schedules a new repeating task for this entity.
+     * @param runnable runnable of the task
+     * @param delay how long should be waited to run the task the first time
+     * @param interval how long should be waited to run the task again after the last execution
+     * @param removeCondition a stop condition that will be checked every tick
+     * @param label task label
+     * @return task id
+     * @deprecated Use {@link #getTaskScheduler()} ({@link WrappedTaskScheduler#scheduleRepeatingTask(Runnable, long, long, Removable, String)}
+     */
     @Override
+    @Deprecated
+    public final long scheduleRepeatingTask(@NotNull TaskRunnable runnable, long delay, long interval, Removable removeCondition, @Nullable String label) {
+        return this.scheduler.scheduleRepeatingTask(runnable, delay, interval, removeCondition, label);
+    }
+
+    /**
+     * Schedules a new one time task for this entity.
+     * @param runnable runnable of the task
+     * @param delay how long should be waited in ticks before running the task
+     * @param removeCondition a stop condition that will be checked every tick
+     * @param label task label
+     * @return task id
+     * @deprecated Use {@link #getTaskScheduler()} ({@link WrappedTaskScheduler#runTaskLater(Runnable, long, Removable, String)}).
+     */
+    @Override
+    @Deprecated
     public final long runTaskLater(@NotNull TaskRunnable runnable, long delay, Removable removeCondition, @Nullable String label) {
-        return this.scheduler.runTaskLater(
-                runnable,
-                delay,
-                () -> this.toBeRemoved() || (removeCondition != null && removeCondition.toBeRemoved()),
-                this + "_" + label
-        );
+        return this.scheduler.runTaskLater(runnable, delay, removeCondition, label);
     }
 
     // ----- REMOVABLE -----
