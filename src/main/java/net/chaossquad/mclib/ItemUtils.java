@@ -2,7 +2,9 @@ package net.chaossquad.mclib;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.minecraft.world.item.component.ResolvableProfile;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
@@ -17,6 +19,14 @@ import java.util.UUID;
  * Contains utilities for items.
  */
 public final class ItemUtils {
+
+    /**
+     * A component that. when used as the parent component of an item lore line, clears the default color and italic of the lore.
+     */
+    public static final Component CLEARED_LORE_COMPONENT = Component.empty()
+            .color(NamedTextColor.WHITE)
+            .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE);
+
     private static final Map<Integer, TrimMaterial> TEXT_COLOR_TRIM_MATERIALS = Map.ofEntries(
             Map.entry(NamedTextColor.RED.value(), TrimMaterial.REDSTONE),
             Map.entry(NamedTextColor.DARK_RED.value(), TrimMaterial.REDSTONE),
