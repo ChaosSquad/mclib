@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  * The purpose of this class is to provide a custom task scheduler so that you don't need to remove tasks manually from the bukkit scheduler.
  * You can for example integrate this scheduler inside a gamemode class, and as soon as the gamemode has ended, all tasks are gone because the {@link TaskScheduler#tick()} method if this scheduler is no longer called.
  */
-public final class TaskScheduler implements SchedulerInterface {
+public class TaskScheduler implements SchedulerInterface {
     private final Logger logger;
     private final Map<Long, Task> tasks;
     private long nextTaskId;
@@ -41,7 +41,7 @@ public final class TaskScheduler implements SchedulerInterface {
      * @return success
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean tick() {
+    public final boolean tick() {
         boolean hadException = false;
 
         synchronized (this.tasks) {
@@ -104,7 +104,7 @@ public final class TaskScheduler implements SchedulerInterface {
      * Returns a copy of the map where the tasks are stored.
      * @return map of tasks
      */
-    public Map<Long, Task> getTasks() {
+    public final Map<Long, Task> getTasks() {
         return Map.copyOf(this.tasks);
     }
 
@@ -112,7 +112,7 @@ public final class TaskScheduler implements SchedulerInterface {
      * Get the amount of all tasks.
      * @return tasks count
      */
-    public int getTaskCount() {
+    public final int getTaskCount() {
         return this.tasks.size();
     }
 
@@ -121,7 +121,7 @@ public final class TaskScheduler implements SchedulerInterface {
      * @param taskId task id
      * @return task
      */
-    public Task getTask(long taskId) {
+    public final Task getTask(long taskId) {
         return this.tasks.get(taskId);
     }
 
@@ -130,7 +130,7 @@ public final class TaskScheduler implements SchedulerInterface {
     /**
      * Clears all tasks.
      */
-    public void clearTasks() {
+    public final void clearTasks() {
         this.tasks.clear();
     }
 
@@ -138,7 +138,7 @@ public final class TaskScheduler implements SchedulerInterface {
      * Removes a task of the task scheduler.
      * @param id task id
      */
-    public void removeTask(int id) {
+    public final void removeTask(int id) {
         this.tasks.remove(id);
     }
 
@@ -152,7 +152,7 @@ public final class TaskScheduler implements SchedulerInterface {
      * @param removeCondition the condition the task should be stopped and removed
      * @return task id
      */
-    public long scheduleRepeatingTask(@NotNull TaskRunnable runnable, long delay, long interval, @Nullable Removable removeCondition, @Nullable String label) {
+    public final long scheduleRepeatingTask(@NotNull TaskRunnable runnable, long delay, long interval, @Nullable Removable removeCondition, @Nullable String label) {
         long taskId = this.getFreeTaskId();
         this.tasks.put(taskId, new RepeatingTask(taskId, this, runnable, removeCondition, label, delay, interval));
         return taskId;
@@ -165,7 +165,7 @@ public final class TaskScheduler implements SchedulerInterface {
      * @param removeCondition the condition the task should be stopped and removed
      * @return task id
      */
-    public long runTaskLater(@NotNull TaskRunnable runnable, long delay, @Nullable Removable removeCondition, @Nullable String label) {
+    public final long runTaskLater(@NotNull TaskRunnable runnable, long delay, @Nullable Removable removeCondition, @Nullable String label) {
         long taskId = this.getFreeTaskId();
         this.tasks.put(taskId, new OneTimeTask(taskId, this, runnable, removeCondition, label, delay));
         return taskId;
@@ -177,7 +177,7 @@ public final class TaskScheduler implements SchedulerInterface {
      * Returns the current scheduler tick.
      * @return tick
      */
-    public long getTick() {
+    public final long getTick() {
         return this.tick;
     }
 
