@@ -1,9 +1,6 @@
 package net.chaossquad.mclib.commands;
 
-import net.chaossquad.mclib.scheduler.OneTimeTask;
-import net.chaossquad.mclib.scheduler.RepeatingTask;
-import net.chaossquad.mclib.scheduler.Task;
-import net.chaossquad.mclib.scheduler.TaskScheduler;
+import net.chaossquad.mclib.scheduler.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -91,28 +88,63 @@ public final class TasksSubcommand {
 
             if (args.length < 2) {
 
-                String out = "§7§lTask Info:§r\n" +
-                        "§7ID: " + taskId + " (" + task.getId() + ")\n" +
-                        "§7Label: " + task.getLabel() + "\n" +
-                        "§7Type: " + task + "\n" +
-                        "§7Should run: " + task.shouldRun() + "\n" +
-                        "§7To be removed: " + task.toBeRemoved() + "\n" +
-                        "§7Marked for removal: " + task.isMarkedForRemoval() + "\n" +
-                        "§7Paused: " + task.isPaused() + "\n" +
-                        "§7Remove condition: " + task.getRemoveCondition();
+                Component out = Component.empty()
+                        .append(Component.text("Task Info:", NamedTextColor.GRAY, TextDecoration.BOLD))
+                        .appendNewline()
+                        .append(Component.text("ID: " + taskId, NamedTextColor.GRAY)).appendNewline()
+                        .append(Component.text("Label: " + task.getLabel(), NamedTextColor.GRAY)).appendNewline()
+                        .append(Component.text("Type: " + task.toString(), NamedTextColor.GRAY)).appendNewline()
+                        .append(Component.text("Should run: " + task.shouldRun(), NamedTextColor.GRAY)).appendNewline()
+                        .append(Component.text("Marked for removal: " + task.isMarkedForRemoval(), NamedTextColor.GRAY)).appendNewline()
+                        .append(Component.text("Paused: " + task.isPaused(), NamedTextColor.GRAY));
+
+                try {
+                    out = out.appendNewline().append(Component.text("To be removed: " + task.toBeRemoved(), NamedTextColor.GRAY));
+                } catch (Exception e) {
+                    out = out.appendNewline().append(Component.text("To be removed: Failed to get status", NamedTextColor.GRAY));
+                }
+
+                out = out.appendNewline()
+                        .append(Component.text("Runnable: ", NamedTextColor.GRAY)).appendNewline()
+                        .append(Component.text(" - Identity: " + System.identityHashCode(task.getRunnable()), NamedTextColor.GRAY)).appendNewline()
+                        .append(Component.text(" - Class: " + task.getRunnable().getClass().getName(), NamedTextColor.GRAY));
+
+                try {
+                    out = out.appendNewline().append(Component.text(" - Name: " + task.getRunnable().toString(), NamedTextColor.GRAY));
+                } catch (Exception e) {
+                    out = out.appendNewline().append(Component.text(" - Name: Failed to get name", NamedTextColor.GRAY));
+                }
+
+                out = out.appendNewline()
+                        .append(Component.text("Remove Condition: ", NamedTextColor.GRAY)).appendNewline()
+                        .append(Component.text(" - Identity: " + System.identityHashCode(task.getRemoveCondition()), NamedTextColor.GRAY)).appendNewline()
+                        .append(Component.text(" - Class: " + task.getRemoveCondition().getClass().getName(), NamedTextColor.GRAY));
+
+                try {
+                    out = out.appendNewline().append(Component.text(" - Name: " + task.getRemoveCondition().toString(), NamedTextColor.GRAY));
+                } catch (Exception e) {
+                    out = out.appendNewline().append(Component.text(" - Name: Failed to get name", NamedTextColor.GRAY));
+                }
+
+                if (task.getRunnable() instanceof ChildTaskScheduler childScheduler) {
+                    out = out.appendNewline().append(Component.text("Child scheduler:", NamedTextColor.GRAY)).appendNewline()
+                            .append(Component.text(" - Scheduler is child scheduler", NamedTextColor.GRAY));
+                }
 
                 if (task instanceof RepeatingTask repeatingTask) {
 
-                    out = out + "\n" +
-                            "§7Interval: " + repeatingTask.getInterval() + "\n" +
-                            "§7Last execution: " + repeatingTask.getLastExecutionTick();
+                    out = out.appendNewline()
+                            .append(Component.text("Repeating Task:", NamedTextColor.GRAY)).appendNewline()
+                            .append(Component.text(" - Interval: " + repeatingTask.getInterval(), NamedTextColor.GRAY)).appendNewline()
+                            .append(Component.text(" - Last execution: " + repeatingTask.getLastExecutionTick(), NamedTextColor.GRAY));
 
                 } else if (task instanceof OneTimeTask oneTimeTask) {
 
-                    out = out + "\n" +
-                            "§7Executed: " + oneTimeTask.isExecuted() + "\n" +
-                            "§7Added tick: " + oneTimeTask.getAddedTick() + "\n" +
-                            "§7Delay: " + oneTimeTask.getDelay();
+                    out = out.appendNewline()
+                            .append(Component.text("One-time Task:", NamedTextColor.GRAY)).appendNewline()
+                            .append(Component.text(" - Executed: " + oneTimeTask.isExecuted(), NamedTextColor.GRAY)).appendNewline()
+                            .append(Component.text(" - Added tick: " + oneTimeTask.getAddedTick(), NamedTextColor.GRAY)).appendNewline()
+                            .append(Component.text("Delay: " + oneTimeTask.getDelay(), NamedTextColor.GRAY));
 
                 }
 

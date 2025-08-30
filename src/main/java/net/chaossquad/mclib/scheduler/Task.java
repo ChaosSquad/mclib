@@ -140,6 +140,15 @@ public abstract class Task {
     }
 
     /**
+     * Returns the runnable object.<br/>
+     * <b>NEVER CALL THIS MANUALLY! ALWAYS USE {@link #run()}</b>
+     * @return task runnable
+     */
+    public final @NotNull TaskRunnable getRunnable() {
+        return this.runnable;
+    }
+
+    /**
      * Returns the remove condition object.
      * @return remove condition
      */
