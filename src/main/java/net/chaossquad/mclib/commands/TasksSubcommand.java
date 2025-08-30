@@ -128,7 +128,9 @@ public final class TasksSubcommand {
 
                 if (task.getRunnable() instanceof ChildTaskScheduler childScheduler) {
                     out = out.appendNewline().append(Component.text("Child scheduler:", NamedTextColor.GRAY)).appendNewline()
-                            .append(Component.text(" - Scheduler is child scheduler", NamedTextColor.GRAY));
+                            .append(Component.text(" - Scheduler is child scheduler", NamedTextColor.GRAY)).appendNewline()
+                            .append(Component.text(" - Task amount: " + childScheduler.getTaskCount(), NamedTextColor.GRAY)).appendNewline()
+                            .append(Component.text(" - Tick: " + childScheduler.getTick(), NamedTextColor.GRAY));
                 }
 
                 if (task instanceof RepeatingTask repeatingTask) {
