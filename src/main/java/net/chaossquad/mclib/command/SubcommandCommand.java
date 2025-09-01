@@ -1,6 +1,7 @@
 package net.chaossquad.mclib.command;
 
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.Plugin;
@@ -25,6 +26,71 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
     @NotNull private final Map<String, SubcommandEntry> entries;
     @Nullable private final DynamicSubcommandProvider dynamicSubcommandProvider;
     @Nullable private final PermissionProvider permissionProvider;
+    @Nullable private final CommandExecutor noSubcommandExecutor;
+    @Nullable private final CommandExecutor noPermissionExecutor;
+    @Nullable private final CommandExecutor unknownSubcommandExecutor;
+
+    /**
+     * Creates a new SubcommandCommand.
+     * @param plugin plugin
+     * @param permissionProvider permission provider
+     * @param dynamicSubcommandProvider dynamic subcommand provider
+     * @param noSubcommandExecutor This is executed when there is no subcommand provided
+     * @param noPermissionExecutor This is executed when the player has no permission.
+     * @param unknownSubcommandExecutor This is executed when the player specified an invalid subcommand.
+     */
+    public SubcommandCommand(
+            @NotNull Plugin plugin,
+            @Nullable PermissionProvider permissionProvider,
+            @Nullable DynamicSubcommandProvider dynamicSubcommandProvider,
+            @Nullable CommandExecutor noSubcommandExecutor,
+            @Nullable CommandExecutor noPermissionExecutor,
+            @Nullable CommandExecutor unknownSubcommandExecutor
+    ) {
+        this.plugin = plugin;
+        this.entries = new HashMap<>();
+        this.dynamicSubcommandProvider = dynamicSubcommandProvider;
+        this.permissionProvider = permissionProvider;
+        this.noSubcommandExecutor = noSubcommandExecutor;
+        this.noPermissionExecutor = noPermissionExecutor;
+        this.unknownSubcommandExecutor = unknownSubcommandExecutor;
+    }
+
+    /**
+     * Creates a new SubcommandCommand.
+     * @param plugin plugin
+     * @param permissionProvider permission provider
+     * @param noSubcommandExecutor This is executed when there is no subcommand provided
+     * @param noPermissionExecutor This is executed when the player has no permission.
+     * @param unknownSubcommandExecutor This is executed when the player specified an invalid subcommand.
+     */
+    public SubcommandCommand(
+            @NotNull Plugin plugin,
+            @Nullable PermissionProvider permissionProvider,
+            @Nullable CommandExecutor noSubcommandExecutor,
+            @Nullable CommandExecutor noPermissionExecutor,
+            @Nullable CommandExecutor unknownSubcommandExecutor
+    ) {
+        this(plugin, permissionProvider, null, noSubcommandExecutor, noPermissionExecutor, unknownSubcommandExecutor);
+    }
+
+    /**
+     * Creates a new SubcommandCommand.
+     * @param plugin plugin
+     * @param dynamicSubcommandProvider dynamic subcommand provider
+     * @param noSubcommandExecutor This is executed when there is no subcommand provided
+     * @param noPermissionExecutor This is executed when the player has no permission.
+     * @param unknownSubcommandExecutor This is executed when the player specified an invalid subcommand.
+     */
+    public SubcommandCommand(
+            @NotNull Plugin plugin,
+            DynamicSubcommandProvider dynamicSubcommandProvider,
+            @Nullable CommandExecutor noSubcommandExecutor,
+            @Nullable CommandExecutor noPermissionExecutor,
+            @Nullable CommandExecutor unknownSubcommandExecutor
+    ) {
+        this(plugin, null, dynamicSubcommandProvider, noSubcommandExecutor, noPermissionExecutor, unknownSubcommandExecutor);
+    }
 
     /**
      * Creates a new SubcommandCommand.
@@ -33,10 +99,7 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
      * @param dynamicSubcommandProvider dynamic subcommand provider
      */
     public SubcommandCommand(@NotNull Plugin plugin, @Nullable PermissionProvider permissionProvider, @Nullable DynamicSubcommandProvider dynamicSubcommandProvider) {
-        this.plugin = plugin;
-        this.entries = new HashMap<>();
-        this.dynamicSubcommandProvider = dynamicSubcommandProvider;
-        this.permissionProvider = permissionProvider;
+        this(plugin, permissionProvider, dynamicSubcommandProvider, null, null, null);
     }
 
     /**
@@ -89,7 +152,13 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
 
             SubcommandEntry subcommand = this.getSubcommand(args[0]);
             if (subcommand == null) {
-                this.onExecutionWithUnknownSubcommand(sender, cmd, label, args);
+
+                if (this.unknownSubcommandExecutor != null) {
+                    this.unknownSubcommandExecutor.onCommand(sender, cmd, label, args);
+                } else {
+                    this.onExecutionWithUnknownSubcommand(sender, cmd, label, args);
+                }
+
                 return true;
             }
 
@@ -99,14 +168,26 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
             }
 
             if (!this.hasCommandPermission(subcommand, sender)) {
-                this.onExecutionWithoutPermission(sender, cmd, label, args, args[0]);
+
+                if (this.noPermissionExecutor != null) {
+                    this.noPermissionExecutor.onCommand(sender, cmd, label, args);
+                } else {
+                    this.onExecutionWithoutPermission(sender, cmd, label, args, args[0]);
+                }
+
                 return true;
             }
 
             subcommand.executor().onCommand(sender, cmd, args[0], this.subcommandArguments(args));
 
         } else {
-            this.onExecutionWithoutSubcommand(sender, cmd, label);
+
+            if (this.noSubcommandExecutor != null) {
+                this.noSubcommandExecutor.onCommand(sender, cmd, label, new String[]{});
+            } else {
+                this.onExecutionWithoutSubcommand(sender, cmd, label);
+            }
+
         }
 
         return true;
@@ -141,7 +222,8 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
     // ----- NO SUBCOMMAND ACTION -----
 
     /**
-     * This is executed when no subcommand is specified.
+     * This is executed when no subcommand is specified.<br/>
+     * This method is not called when a noSubcommandExecutor is specified.
      * @param sender sender
      * @param cmd cmd
      * @param label label
@@ -167,7 +249,8 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
     }
 
     /**
-     * This is executed when the sender has no permission for the command.
+     * This is executed when the sender has no permission for the command.<br/>
+     * This method is not called when a noPermissionExecutor is specified.
      * @param sender sender
      * @param cmd command
      * @param label label
@@ -179,7 +262,8 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
     }
 
     /**
-     * This is executed when the specified subcommand does not exist.
+     * This is executed when the specified subcommand does not exist.<br/>
+     * This method is not executed when a unknownSubcommandExecutor is specified.
      * @param sender sender
      * @param cmd cmd
      * @param label label
@@ -336,6 +420,33 @@ public class SubcommandCommand implements TabCompletingCommandExecutor {
     @Nullable
     public final DynamicSubcommandProvider getDynamicSubcommandProvider() {
         return this.dynamicSubcommandProvider;
+    }
+
+    /**
+     * Returns the executor that is called when no subcommand was specified.
+     * @return command executor
+     */
+    @Nullable
+    public final CommandExecutor getNoSubcommandExecutor() {
+        return this.noSubcommandExecutor;
+    }
+
+    /**
+     * Returns the executor that is called when the sender does not have the permission to run the command.
+     * @return command executor
+     */
+    @Nullable
+    public final CommandExecutor getNoPermissionExecutor() {
+        return this.noPermissionExecutor;
+    }
+
+    /**
+     * Returns the executor that is called when the specified subcommand does not exist.
+     * @return command executor
+     */
+    @Nullable
+    public final CommandExecutor getUnknownSubcommandExecutor() {
+        return this.unknownSubcommandExecutor;
     }
 
     // ----- INNER CLASSES -----

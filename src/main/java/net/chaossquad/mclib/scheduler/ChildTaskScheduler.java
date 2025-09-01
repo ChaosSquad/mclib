@@ -17,6 +17,8 @@ public class ChildTaskScheduler extends TaskScheduler implements TaskRunnable {
      * Creates a task scheduler.
      *
      * @param logger logger
+     * @param removeCondition the condition for when this scheduler is removed from its parent scheduler
+     * @param name the task name for this scheduler in the parent scheduler
      */
     public ChildTaskScheduler(@NotNull Logger logger, @Nullable Removable removeCondition, @NotNull String name) {
         super(logger);
@@ -26,6 +28,7 @@ public class ChildTaskScheduler extends TaskScheduler implements TaskRunnable {
      * Creates a task scheduler.
      *
      * @param logger logger
+     * @param name the task name for this scheduler in the parent scheduler
      */
     public ChildTaskScheduler(@NotNull Logger logger, @NotNull String name) {
         this(logger, null, name);
