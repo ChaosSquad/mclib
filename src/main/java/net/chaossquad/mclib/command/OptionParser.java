@@ -1,7 +1,9 @@
 package net.chaossquad.mclib.command;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -81,37 +83,57 @@ public final class OptionParser {
      * Tab-completer for {@link org.bukkit.command.TabCompleter}.
      * @param sender sender
      * @param args args
+     * @param argsCompleter Completer that completes command arguments (not options).
      * @param uncompletedAvailableOptions options that have no own tab completer (options without a value, format: --my-option)
      * @param completedAvailableOptions options that have an own completer (options with a value, format: --my-option=value)
      * @return available values
      */
-    public static List<String> complete(@NotNull CommandSender sender, @NotNull Result args, @NotNull Set<String> uncompletedAvailableOptions, @NotNull Map<@NotNull String, @NotNull OptionCompleter> completedAvailableOptions) {
+    public static List<String> complete(@NotNull CommandSender sender, @NotNull Result args, @Nullable OptionCompleter argsCompleter, @Nullable Set<String> uncompletedAvailableOptions, @Nullable Map<@NotNull String, @NotNull OptionCompleter> completedAvailableOptions) {
         Set<String> currentOptions = new HashSet<>(args.options().keySet());
 
         List<String> suggestions = new ArrayList<>();
 
         // Complete available options without a completer
-        for (String option : uncompletedAvailableOptions) {
-            if (!currentOptions.contains(option)) {
-                suggestions.add("--" + option);
+        if (uncompletedAvailableOptions != null) {
+
+            for (String option : uncompletedAvailableOptions) {
+                if (!currentOptions.contains(option)) {
+                    suggestions.add("--" + option);
+                }
             }
+
         }
 
         // Complete available options with a completer
-        for (String option : completedAvailableOptions.keySet()) {
-            if (currentOptions.contains(option)) continue;
+        if (completedAvailableOptions != null) {
 
-            OptionCompleter completer = completedAvailableOptions.get(option);
-            if (completer != null) {
+            for (String option : completedAvailableOptions.keySet()) {
+                if (currentOptions.contains(option)) continue;
 
-                try {
-                    for (String value : completer.onTabComplete(sender, args)) {
-                        suggestions.add("--" + option + "=" + value);
+                OptionCompleter optionCompleter = completedAvailableOptions.get(option);
+                if (optionCompleter != null) {
+
+                    try {
+                        for (String value : optionCompleter.onTabComplete(sender, args)) {
+                            suggestions.add("--" + option + "=" + value);
+                        }
+                    } catch (Exception e) {
+                        suggestions.add(e.getClass().getSimpleName() + ": " + e.getMessage());
                     }
-                } catch (Exception e) {
-                    suggestions.add(e.getClass().getSimpleName() + ": " + e.getMessage());
+
                 }
 
+            }
+
+        }
+
+        // Complete arguments
+        if (argsCompleter != null) {
+
+            try {
+                suggestions.addAll(argsCompleter.onTabComplete(sender, args));
+            } catch (Exception e) {
+                suggestions.add(e.getClass().getSimpleName() + ": " + e.getMessage());
             }
 
         }
@@ -120,12 +142,13 @@ public final class OptionParser {
     }
 
     /**
-     * Tab-completer for options.
+     * Tab-completer for the {@link #complete(CommandSender, Result, OptionCompleter, Set, Map)}  method.<br/>
+     * Works as {@link TabCompleter}, but does not have the command and label arguments.
      */
     public interface OptionCompleter {
 
         /**
-         * Called when an option is completed.
+         * Called when an argument/option is completed.
          * @param sender sender
          * @param args args
          * @return available values
