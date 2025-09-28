@@ -38,7 +38,7 @@ public class TaskScheduler implements SchedulerInterface {
     /**
      * This method runs the scheduler.<br/>
      * Call it using a repeating bukkit task or something similar.
-     * @return success
+     * @return success (= no exceptions occurred)
      */
     @SuppressWarnings("UnusedReturnValue")
     public final boolean tick() {
@@ -55,7 +55,7 @@ public class TaskScheduler implements SchedulerInterface {
 
         this.tick++;
 
-        return hadException;
+        return !hadException;
     }
 
     /**
@@ -138,7 +138,7 @@ public class TaskScheduler implements SchedulerInterface {
      * Removes a task of the task scheduler.
      * @param id task id
      */
-    public final void removeTask(int id) {
+    public final void removeTask(long id) {
         this.tasks.remove(id);
     }
 
