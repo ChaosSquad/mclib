@@ -1,17 +1,16 @@
 package net.chaossquad.mclib;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.minecraft.world.item.component.ResolvableProfile;
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.UUID;
 
@@ -64,18 +63,9 @@ public final class ItemUtils {
      * @param customHead base64-encoded player head
      */
     public static void setCustomHeadForSkullMeta(@NotNull SkullMeta skullMeta, @NotNull String customHead) {
-
-        GameProfile cameraProfile = new GameProfile(UUID.randomUUID(), "");
-        cameraProfile.getProperties().put("textures", new Property("textures", customHead));
-
-        try {
-            Field field = skullMeta.getClass().getDeclaredField("profile");
-            field.setAccessible(true);
-            field.set(skullMeta, new ResolvableProfile(cameraProfile));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID(), "");
+        profile.setProperty(new ProfileProperty("textures", customHead));
+        skullMeta.setPlayerProfile(profile);
     }
 
 }
