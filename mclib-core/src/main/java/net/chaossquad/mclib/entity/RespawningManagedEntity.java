@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 public class RespawningManagedEntity<ENTITY_TYPE extends Entity> extends ManagedEntity<ENTITY_TYPE> {
     @NotNull private final World world;
     @NotNull private final Location location;
-    @NotNull private final EntityCreator<ENTITY_TYPE> creator;
+    @NotNull private final EntityCreator<ENTITY_TYPE, RespawningManagedEntity<ENTITY_TYPE>> creator;
     private boolean enabled;
 
     /**
@@ -28,7 +28,7 @@ public class RespawningManagedEntity<ENTITY_TYPE extends Entity> extends Managed
      * @param entityCreator entity creator
      * @param enabled enabled
      */
-    public RespawningManagedEntity(@NotNull World world, @NotNull SchedulerInterface scheduler, @NotNull ListenerRegistrar listenerRegistrar, @NotNull Location location, @NotNull EntityCreator<ENTITY_TYPE> entityCreator, boolean enabled) {
+    public RespawningManagedEntity(@NotNull World world, @NotNull SchedulerInterface scheduler, @NotNull ListenerRegistrar listenerRegistrar, @NotNull Location location, @NotNull EntityCreator<ENTITY_TYPE, RespawningManagedEntity<ENTITY_TYPE>> entityCreator, boolean enabled) {
         super(scheduler, listenerRegistrar);
         this.world = world;
         this.location = new Location(this.world, location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
@@ -62,8 +62,12 @@ public class RespawningManagedEntity<ENTITY_TYPE extends Entity> extends Managed
         if (this.getEntity() == null || this.getEntity().isDead()) {
             if (!WorldUtils.isChunkLoaded(this.location.clone())) return;
 
-            this.setEntity(this.creator.create());
-            this.getEntity().teleport(this.location.clone());
+            try {
+                this.setEntity(this.creator.create(this));
+                this.getEntity().teleport(this.location.clone());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             return;
         }

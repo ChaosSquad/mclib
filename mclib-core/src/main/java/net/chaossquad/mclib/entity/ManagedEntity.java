@@ -192,14 +192,16 @@ public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements Manag
     /**
      * An interface to be used by subclasses to create the entities because a class cannot be retrieved from a type parameter.
      * @param <ENTITY_TYPE> entity type
+     * @param <MANAGED_ENTITY_TYPE> the type of the managed entity
      */
-    public interface EntityCreator<ENTITY_TYPE extends Entity> {
+    public interface EntityCreator<ENTITY_TYPE extends Entity, MANAGED_ENTITY_TYPE extends ManagedEntity<ENTITY_TYPE>> {
 
         /**
          * Returns the created entity.
+         * @param managedEntity the ManagedEntity that creates the entity
          * @return created entity
          */
-        @NotNull ENTITY_TYPE create();
+        @NotNull ENTITY_TYPE create(@NotNull MANAGED_ENTITY_TYPE managedEntity);
 
     }
 

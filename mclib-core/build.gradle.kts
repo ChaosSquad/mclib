@@ -3,9 +3,6 @@ plugins {
     `maven-publish`
 }
 
-group = "net.chaossquad"
-version = "1.0-SNAPSHOT"
-
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
     compileOnly("net.luckperms:api:5.4")
