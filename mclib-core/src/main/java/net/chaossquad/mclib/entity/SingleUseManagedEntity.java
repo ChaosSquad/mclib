@@ -19,14 +19,15 @@ public class SingleUseManagedEntity<ENTITY_TYPE extends Entity> extends ManagedE
      */
     public SingleUseManagedEntity(@NotNull SchedulerInterface scheduler, @NotNull ListenerRegistrar listenerRegistrar, @NotNull EntityCreator<ENTITY_TYPE, SingleUseManagedEntity<ENTITY_TYPE>> creator) {
         super(scheduler, listenerRegistrar);
-        super.setRemovable(() -> this.getEntity() == null || this.getEntity().isDead()); // Run before entity creation in case creator.create(this) throws an exception, the SingleUsedManagedEntity will be cleaned up
 
         try {
             this.setEntity(creator.create(this));
         } catch (Exception e) {
             e.printStackTrace();
+            this.remove();
         }
 
+        super.setRemovable(() -> this.getEntity() == null || this.getEntity().isDead());
     }
 
 }
