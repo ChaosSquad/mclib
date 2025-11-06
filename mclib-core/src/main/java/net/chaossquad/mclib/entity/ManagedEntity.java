@@ -38,7 +38,9 @@ public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements Manag
         this.removed = false;
 
         // This task is scheduled directly by the real task scheduler because it has a different remove condition. All other tasks are scheduled via the internal methods.
-        scheduler.scheduleRepeatingTask(this::entityCleanupTask, 1, 200, () -> (this.entity == null || this.entity.isDead()) && this.removed, this + "entity_cleanup");
+        scheduler.scheduleRepeatingTask(this::entityCleanupTask, 1, 200, this::isCleanedUp, this + "_entity_cleanup");
+        // This task is responsible for marking the entity as removed when the remove condition is true. It can be stopped when the entity is marked as removed
+        scheduler.scheduleRepeatingTask(this::removeTask, 1, 100, this, this + "_set_removed");
 
         registrar.registerListener(this);
     }
@@ -46,15 +48,34 @@ public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements Manag
     // ----- TASKS -----
 
     /**
+     * Marks the entity for removal when the remove condition is met.
+     */
+    private void removeTask() {
+
+        try {
+
+            if (this.removable.toBeRemoved()) {
+                this.remove();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.remove();
+        }
+
+    }
+
+    /**
      * Stays active until the ManagedEntity is set as removed and the ManagedEntity is dead.<br/>
-     * Sets removed to true if the other remove condition is met, and removes the Entity currently managed by this ManagedEntity.
+     * Ensures that the Entity will be removed when the ManagedEntity is removed.
      */
     private void entityCleanupTask() {
-        if (this.toBeRemoved()) this.removed = true;
+        if (!this.removed) return;
 
-        if (this.toBeRemoved() && this.entity != null && !this.entity.isDead()) {
-            this.entity.remove();
-        }
+        if (this.entity == null) return;
+        if (this.entity.isDead()) return;
+
+        this.entity.remove();
     }
 
     // ----- ENTITY -----
@@ -73,7 +94,7 @@ public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements Manag
      * @param entity entity
      */
     protected final void setEntity(@NotNull ENTITY_TYPE entity) {
-        if (this.toBeRemoved()) throw new IllegalStateException("ManagedEntity is already removed");
+        if (this.removed) throw new IllegalStateException("ManagedEntity is already removed");
 
         // Remove previously existing entity
         if (this.entity != null && !this.entity.isDead()) {
@@ -85,6 +106,14 @@ public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements Manag
         this.entity.setPersistent(false);
         this.entity.addScoreboardTag("managed_entity");
         this.entity.addScoreboardTag("managed_entity_" + System.identityHashCode(this));
+    }
+
+    /**
+     * Returns true if the entity exist (not null or dead).
+     * @return entity exists
+     */
+    public final boolean doesEntityExist() {
+        return this.entity != null && !this.entity.isDead();
     }
 
     /**
@@ -140,14 +169,7 @@ public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements Manag
 
     @Override
     public final boolean toBeRemoved() {
-        if (this.removed) return true;
-
-        if (this.removable.toBeRemoved()) {
-            this.removed = true;
-            return true;
-        }
-
-        return false;
+        return this.removed;
     }
 
     /**
@@ -180,11 +202,29 @@ public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements Manag
     }
 
     /**
+     * Returns true if the entity is marked for removal.
+     * @return marked for removal
+     */
+    public final boolean isRemoved() {
+        return this.removed;
+    }
+
+    /**
      * Mark the managed entity as removed.<br/>
      * This will remove the entity and stop all its tasks.
      */
     public final void remove() {
         this.removed = true;
+        this.entityCleanupTask();
+    }
+
+    /**
+     * Returns true if the ManagedEntity has reached the end of its lifecycle and is fully cleaned up.<br/>
+     * This means that its entity is dead, and it is marked for removal.
+     * @return cleaned up
+     */
+    public final boolean isCleanedUp() {
+        return this.removed && (this.entity == null || this.entity.isDead());
     }
 
     // ----- CREATOR -----
