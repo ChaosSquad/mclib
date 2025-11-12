@@ -352,6 +352,8 @@ public final class WorldUtils {
         return List.copyOf(blockDisplays);
     }
 
+    // CHUNKS
+
     /**
      * Returns the chunk coordinates of the specified world coordinates.
      * @param locationX world X
@@ -367,9 +369,38 @@ public final class WorldUtils {
      * @param location location of the chunk
      * @return result
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isChunkLoaded(@NotNull Location location) {
         int[] chunkCoordinates = getChunkCoordinates(location.getBlockX(), location.getBlockZ());
         return Objects.requireNonNull(location.getWorld()).isChunkLoaded(chunkCoordinates[0], chunkCoordinates[1]);
+    }
+
+    /**
+     * Checks if both the chunk and the chunk's entities are loaded.<br/>
+     * Checking in a "respawn entity when the old has died" loop can prevent entity respawn and instant chunk unloading spams,
+     * which causes the chunk to fill up with entities being spawned, then instantly removed by chunk unload and saved into the chunk, then again spawned (because the entity was removed as entity object, and repeat.
+     * @param location location
+     * @return "safe" to spawn
+     */
+    public static boolean isSafeToSpawn(@NotNull Location location) {
+        if (!isChunkLoaded(location)) return false;
+        Chunk chunk = location.getChunk();
+        return chunk.isLoaded() && chunk.isEntitiesLoaded();
+    }
+
+    /**
+     * Checks if both the chunk and the chunk's entities are loaded.<br/>
+     * Checking in a "respawn entity when the old has died" loop can prevent entity respawn and instant chunk unloading spams,
+     * which causes the chunk to fill up with entities being spawned, then instantly removed by chunk unload and saved into the chunk, then again spawned (because the entity was removed as entity object, and repeat.
+     * @param world world
+     * @param x x chunk coordinate
+     * @param z z chunk coordinate
+     * @return "safe" to spawn
+     */
+    public static boolean isSafeToSpawn(@NotNull World world, int x, int z) {
+        if (!world.isChunkLoaded(x, z)) return false;
+        Chunk chunk = world.getChunkAt(x, z);
+        return chunk.isLoaded() && chunk.isEntitiesLoaded();
     }
 
 }

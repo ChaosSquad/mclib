@@ -1,0 +1,39 @@
+plugins {
+    id("java")
+    `maven-publish`
+}
+
+dependencies {
+    compileOnly(project(":mclib-core"))
+    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+// gradle publish{PUBLICATION_NAME}To{REPOSITORY_NAME}Repository
+// in this case: publishMavenToChaosSquadRepository
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
+    repositories {
+        maven {
+            name = "chaossquad"
+            url = uri(if (version.toString().endsWith("RELEASE")) {
+                "https://maven.chaossquad.net/releases"
+            } else {
+                "https://maven.chaossquad.net/snapshots"
+            })
+
+            credentials {
+                username = findProperty("chaossquad-repository.username") as String?
+                password = findProperty("chaossquad-repository.password") as String?
+            }
+        }
+    }
+}

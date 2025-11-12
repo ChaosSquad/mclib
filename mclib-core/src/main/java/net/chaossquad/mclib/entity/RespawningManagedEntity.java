@@ -60,7 +60,7 @@ public class RespawningManagedEntity<ENTITY_TYPE extends Entity> extends Managed
 
         // Spawn entity if not disabled
         if (this.getEntity() == null || this.getEntity().isDead()) {
-            if (!WorldUtils.isChunkLoaded(this.location.clone())) return;
+            if (!WorldUtils.isSafeToSpawn(this.location.clone())) return;
 
             try {
                 this.setEntity(this.creator.create(this));
