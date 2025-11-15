@@ -65,25 +65,33 @@ public class TaskScheduler implements SchedulerInterface {
      */
     private void handleTask(long taskId, @NotNull Task task) {
 
-        // Conditions
-        boolean valid = taskId == task.getId() && task.getScheduler() == this;
-        boolean toBeRemoved = task.toBeRemoved();
-        boolean shouldRun = task.shouldRun();
-        boolean paused = task.isPaused();
+        try {
 
-        // Execution
-        if (valid && !toBeRemoved && !paused && shouldRun) {
+            // Conditions
+            boolean valid = taskId == task.getId() && task.getScheduler() == this;
+            boolean toBeRemoved = task.toBeRemoved();
+            boolean shouldRun = task.shouldRun();
+            boolean paused = task.isPaused();
 
-            try {
-                task.run();
-            } catch (Exception e) {
-                this.logger.log(Level.WARNING, "Exception in scheduler task (id=" + taskId + ")", e);
+            // Execution
+            if (valid && !toBeRemoved && !paused && shouldRun) {
+
+                try {
+                    task.run();
+                } catch (Exception e) {
+                    this.logger.log(Level.WARNING, "Exception in scheduler task (id=" + taskId + ")", e);
+                }
+
             }
 
-        }
+            // Removal
+            if (!valid || toBeRemoved) {
+                this.tasks.remove(taskId);
+                return;
+            }
 
-        // Removal
-        if (!valid || toBeRemoved) {
+        } catch (Throwable t) {
+            this.logger.log(Level.SEVERE, "Failed to handle task " + taskId + ". This is most likely caused by an non-exception throwable in the task's runnable or a throwable in the remove condition. The task has been removed.", t);
             this.tasks.remove(taskId);
             return;
         }
