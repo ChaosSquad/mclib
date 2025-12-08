@@ -57,7 +57,7 @@ public class OneTimeTask extends Task {
     }
 
     @Override
-    public boolean inheritedRemoveCondition() {
+    protected boolean inheritedRemoveCondition() {
         return this.executed;
     }
 

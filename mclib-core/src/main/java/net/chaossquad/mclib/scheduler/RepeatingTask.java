@@ -51,7 +51,7 @@ public class RepeatingTask extends Task {
     }
 
     @Override
-    public boolean inheritedRemoveCondition() {
+    protected boolean inheritedRemoveCondition() {
         return false;
     }
 
