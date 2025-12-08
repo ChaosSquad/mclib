@@ -1,4 +1,4 @@
-package net.chaossquad.mclib.commands;
+package net.chaossquad.mclib.storage;
 
 import net.jandie1505.datastorage.DataStorage;
 import org.bukkit.Bukkit;
