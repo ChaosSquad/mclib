@@ -1,7 +1,8 @@
-package net.chaossquad.mclib.entity;
+package net.chaossquad.mclib.gamemode.entity;
 
-import net.chaossquad.mclib.executable.ManagedListener;
-import net.chaossquad.mclib.misc.ListenerRegistrar;
+import net.chaossquad.mclib.gamemode.executable.ManagedListener;
+import net.chaossquad.mclib.gamemode.executable.CoreExecutable;
+import net.chaossquad.mclib.gamemode.executable.ListenerRegistrar;
 import net.chaossquad.mclib.misc.Removable;
 import net.chaossquad.mclib.scheduler.SchedulerInterface;
 import net.chaossquad.mclib.scheduler.TaskRunnable;
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
  * It allows to schedule tasks for entities and works as managed listener.<br/>
  * The goal of this class is to allow scheduling tasks and listen to events while the entity is alive, and then auto-cleanup tasks and listeners when the entity is dead.<br/>
  * <b>DO NOT REGISTER THIS ENTITY DIRECTLY TO THE BUKKIT EVENT LISTENER!!!<br/>
- * Only register it to a {@link net.chaossquad.mclib.executable.CoreExecutable} or a similar solution!<br/>
+ * Only register it to a {@link CoreExecutable} or a similar solution!<br/>
  * If you register it directly to Bukkit, it causes a memory leak because the listener is never cleaned up!</b>
  * @param <ENTITY_TYPE> entity type
  */

@@ -1,8 +1,7 @@
-package net.chaossquad.mclib.executable;
+package net.chaossquad.mclib.gamemode.executable;
 
 import net.chaossquad.mclib.dynamicevents.EventListenerManager;
 import net.chaossquad.mclib.dynamicevents.ListenerOwner;
-import net.chaossquad.mclib.misc.ListenerRegistrar;
 import net.chaossquad.mclib.scheduler.TaskScheduler;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.ApiStatus;

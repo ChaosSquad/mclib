@@ -1,6 +1,5 @@
-package net.chaossquad.mclib.misc;
+package net.chaossquad.mclib.gamemode.executable;
 
-import net.chaossquad.mclib.executable.ManagedListener;
 import org.jetbrains.annotations.NotNull;
 
 /**

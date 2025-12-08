@@ -1,4 +1,4 @@
-package net.chaossquad.mclib.executable;
+package net.chaossquad.mclib.gamemode.executable;
 
 import net.chaossquad.mclib.misc.Removable;
 import org.bukkit.event.Listener;

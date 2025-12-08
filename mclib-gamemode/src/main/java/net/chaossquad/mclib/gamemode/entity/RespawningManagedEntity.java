@@ -1,12 +1,11 @@
-package net.chaossquad.mclib.entity;
+package net.chaossquad.mclib.gamemode.entity;
 
 import net.chaossquad.mclib.WorldUtils;
-import net.chaossquad.mclib.misc.ListenerRegistrar;
+import net.chaossquad.mclib.gamemode.executable.ListenerRegistrar;
 import net.chaossquad.mclib.scheduler.SchedulerInterface;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
