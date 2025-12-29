@@ -150,6 +150,22 @@ public class TaskScheduler implements SchedulerInterface {
         this.tasks.remove(id);
     }
 
+    /**
+     * Removes all tasks with the specified remove condition.
+     * @param removeCondition remove condition
+     */
+    public final void removeTasks(@NotNull Removable removeCondition) {
+        this.tasks.values().removeIf(t -> t.getRemoveCondition() == removeCondition);
+    }
+
+    /**
+     * Removes all tasks with the specified task runnable.
+     * @param runnable task runnable
+     */
+    public final void removeTasks(@NotNull TaskRunnable runnable) {
+        this.tasks.values().removeIf(t -> t.getRunnable() == runnable);
+    }
+
     // ADD TASKS
 
     /**
