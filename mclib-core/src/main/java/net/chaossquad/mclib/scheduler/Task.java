@@ -17,6 +17,7 @@ public abstract class Task {
     private final String label;
     private boolean removed;
     private boolean paused;
+    private long lastExecutionDuration;
 
     /**
      * Creates a task.
@@ -35,6 +36,7 @@ public abstract class Task {
         this.label = label != null ? label.replace(",", "").replace(" ", "") : "unnamed";
         this.removed = false;
         this.paused = false;
+        this.lastExecutionDuration = 0L;
     }
 
     // RUN
@@ -47,7 +49,10 @@ public abstract class Task {
     public final void run() {
 
         this.onRun();
+
+        long startTime = System.nanoTime();
         this.runnable.run(this);
+        this.lastExecutionDuration = System.nanoTime() - startTime;
 
     }
 
@@ -120,6 +125,14 @@ public abstract class Task {
      */
     public final void setPaused(boolean paused) {
         this.paused = paused;
+    }
+
+    /**
+     * Returns the duration of the last task execution in nanoseconds.
+     * @return duration in nanoseconds
+     */
+    public final long getLastExecutionDuration() {
+        return this.lastExecutionDuration;
     }
 
     /**

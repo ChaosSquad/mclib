@@ -21,6 +21,7 @@ public class TaskScheduler implements SchedulerInterface {
     private final Map<Long, Task> tasks;
     private long nextTaskId;
     private long tick;
+    private long lastTickExecutionDuration;
 
     /**
      * Creates a task scheduler.
@@ -31,6 +32,7 @@ public class TaskScheduler implements SchedulerInterface {
         this.tasks = Collections.synchronizedMap(new HashMap<>());
         this.nextTaskId = 1;
         this.tick = 0;
+        this.lastTickExecutionDuration = 0L;
     }
 
     // TICK
@@ -44,6 +46,8 @@ public class TaskScheduler implements SchedulerInterface {
     public final boolean tick() {
         boolean hadException = false;
 
+        long startTime = System.nanoTime();
+
         synchronized (this.tasks) {
 
             for (Map.Entry<Long, Task> entry : Map.copyOf(this.tasks).entrySet()) {
@@ -55,6 +59,7 @@ public class TaskScheduler implements SchedulerInterface {
 
         this.tick++;
 
+        this.lastTickExecutionDuration = System.nanoTime() - startTime;
         return !hadException;
     }
 
@@ -203,6 +208,14 @@ public class TaskScheduler implements SchedulerInterface {
      */
     public final long getTick() {
         return this.tick;
+    }
+
+    /**
+     * Returns the last duration of the tick execution (all tasks + all other stuff) in nanoseconds.
+     * @return duration in nanoseconds
+     */
+    public final long getLastTickExecutionDuration() {
+        return this.lastTickExecutionDuration;
     }
 
 }
