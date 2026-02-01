@@ -94,12 +94,18 @@ public abstract class ManagedEntity<ENTITY_TYPE extends Entity> implements Manag
      * This will kill the old entity.
      * @param entity entity
      */
-    protected final void setEntity(@NotNull ENTITY_TYPE entity) {
+    protected final void setEntity(@Nullable ENTITY_TYPE entity) {
         if (this.removed) throw new IllegalStateException("ManagedEntity is already removed");
 
         // Remove previously existing entity
         if (this.entity != null && !this.entity.isDead()) {
             this.entity.remove();
+        }
+
+        // If the specified entity is null, set the current entity to null and do nothing more
+        if (entity == null) {
+            this.entity = null;
+            return;
         }
 
         // Set new entity
