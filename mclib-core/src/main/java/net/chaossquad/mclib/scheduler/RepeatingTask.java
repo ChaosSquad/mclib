@@ -28,7 +28,7 @@ public class RepeatingTask extends Task {
         super(id, scheduler, runnable, removeCondition, label);
 
         this.interval = interval;
-        this.lastExecutionTick = this.getScheduler().getTick() + initialDelay;
+        this.lastExecutionTick = this.getScheduler().getTick() + initialDelay - interval;
     }
 
     @Override
