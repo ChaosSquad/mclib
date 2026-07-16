@@ -25,6 +25,15 @@ allprojects {
             url = uri("https://maven.chaossquad.net/snapshots")
         }
     }
+
+    tasks {
+        withType<Javadoc>().configureEach {
+            (options as StandardJavadocDocletOptions).apply {
+                addBooleanOption("-no-fonts", true)
+            }
+        }
+    }
+
 }
 
 extra["javaVersion"] = "25"
