@@ -5,11 +5,14 @@ plugins {
 
 dependencies {
     compileOnly(project(":mclib-core"))
-    compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
-    implementation("net.jandie1505:DataStorage:1.0-RELEASE")
+    compileOnly("io.papermc.paper:paper-api:${rootProject.extra["paperVersion"]}")
+    implementation("net.jandie1505:DataStorage:${rootProject.extra["dataStorageVersion"]}")
 }
 
 java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(rootProject.extra["javaVersion"].toString())
+    }
     withSourcesJar()
     withJavadocJar()
 }

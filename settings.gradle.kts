@@ -11,6 +11,5 @@ plugins {
 }
 
 rootProject.name = "mclib"
-include("lib")
 
 include("mclib-core", "mclib-gamemode", "mclib-datastorage")

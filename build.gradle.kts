@@ -26,3 +26,11 @@ allprojects {
         }
     }
 }
+
+extra["javaVersion"] = "25"
+
+extra["paperVersion"] = "26.2.build.+"
+extra["luckPermsVersion"] = "5.5"
+extra["vaultAPIVersion"] = "1.7.1"
+extra["placeholderAPIVersion"] = "2.12.3"
+extra["dataStorageVersion"] = "1.0-RELEASE"
